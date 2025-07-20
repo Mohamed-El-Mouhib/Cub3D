@@ -1,0 +1,5 @@
+*.o
+libs
+libs/*
+cub3d
+.vscode
