@@ -86,7 +86,9 @@ void	render_player(int x, int y, void *win, void *mlx, int color)
 		j = 0;
 		while (j < 5)
 		{
-			mlx_pixel_put(mlx, win, y - 3 + i, x - 3 + j, color);
+			if ((y - 3 + i + 1) % 45 != 0 && (x - 3 + j + 1) % 45 != 0
+				&& (y - 3 + i + 2) % 45 != 0 && (x - 3 + j + 2) % 45 != 0)
+				mlx_pixel_put(mlx, win, y - 3 + i, x - 3 + j, color);
 			j++;
 		}
 		i++;
@@ -127,6 +129,7 @@ int	function_handle_(void)
 
 	if (oldy_ != box()->py || oldx_ != box()->px)
 	{
+		printf("py %d, px %d\n", box()->py, box()->px);
 		if (oldy_ || oldx_)
 			render_player(oldx_, oldy_ , box()->win, box()->mlx, 0x808080);
 		render_player(box()->px , box()->py , box()->win, box()->mlx, 0xB32134);
@@ -141,13 +144,13 @@ int	escape_handle(int event_c_)
 	if (event_c_ == KE)
 		exit(0);
 	else if (event_c_ == KA)
-		box()->py -= 8;
+		box()->py -= 2;
 	else if (event_c_ == KS)
-		box()->py += 8;
+		box()->py += 2;
 	else if (event_c_ == KD)
-		box()->px += 8;
+		box()->px += 2;
 	else if (event_c_ == KW)
-		box()->px -= 8;
+		box()->px -= 2;
 	return 0;
 }
 
