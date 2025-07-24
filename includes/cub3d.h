@@ -6,7 +6,7 @@
 /*   By: mel-mouh <mel-mouh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 14:44:05 by mel-mouh          #+#    #+#             */
-/*   Updated: 2025/07/05 17:07:24 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2025/07/24 23:30:11 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include "libft.h"
 # include <fcntl.h>
 # include <mlx.h>
-# include <X11/Xlib.h>
+# include <X11/keysym.h>
 # include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -26,21 +26,35 @@
 # define MAP_HEIGHT 10
 # define MAP_WIDTH 10
 
-# define KA 97
-# define KD 115 
-# define KS 100
-# define KW 119
-# define KE 65307
+typedef struct	s_data {
+	void	*img;
+	char	*addr;
+	int		bpp;
+	int		line_len;
+	int		endian;
+}	t_data;
 
 
 typedef struct s_parse
 {
 	int	height;
 	int	width;
-	int	px;
-	int	py;
+	double	px;
+	double	py;
 	void	*win;
 	void	*mlx;
+	bool	is_moving;
+	t_data	data;
 }	t_parse;
+
+typedef struct s_movment
+{
+	double	left_right_;
+	double	up_down_;
+	bool	is_moving;
+}	t_movment;
+
+
+void	my_pixel_put(int x, int y, unsigned int color);
 
 #endif
