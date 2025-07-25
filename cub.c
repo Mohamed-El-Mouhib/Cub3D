@@ -6,7 +6,7 @@
 /*   By: mel-mouh <mel-mouh@student.1337.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 21:54:38 by mel-mouh          #+#    #+#             */
-/*   Updated: 2025/07/24 23:57:29 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2025/07/25 16:57:11 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,16 +28,12 @@ t_movment	*pmo(void)
 }
 
 int map[MAP_HEIGHT][MAP_WIDTH] = {
-  {1,1,1,1,1,1,1,1,1,1},
-  {1,1,0,0,0,0,0,0,1,1},
-  {1,0,0,1,0,0,0,0,0,1},
-  {1,0,0,0,1,1,1,0,0,1},
-  {1,0,0,0,0,1,1,0,0,1},
-  {1,0,0,1,0,6,1,0,0,1},
-  {1,0,0,1,1,0,0,0,0,1},
-  {1,0,0,1,1,1,0,0,0,1},
-  {1,1,0,0,0,0,0,0,1,1},
-  {1,1,1,1,1,1,1,1,1,1}
+  {1,1,1,1,1,1},
+  {1,0,1,1,0,1},
+  {1,0,1,0,0,1},
+  {1,0,1,6,0,1},
+  {1,0,0,0,0,1},
+  {1,1,1,1,1,1},
 };
 
 void	init(void)
@@ -53,10 +49,11 @@ void	init(void)
 		{
 			if (map[i][j] == 6)
 			{
-				box()->px = (double)i *45 + 22;
-				box()->py = (double)j *45 + 22;
+				box()->py = (double)i * 45 + 22;
+				box()->px = (double)j * 45 + 22;
 			}
-		} }
+		}
+	}
 	box()->height = i;
 	box()->width = j;
 }
@@ -83,20 +80,40 @@ void	my_pixel_put(int x, int y, unsigned int color)
 	*((unsigned int *)(box()->data.addr + offset)) = color;
 }
 
+void	draw_lines()
+{
+	int	i;
+	double	y;
+	double	x;
+
+	i = 0;
+	y = box()->py;
+	x = box()->px;
+	while ((int)i < MAX_DISTANCE)
+	{
+		if (((int)y + 1) % 45 != 0 && ((int)x + 1) % 45 != 0
+			&& ((int)y + 2) % 45 != 0 && ((int)x + 2) % 45 != 0)
+			my_pixel_put((int)x, (int)y, 0xFFFFFF);
+		y = box()->py + cos(box()->dir_) * i;
+		x = box()->px + sin(box()->dir_) * i;
+		i++;
+	}
+}
+
 void	render_player(int x, int y, int color)
 {
 	int	i;
 	int	j;
 
 	i = -1;
-	while (++i < 5)
+	while (++i < 9)
 	{
 		j = -1;
-		while (++j < 5)
+		while (++j < 9)
 		{
-			if ((y - 3 + i + 1) % 45 != 0 && (x - 3 + j + 1) % 45 != 0
-				&& (y - 3 + i + 2) % 45 != 0 && (x - 3 + j + 2) % 45 != 0)
-				my_pixel_put(y - 3 + i, x - 3 + j, color);
+			if ((!i || i == 8 || !j || j == 8) && (y - 5 + j + 1) % 45 != 0 && (x - 5 + i + 1) % 45 != 0
+				&& (y - 5 + j + 2) % 45 != 0 && (x - 5 + i + 2) % 45 != 0)
+				my_pixel_put(y - 5 + j, x - 5 + i, color);
 		}
 	}
 }
@@ -113,29 +130,25 @@ void	draw_walls(void)
 		while (++j < box()->width)
 		{
 			if (map[i][j] == 1)
-				render_wall(i * 45, j * 45, 0x555555);
+				render_wall(j * 45, i * 45, 0x555555);
 			else
-				render_wall(i * 45, j * 45, 0x808080);
+				render_wall(j * 45, i * 45, 0x808080);
 		}
 	}
 }
 
 int	function_handle_(void)
 {
-	static double	oldy_;
-	static double	oldx_;
-
-	usleep(1000);
 	draw_walls();
-	if (map[(int)(box()->px + pmo()->left_right_) / 45][(int)box()->py / 45] != 1)
-		box()->py += pmo()->left_right_;
-	box()->px += pmo()->up_down_;
-	printf("py %d, px %d\n", (int)box()->py, (int)box()->px);
-	if (oldy_ || oldx_)
-		render_player((int)oldx_, (int)oldy_, 0x808080);
-	render_player((int)box()->px, (int)box()->py, 0xB32134);
-	oldx_ = box()->px;
-	oldy_ = box()->py;
+	if (map[(int)((box()->py + 5) / 45)][(int)((box()->px + pmo()->left_right_ + 5) / 45)] != 1
+		&& map[(int)((box()->py - 5) / 45)][(int)((box()->px + pmo()->left_right_ - 5) / 45)] != 1)
+		box()->px += pmo()->left_right_;
+	if (map[(int)((box()->py + pmo()->up_down_ + 5) / 45)][(int)((box()->px + 5) / 45)] != 1
+		&& map[(int)((box()->py + pmo()->up_down_ - 5) / 45)][(int)((box()->px - 5) / 45)] != 1)
+		box()->py += pmo()->up_down_;
+	box()->dir_ += pmo()->diroffset_;
+	draw_lines();
+	render_player((int)box()->py, (int)box()->px, 0xB32134);
 	mlx_put_image_to_window(box()->mlx, box()->win, box()->data.img, 0, 0);
 	return (0);
 }
@@ -152,6 +165,10 @@ int	key_set_(int event_c_, double *mode_)
 		pmo()->left_right_ = (*mode_);
 	else if (event_c_ == XK_w)
 		pmo()->up_down_ = -(*mode_);
+	else if (event_c_ == XK_Left)
+		pmo()->diroffset_ = +(*mode_) * 0.008;
+	else if (event_c_ == XK_Right)
+		pmo()->diroffset_ = -(*mode_) * 0.008;
 	return 0;
 }
 
@@ -160,7 +177,7 @@ int	main(int ac, char **av)
 	double	set_flag;
 	double	unset_flag;
 
-	set_flag = 0.2;
+	set_flag = 0.1;
 	unset_flag = 0;
 	pmo()->is_moving = true;
 	(void)ac;

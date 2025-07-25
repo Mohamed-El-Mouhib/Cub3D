@@ -16,6 +16,7 @@
 # include "libft.h"
 # include <fcntl.h>
 # include <mlx.h>
+# include <math.h>
 # include <X11/keysym.h>
 # include <stdbool.h>
 # include <stdio.h>
@@ -23,8 +24,9 @@
 # include <string.h>
 # include <unistd.h>
 
-# define MAP_HEIGHT 10
-# define MAP_WIDTH 10
+# define MAP_HEIGHT 6
+# define MAP_WIDTH 6
+# define MAX_DISTANCE 50
 
 typedef struct	s_data {
 	void	*img;
@@ -44,6 +46,7 @@ typedef struct s_parse
 	void	*win;
 	void	*mlx;
 	bool	is_moving;
+	double	dir_;
 	t_data	data;
 }	t_parse;
 
@@ -51,6 +54,7 @@ typedef struct s_movment
 {
 	double	left_right_;
 	double	up_down_;
+	double	diroffset_;
 	bool	is_moving;
 }	t_movment;
 
