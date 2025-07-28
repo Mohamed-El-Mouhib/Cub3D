@@ -2,7 +2,7 @@ SRC=cub.c
 OBJ= $(SRC:%.c=%.o)
 CC=cc
 CFLAGS= -Wall -Werror -Wextra -Iincludes -Imlx
-NAME=cub3d
+NAME=Cub3d
 LIBS=./libs/libft
 LIB_DIR=libs
 
