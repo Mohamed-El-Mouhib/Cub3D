@@ -6,7 +6,7 @@
 /*   By: mel-mouh <mel-mouh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 14:44:05 by mel-mouh          #+#    #+#             */
-/*   Updated: 2025/07/26 16:16:35 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2025/07/28 20:41:57 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,9 @@
 # define MAX_DISTANCE 50
 # define FOV 60
 # define PI 3.14159
-
-typedef struct	s_data {
+# define TILE_S 60
+typedef struct	s_data
+{
 	void	*img;
 	char	*addr;
 	int		bpp;
@@ -38,6 +39,7 @@ typedef struct	s_data {
 	int		endian;
 }	t_data;
 
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 
 typedef struct s_parse
 {
@@ -51,6 +53,12 @@ typedef struct s_parse
 	double	dir_;
 	t_data	data;
 }	t_parse;
+
+typedef struct	s_cal
+{
+	double	y_iter;
+	double	x_iter;
+}	t_cal;
 
 typedef struct s_movment
 {

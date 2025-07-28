@@ -6,18 +6,24 @@
 /*   By: mel-mouh <mel-mouh@student.1337.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 21:54:38 by mel-mouh          #+#    #+#             */
-/*   Updated: 2025/07/26 17:26:04 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2025/07/28 20:47:43 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/cub3d.h"
-#include <mlx.h>
 
 t_parse	*box(void)
 {
 	static t_parse var;
 
 	return	(&var);
+}
+
+t_cal	*iterators(void)
+{
+	static t_cal	var;
+
+	return  (&var);
 }
 
 t_movment	*pmo(void)
@@ -49,8 +55,8 @@ void	init(void)
 		{
 			if (map[i][j] == 6)
 			{
-				box()->py = (double)i * 45 + 22;
-				box()->px = (double)j * 45 + 22;
+				box()->py = (double)i * TILE_S + TILE_S/2;
+				box()->px = (double)j * TILE_S + TILE_S/2;
 			}
 		}
 	}
@@ -64,10 +70,10 @@ void	render_wall(int x, int y, int color)
 	int	j;
 
 	i = -1;
-	while (++i < 43)
+	while (++i < TILE_S - 2)
 	{
 		j = -1;
-		while (++j < 43)
+		while (++j < TILE_S - 2)
 			my_pixel_put(x + i, y + j, color);
 	}
 }
@@ -91,8 +97,8 @@ void	draw_lines()
 	x = box()->px;
 	while ((int)i < MAX_DISTANCE)
 	{
-		if (((int)y + 1) % 45 != 0 && ((int)x + 1) % 45 != 0
-			&& ((int)y + 2) % 45 != 0 && ((int)x + 2) % 45 != 0)
+		if (((int)y + 1) % TILE_S != 0 && ((int)x + 1) % TILE_S != 0
+			&& ((int)y + 2) % TILE_S != 0 && ((int)x + 2) % TILE_S != 0)
 			my_pixel_put((int)x, (int)y, 0xFFFFFF);
 		y = box()->py + cos(box()->dir_) * i;
 		x = box()->px + sin(box()->dir_) * i;
@@ -111,8 +117,8 @@ void	render_player(int x, int y, int color)
 		j = -1;
 		while (++j < 9)
 		{
-			if ((!i || i == 8 || !j || j == 8) && (y - 5 + j + 1) % 45 != 0 && (x - 5 + i + 1) % 45 != 0
-				&& (y - 5 + j + 2) % 45 != 0 && (x - 5 + i + 2) % 45 != 0)
+			if ((!i || i == 8 || !j || j == 8) && (y - 5 + j + 1) % TILE_S != 0 && (x - 5 + i + 1) % TILE_S != 0
+				&& (y - 5 + j + 2) % TILE_S != 0 && (x - 5 + i + 2) % TILE_S != 0)
 				my_pixel_put(y - 5 + j, x - 5 + i, color);
 		}
 	}
@@ -130,9 +136,9 @@ void	draw_walls(void)
 		while (++j < box()->width)
 		{
 			if (map[i][j] == 1)
-				render_wall(j * 45, i * 45, 0x555555);
+				render_wall(j * TILE_S, i * TILE_S, 0x555555);
 			else
-				render_wall(j * 45, i * 45, 0x808080);
+				render_wall(j * TILE_S, i * TILE_S, 0x808080);
 		}
 	}
 }
@@ -148,33 +154,35 @@ void	cast_rays(void)
 	while (i < box()->dir_ + (PI / 3))
 	{
 		j = 0;
-		while (j < MAX_DISTANCE)
+		while (1)
 		{
 			y = box()->py + cos(i) * j;
 			x = box()->px + sin(i) * j;
-			if (((int)y + 1) % 45 != 0 && ((int)x + 1) % 45 != 0
-				&& ((int)y + 2) % 45 != 0 && ((int)x + 2) % 45 != 0)
+			if (map[(int)y / TILE_S][(int)x / TILE_S] == 1)
+				break ;
+			if (((int)y + 1) % TILE_S != 0 && ((int)x + 1) % TILE_S != 0
+				&& ((int)y + 2) % TILE_S != 0 && ((int)x + 2) % TILE_S != 0)
 				my_pixel_put((int)x, (int)y, 0xFFFFFF);
 			j++;
 		}
-		i += 0.7;
+		i += 0.08;
 	}
 }
 
 int	function_handle_(void)
 {
 	draw_walls();
-	if (map[(int)((box()->py + 5) / 45)][(int)((box()->px + pmo()->left_right_ + 5) / 45)] != 1
-		&& map[(int)((box()->py - 5) / 45)][(int)((box()->px + pmo()->left_right_ - 5) / 45)] != 1)
+	// calcule_cords();
+	// if (map[(int)((box()->py + 5) / TILE_S)][(int)((box()->px + pmo()->left_right_ + 5) / TILE_S)] != 1
+	// 	&& map[(int)((box()->py - 5) / TILE_S)][(int)((box()->px + pmo()->left_right_ - 5) / TILE_S)] != 1)
 		box()->px += pmo()->left_right_;
-	if (map[(int)((box()->py + pmo()->up_down_ + 5) / 45)][(int)((box()->px + 5) / 45)] != 1
-		&& map[(int)((box()->py + pmo()->up_down_ - 5) / 45)][(int)((box()->px - 5) / 45)] != 1)
-	{
+	// if (map[(int)((box()->py + pmo()->up_down_ + 5) / TILE_S)][(int)((box()->px + 5) / TILE_S)] != 1
+	// 	&& map[(int)((box()->py + pmo()->up_down_ - 5) / TILE_S)][(int)((box()->px - 5) / TILE_S)] != 1)
+	// {
 		box()->py -= cos(box()->dir_) * pmo()->up_down_;
 		box()->px -= sin(box()->dir_) * pmo()->up_down_;
-	}
+	// }
 	box()->dir_ += pmo()->diroffset_;
-	// draw_lines();
 	render_player(floor(box()->py), floor(box()->px), 0xB32134);
 	cast_rays();
 	mlx_put_image_to_window(box()->mlx, box()->win, box()->data.img, 0, 0);
@@ -200,32 +208,20 @@ int	key_set_(int event_c_, double *mode_)
 	return 0;
 }
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
 int	main()
 {
 	double	set_flag;
 	double	unset_flag;
 
-	set_flag = 0.03;
+	set_flag = 0.08;
 	unset_flag = 0;
 	box()->dir_ = ( 0 + 90 ) * PI/180;
 	pmo()->diroffset_ = 0;
 	pmo()->is_moving = true;
 	init();
 	box()->mlx = mlx_init();
-	box()->win = mlx_new_window(box()->mlx, box()->height*45, box()->width*45, "Cub3d test");
-	box()->data.img = mlx_new_image(box()->mlx, box()->height * 45, box()->width * 45);
+	box()->win = mlx_new_window(box()->mlx, box()->height*TILE_S, box()->width*TILE_S, "Cub3d test");
+	box()->data.img = mlx_new_image(box()->mlx, box()->height * TILE_S, box()->width * TILE_S);
 	box()->data.addr = mlx_get_data_addr(box()->data.img, &box()->data.bpp, &box()->data.line_len, &box()->data.endian);
 	mlx_hook(box()->win, 02, 1L<<0, key_set_, &set_flag);
 	mlx_hook(box()->win, 03, 1L<<1, key_set_, &unset_flag);
