@@ -6,7 +6,7 @@
 /*   By: mel-mouh <mel-mouh@student.1337.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 21:54:38 by mel-mouh          #+#    #+#             */
-/*   Updated: 2025/07/28 20:47:43 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2025/07/28 20:50:59 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ void	init(void)
 		{
 			if (map[i][j] == 6)
 			{
-				box()->py = (double)i * TILE_S + TILE_S/2;
-				box()->px = (double)j * TILE_S + TILE_S/2;
+				box()->py = (double)i * TILE_S + 30;
+				box()->px = (double)j * TILE_S + 30;
 			}
 		}
 	}
@@ -165,7 +165,7 @@ void	cast_rays(void)
 				my_pixel_put((int)x, (int)y, 0xFFFFFF);
 			j++;
 		}
-		i += 0.08;
+		i += 0.03;
 	}
 }
 
