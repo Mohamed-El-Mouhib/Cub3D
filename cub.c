@@ -200,6 +200,18 @@ int	key_set_(int event_c_, double *mode_)
 	return 0;
 }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 int	main()
 {
 	double	set_flag;
