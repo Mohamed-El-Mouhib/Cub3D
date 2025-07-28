@@ -31,4 +31,4 @@ re: fclean all
 
 .PHONY: all clean fclean re
 
-.SECONDARY: $(OBJ)
+.SECONDARY: $(OBJ) $(LIBS)
