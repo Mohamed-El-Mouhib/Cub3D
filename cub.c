@@ -6,7 +6,7 @@
 /*   By: mel-mouh <mel-mouh@student.1337.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 21:54:38 by mel-mouh          #+#    #+#             */
-/*   Updated: 2025/07/25 16:57:11 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2025/07/26 17:26:04 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,6 +137,30 @@ void	draw_walls(void)
 	}
 }
 
+void	cast_rays(void)
+{
+	double	i;
+	int	j;
+	double	y;
+	double	x;
+
+	i = box()->dir_ - (PI / 3);
+	while (i < box()->dir_ + (PI / 3))
+	{
+		j = 0;
+		while (j < MAX_DISTANCE)
+		{
+			y = box()->py + cos(i) * j;
+			x = box()->px + sin(i) * j;
+			if (((int)y + 1) % 45 != 0 && ((int)x + 1) % 45 != 0
+				&& ((int)y + 2) % 45 != 0 && ((int)x + 2) % 45 != 0)
+				my_pixel_put((int)x, (int)y, 0xFFFFFF);
+			j++;
+		}
+		i += 0.7;
+	}
+}
+
 int	function_handle_(void)
 {
 	draw_walls();
@@ -145,10 +169,14 @@ int	function_handle_(void)
 		box()->px += pmo()->left_right_;
 	if (map[(int)((box()->py + pmo()->up_down_ + 5) / 45)][(int)((box()->px + 5) / 45)] != 1
 		&& map[(int)((box()->py + pmo()->up_down_ - 5) / 45)][(int)((box()->px - 5) / 45)] != 1)
-		box()->py += pmo()->up_down_;
+	{
+		box()->py -= cos(box()->dir_) * pmo()->up_down_;
+		box()->px -= sin(box()->dir_) * pmo()->up_down_;
+	}
 	box()->dir_ += pmo()->diroffset_;
-	draw_lines();
-	render_player((int)box()->py, (int)box()->px, 0xB32134);
+	// draw_lines();
+	render_player(floor(box()->py), floor(box()->px), 0xB32134);
+	cast_rays();
 	mlx_put_image_to_window(box()->mlx, box()->win, box()->data.img, 0, 0);
 	return (0);
 }
@@ -166,22 +194,22 @@ int	key_set_(int event_c_, double *mode_)
 	else if (event_c_ == XK_w)
 		pmo()->up_down_ = -(*mode_);
 	else if (event_c_ == XK_Left)
-		pmo()->diroffset_ = +(*mode_) * 0.008;
+		pmo()->diroffset_ = +(*mode_) * 0.02;
 	else if (event_c_ == XK_Right)
-		pmo()->diroffset_ = -(*mode_) * 0.008;
+		pmo()->diroffset_ = -(*mode_) * 0.02;
 	return 0;
 }
 
-int	main(int ac, char **av)
+int	main()
 {
 	double	set_flag;
 	double	unset_flag;
 
-	set_flag = 0.1;
+	set_flag = 0.03;
 	unset_flag = 0;
+	box()->dir_ = ( 0 + 90 ) * PI/180;
+	pmo()->diroffset_ = 0;
 	pmo()->is_moving = true;
-	(void)ac;
-	(void)av;
 	init();
 	box()->mlx = mlx_init();
 	box()->win = mlx_new_window(box()->mlx, box()->height*45, box()->width*45, "Cub3d test");

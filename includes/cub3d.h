@@ -6,7 +6,7 @@
 /*   By: mel-mouh <mel-mouh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 14:44:05 by mel-mouh          #+#    #+#             */
-/*   Updated: 2025/07/24 23:30:11 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2025/07/26 16:16:35 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@
 # define MAP_HEIGHT 6
 # define MAP_WIDTH 6
 # define MAX_DISTANCE 50
+# define FOV 60
+# define PI 3.14159
 
 typedef struct	s_data {
 	void	*img;
