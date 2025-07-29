@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   cub3d.h                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mel-mouh <mel-mouh@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/05 14:44:05 by mel-mouh          #+#    #+#             */
-/*   Updated: 2025/07/28 20:41:57 by mel-mouh         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef CUB3D_H
 # define CUB3D_H
 
@@ -24,12 +12,16 @@
 # include <string.h>
 # include <unistd.h>
 
+# define WIN_H 500
+# define WIN_W 525
+
 # define MAP_HEIGHT 6
 # define MAP_WIDTH 6
-# define MAX_DISTANCE 50
-# define FOV 60
 # define PI 3.14159
 # define TILE_S 60
+
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
 typedef struct	s_data
 {
 	void	*img;
@@ -38,8 +30,6 @@ typedef struct	s_data
 	int		line_len;
 	int		endian;
 }	t_data;
-
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
 
 typedef struct s_parse
 {
@@ -60,6 +50,12 @@ typedef struct	s_cal
 	double	x_iter;
 }	t_cal;
 
+typedef struct	s_ray
+{
+	double	rx;
+	double	ry;
+}	t_ray;
+
 typedef struct s_movment
 {
 	double	left_right_;
@@ -67,7 +63,6 @@ typedef struct s_movment
 	double	diroffset_;
 	bool	is_moving;
 }	t_movment;
-
 
 void	my_pixel_put(int x, int y, unsigned int color);
 

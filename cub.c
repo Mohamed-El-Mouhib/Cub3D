@@ -6,7 +6,7 @@
 /*   By: mel-mouh <mel-mouh@student.1337.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 21:54:38 by mel-mouh          #+#    #+#             */
-/*   Updated: 2025/07/28 20:50:59 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2025/07/29 19:51:51 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,14 @@ t_movment	*pmo(void)
 	return (&pp);
 }
 
+t_ray	arr[105];
+
 int map[MAP_HEIGHT][MAP_WIDTH] = {
   {1,1,1,1,1,1},
-  {1,0,1,1,0,1},
-  {1,0,1,0,0,1},
-  {1,0,1,6,0,1},
   {1,0,0,0,0,1},
+  {1,0,0,0,0,1},
+  {1,0,0,0,0,1},
+  {1,0,0,0,6,1},
   {1,1,1,1,1,1},
 };
 
@@ -86,26 +88,6 @@ void	my_pixel_put(int x, int y, unsigned int color)
 	*((unsigned int *)(box()->data.addr + offset)) = color;
 }
 
-void	draw_lines()
-{
-	int	i;
-	double	y;
-	double	x;
-
-	i = 0;
-	y = box()->py;
-	x = box()->px;
-	while ((int)i < MAX_DISTANCE)
-	{
-		if (((int)y + 1) % TILE_S != 0 && ((int)x + 1) % TILE_S != 0
-			&& ((int)y + 2) % TILE_S != 0 && ((int)x + 2) % TILE_S != 0)
-			my_pixel_put((int)x, (int)y, 0xFFFFFF);
-		y = box()->py + cos(box()->dir_) * i;
-		x = box()->px + sin(box()->dir_) * i;
-		i++;
-	}
-}
-
 void	render_player(int x, int y, int color)
 {
 	int	i;
@@ -143,15 +125,16 @@ void	draw_walls(void)
 	}
 }
 
-void	cast_rays(void)
+void	draw_rays(void)
 {
 	double	i;
 	int	j;
 	double	y;
 	double	x;
 
-	i = box()->dir_ - (PI / 3);
-	while (i < box()->dir_ + (PI / 3))
+	int c=0;
+	i = box()->dir_ - (PI / 6);
+	while (i < box()->dir_ + (PI / 6))
 	{
 		j = 0;
 		while (1)
@@ -165,14 +148,106 @@ void	cast_rays(void)
 				my_pixel_put((int)x, (int)y, 0xFFFFFF);
 			j++;
 		}
-		i += 0.03;
+		c++;
+		i += 0.01;
+	}
+}
+
+void	cast_rays(void)
+{
+	double	i;
+	int	j;
+	int	it;
+	double	y;
+	double	x;
+
+	i = box()->dir_ - (PI / 6);
+	it = 0;
+	while (i < box()->dir_ + (PI / 6))
+	{
+		j = 0;
+		while (1)
+		{
+			y = box()->py + cos(i) * j;
+			x = box()->px + sin(i) * j;
+			if (map[(int)y / TILE_S][(int)x / TILE_S] == 1)
+			{
+				arr[it].rx = x;
+				arr[it].ry = y;
+				it++;
+				break ;
+			}
+			j++;
+		}
+		i += 0.01;
+	}
+}
+
+void	draw_floor_ceiling(void)
+{
+	int	x;
+	int	y;
+
+	y = 0;
+	while (y < WIN_H)
+	{
+		x = 0;
+		while (x < WIN_W)
+		{
+			if (y < WIN_H/2)
+				my_pixel_put(x, y, 0x808080);
+			else
+				my_pixel_put(x, y, 0xffe4c4);
+			x++;
+		}
+		y++;
+	}
+}
+
+void	draw_row_wall(int dist, int col)
+{
+	int	j;
+
+	j = 0;
+	while (j < dist/2)
+	{
+		my_pixel_put(col, WIN_H/2 - j, 0xD10096);
+		my_pixel_put(col+ 1, WIN_H/2 - j, 0xD10096);
+		my_pixel_put(col+ 2, WIN_H/2 - j, 0xD10096);
+		my_pixel_put(col+ 3, WIN_H/2 - j, 0xD10096);
+		my_pixel_put(col+ 4, WIN_H/2 - j, 0xD10096);
+		my_pixel_put(col, WIN_H/2 + j, 0xD10096);
+		my_pixel_put(col+ 1, WIN_H/2 + j, 0xD10096);
+		my_pixel_put(col+ 2, WIN_H/2 + j, 0xD10096);
+		my_pixel_put(col+ 3, WIN_H/2 + j, 0xD10096);
+		my_pixel_put(col+ 4, WIN_H/2 + j, 0xD10096);
+		j++;
+	}
+}
+
+void	construct_wall(void)
+{
+	double	dist;
+	int	i;
+
+	i = 0;
+	while (i < 105)
+	{
+		dist = (WIN_H * TILE_S) / hypot(box()->px - arr[i].rx, box()->py - arr[i].ry);
+		if ((int)dist > WIN_H)
+			dist = (int)WIN_H;
+		draw_row_wall(dist, i*5);
+		i++;
 	}
 }
 
 int	function_handle_(void)
 {
-	draw_walls();
-	// calcule_cords();
+	draw_floor_ceiling();
+	cast_rays();
+	construct_wall();
+	// printf("here\n");
+	// draw_walls();
 	// if (map[(int)((box()->py + 5) / TILE_S)][(int)((box()->px + pmo()->left_right_ + 5) / TILE_S)] != 1
 	// 	&& map[(int)((box()->py - 5) / TILE_S)][(int)((box()->px + pmo()->left_right_ - 5) / TILE_S)] != 1)
 		box()->px += pmo()->left_right_;
@@ -183,8 +258,8 @@ int	function_handle_(void)
 		box()->px -= sin(box()->dir_) * pmo()->up_down_;
 	// }
 	box()->dir_ += pmo()->diroffset_;
-	render_player(floor(box()->py), floor(box()->px), 0xB32134);
-	cast_rays();
+	// render_player(floor(box()->py), floor(box()->px), 0xB32134);
+	// draw_rays();
 	mlx_put_image_to_window(box()->mlx, box()->win, box()->data.img, 0, 0);
 	return (0);
 }
@@ -202,9 +277,9 @@ int	key_set_(int event_c_, double *mode_)
 	else if (event_c_ == XK_w)
 		pmo()->up_down_ = -(*mode_);
 	else if (event_c_ == XK_Left)
-		pmo()->diroffset_ = +(*mode_) * 0.02;
-	else if (event_c_ == XK_Right)
 		pmo()->diroffset_ = -(*mode_) * 0.02;
+	else if (event_c_ == XK_Right)
+		pmo()->diroffset_ = +(*mode_) * 0.02;
 	return 0;
 }
 
@@ -215,13 +290,15 @@ int	main()
 
 	set_flag = 0.08;
 	unset_flag = 0;
-	box()->dir_ = ( 0 + 90 ) * PI/180;
+	box()->dir_ = (30 + 90) * PI/180;
 	pmo()->diroffset_ = 0;
 	pmo()->is_moving = true;
 	init();
 	box()->mlx = mlx_init();
-	box()->win = mlx_new_window(box()->mlx, box()->height*TILE_S, box()->width*TILE_S, "Cub3d test");
-	box()->data.img = mlx_new_image(box()->mlx, box()->height * TILE_S, box()->width * TILE_S);
+	// box()->win = mlx_new_window(box()->mlx, box()->height*TILE_S, box()->width*TILE_S, "Cub3d test");
+	// box()->data.img = mlx_new_image(box()->mlx, box()->height * TILE_S, box()->width * TILE_S);
+	box()->win = mlx_new_window(box()->mlx, WIN_W, WIN_H, "Cub3d test");
+	box()->data.img = mlx_new_image(box()->mlx, WIN_W, WIN_H);
 	box()->data.addr = mlx_get_data_addr(box()->data.img, &box()->data.bpp, &box()->data.line_len, &box()->data.endian);
 	mlx_hook(box()->win, 02, 1L<<0, key_set_, &set_flag);
 	mlx_hook(box()->win, 03, 1L<<1, key_set_, &unset_flag);
