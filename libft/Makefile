@@ -20,9 +20,6 @@ re : fclean all
 $(NAME) : $(OBJ)
 	ar rcs $(NAME) $(OBJ)
 
-%.o : %.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
 clean :
 	rm -f $(OBJ)
 
@@ -30,3 +27,4 @@ fclean : clean
 	rm -f $(NAME)
 
 .PHONY: all re clean fclean bonus
+.SECONDARY: $(OBJ)

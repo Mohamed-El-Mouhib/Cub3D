@@ -1,24 +1,25 @@
-SRC=cub.c 
-OBJ= $(SRC:%.c=%.o)
-CC=cc
-CFLAGS= -Wall -Werror -Wextra -Iincludes -Imlx
-NAME=cub3d
-LIBS=./libs/libft
-LIB_DIR=libs
+LINKERS       = -lmlx -lXext -lX11 -lm -Llibs -lft
+CFLAGS        = -Wall -Werror -Wextra -Iincludes
+SRC           = $(wildcard *.c) # update accordantly
+OBJ           = $(SRC:%.c=$(OBJDIR)/%.o)
+LIBFT_ARCHIVE = $(LIB_DIR)/libft.a
+OBJDIR        = builds
+NAME          = cub3d
+LIB_DIR       = libs
+CC            = cc
 
-all: $(NAME)
+all: libft_rule $(NAME)
 
-$(NAME): $(OBJ) $(LIBS)
-	$(CC) $(CFLAGS) $(OBJ) -Llibs -Lmlx_linux -lmlx_Linux -L/usr/lib -Imlx_linux -lXext -lX11 -lm -lz -lft -o $(NAME)
+$(NAME): $(OBJ) $(LIBFT_ARCHIVE)
+	$(CC) $(CFLAGS) $(OBJ) $(LINKERS) -o $(NAME)
 
-$(LIBS): $(LIB_DIR)
+$(OBJDIR)/%.o: %.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+libft_rule:
+	@mkdir -p $(LIB_DIR)
 	make -C libft
-
-$(LIB_DIR):
-	mkdir -p libs
-
-%.o:%.c
-	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -rf $(OBJ)
@@ -29,6 +30,5 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
-
 .SECONDARY: $(OBJ)
+.PHONY: all clean fclean re libft_rule
