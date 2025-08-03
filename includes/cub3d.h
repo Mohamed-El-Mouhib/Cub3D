@@ -64,6 +64,11 @@ typedef struct s_movment
 	bool	is_moving;
 }	t_movment;
 
+typedef struct s_vec2 {
+	double x;
+	double y;
+} t_vec2;
+
 void	my_pixel_put(int x, int y, unsigned int color);
 
 #endif

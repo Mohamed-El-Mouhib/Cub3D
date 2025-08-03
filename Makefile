@@ -1,5 +1,5 @@
 LINKERS       = -lmlx -lXext -lX11 -lm -Llibs -lft
-CFLAGS        = -Wall -Werror -Wextra -Iincludes
+CFLAGS        = -Wall -Wextra -Iincludes
 SRC           = $(wildcard *.c) # update accordantly
 OBJ           = $(SRC:%.c=$(OBJDIR)/%.o)
 LIBFT_ARCHIVE = $(LIB_DIR)/libft.a

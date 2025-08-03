@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include "includes/cub3d.h"
+#include <mlx.h>
+#include <unistd.h>
 
 t_parse	*box(void)
 {
@@ -84,9 +86,17 @@ void	my_pixel_put(int x, int y, unsigned int color)
 {
 	unsigned int	offset;
 
-	offset = (y * box()->data.line_len + x * (box()->data.bpp / 8));
-	*((unsigned int *)(box()->data.addr + offset)) = color;
 }
+void	pixel_put(t_data *buff, int x, int y, unsigned int color)
+{
+	unsigned int	offset;
+
+	if (x < 0 || y < 0)
+		return ;
+	offset = (y * buff->line_len + x * (buff->bpp / 8));
+	*((unsigned int *)(buff->addr + offset)) = color;
+}
+
 
 void	render_player(int x, int y, int color)
 {
@@ -282,27 +292,220 @@ int	key_set_(int event_c_, double *mode_)
 		pmo()->diroffset_ = +(*mode_) * 0.02;
 	return 0;
 }
+typedef struct s_game {
+	void	*win;
+	void	*mlx;
+	t_data scene;
+} t_game;
+
+void ft_exit_error(char *msg)
+{
+	write(STDERR_FILENO, msg, ft_strlen(msg));	
+	exit(1);
+}
+
+
+int loop()
+{
+	
+	return (0);
+}
+
+t_vec2 vec2_sub(t_vec2 p1, t_vec2 p2)
+{
+	t_vec2 result;
+
+	result.x = p1.x - p2.x;
+	result.y = p1.y - p2.y;
+	return (result);
+}
+
+void draw_vertical_line(t_data *buff, t_vec2 p1, t_vec2 p2, double c)
+{
+	t_vec2 p;
+
+	p.y = p1.y;
+	if (p.y > p2.y)
+	{
+		while (p.y > p2.y)
+		{
+			p.x = c;
+			pixel_put(buff, p.x, p.y, 0xFF00FF);
+			p.y -= 1;
+		}
+	}
+	else
+	{
+		while (p.y < p2.y)
+		{
+			p.x = c;
+			pixel_put(buff, p.x, p.y, 0xFF00FF);
+			p.y += 1;
+		}
+	}
+}
+
+void draw_line(t_data *buff, t_vec2 p1, t_vec2 p2)
+{
+	double k;
+	double c;
+	t_vec2 p;
+	t_vec2 sub;
+
+	sub = vec2_sub(p1, p2);
+	if (sub.x == 0)
+		k = 0;
+	else
+		k = sub.y / sub.x;
+	c = p1.y - k*p1.x;
+	if (k == 0)
+		draw_vertical_line(buff, p1, p2, c);
+	else
+	{
+		p.x = p1.x;
+		if (p.x > p2.x)
+		{
+			while (p.x > p2.x)
+			{
+				p.y = p.x *k + c;
+				pixel_put(buff, p.x, p.y, 0xFF00FF);
+				p.x -= 1;
+			}
+		}
+		else
+		{
+			while (p.x < p2.x)
+			{
+				p.y = p.x *k + c;
+				pixel_put(buff, p.x, p.y, 0xFF00FF);
+				p.x += 1;
+			}
+		}
+	}
+}
+
+
+void fill_vertical_line(void *img, int cx, int cy, int x, int y, int color)
+{
+	int i;
+
+	if (x < 0 || x >= WIN_W || y < 0 || y >= WIN_H)
+		return;
+	i = cy;
+	while (i != y)
+	{
+		pixel_put(img, x, i, color);
+		i += (y > cy ? 1 : -1);
+	}
+	pixel_put(img, x, y, color);
+}
+
+void draw_filled_circle(void *img, t_vec2 c, int r, int color)
+{
+	int x = 0;
+	int y = -r;
+	int p = -r;
+
+	x = 0;
+	y = -r;
+	p = -r;
+	while (x < -y)
+	{
+		if (p > 0)
+		{
+			y += 1;
+			p += 2 * (x + y) + 1;
+		}
+		else
+	{
+			p += 2 * x + 1;
+		}
+		fill_vertical_line(img, c.x, c.y, c.x + x, c.y + y, color);
+		fill_vertical_line(img, c.x, c.y, c.x - x, c.y + y, color);
+		fill_vertical_line(img, c.x, c.y, c.x + x, c.y - y, color);
+		fill_vertical_line(img, c.x, c.y, c.x - x, c.y - y, color);
+		fill_vertical_line(img, c.x, c.y, c.x + y, c.y + x, color);
+		fill_vertical_line(img, c.x, c.y, c.x + y, c.y - x, color);
+		fill_vertical_line(img, c.x, c.y, c.x - y, c.y + x, color);
+		fill_vertical_line(img, c.x, c.y, c.x - y, c.y - x, color);
+		x += 1;
+	}
+}
+
+
+void draw_circle(t_data *buff, t_vec2 center, int radius)
+{
+	int x = 0;
+	int y = -radius;
+	int p = -radius;
+
+
+	while (x < -y)
+	{
+		if (p > 0)
+		{
+			y += 1;
+			p += 2 * (x + y) + 1;
+		}
+		else
+			p += 2 * x + 1;
+		pixel_put(buff, center.x + x, center.y + y, 0xFF00FF);
+		pixel_put(buff, center.x - x, center.y + y, 0xFF00FF);
+		pixel_put(buff, center.x + x, center.y - y, 0xFF00FF);
+		pixel_put(buff, center.x - x, center.y - y, 0xFF00FF);
+		pixel_put(buff, center.x + y, center.y + x, 0xFF00FF);
+		pixel_put(buff, center.x + y, center.y - x, 0xFF00FF);
+		pixel_put(buff, center.x - y, center.y + x, 0xFF00FF);
+		pixel_put(buff, center.x - y, center.y - x, 0xFF00FF);
+		x += 1;
+	}
+}
+
+void init_game(t_game *game)
+{
+	t_data	img;
+
+	game->mlx = mlx_init();
+	if (!game->mlx)
+		ft_exit_error("Faild to allocate mlx");
+	game->win = mlx_new_window(game->mlx, WIN_W, WIN_H, "Hello world!");
+	if (!game->win)
+		ft_exit_error("Faild to allocate window");
+	img.img = mlx_new_image(game->mlx, WIN_W, WIN_H);
+	img.addr = mlx_get_data_addr(img.img, &img.bpp, &img.line_len, &img.endian);
+	game->scene = img;
+}
+
+
+t_data new_img_buff(t_game *game, int width, int height)
+{
+	t_data img;
+
+	img.img = mlx_new_image(game->mlx, width, height);
+	img.addr = mlx_get_data_addr(img.img, &img.bpp, &img.line_len, &img.endian);
+	return (img);
+}
+
+t_vec2 vec2_new(double x, double y)
+{
+	t_vec2 vector;
+
+	vector.x = x;
+	vector.y = y;
+	return (vector);
+}
 
 int	main()
 {
-	double	set_flag;
-	double	unset_flag;
+	t_game game;
 
-	set_flag = 0.08;
-	unset_flag = 0;
-	box()->dir_ = (30 + 90) * PI/180;
-	pmo()->diroffset_ = 0;
-	pmo()->is_moving = true;
-	init();
-	box()->mlx = mlx_init();
-	// box()->win = mlx_new_window(box()->mlx, box()->height*TILE_S, box()->width*TILE_S, "Cub3d test");
-	// box()->data.img = mlx_new_image(box()->mlx, box()->height * TILE_S, box()->width * TILE_S);
-	box()->win = mlx_new_window(box()->mlx, WIN_W, WIN_H, "Cub3d test");
-	box()->data.img = mlx_new_image(box()->mlx, WIN_W, WIN_H);
-	box()->data.addr = mlx_get_data_addr(box()->data.img, &box()->data.bpp, &box()->data.line_len, &box()->data.endian);
-	mlx_hook(box()->win, 02, 1L<<0, key_set_, &set_flag);
-	mlx_hook(box()->win, 03, 1L<<1, key_set_, &unset_flag);
-	mlx_loop_hook(box()->mlx, function_handle_, NULL);
-	mlx_loop(box()->mlx);
+	init_game(&game);
+	draw_filled_circle(&game.scene, vec2_new(0, 0), 200, 0xFF00FF);
+	draw_circle(&game.scene, vec2_new(100, 100), 200);
+	draw_circle(&game.scene, vec2_new(100, 200), 200);
+	draw_line(&game.scene, vec2_new(100, 100), vec2_new(50, 200));
+	mlx_put_image_to_window(game.mlx, game.win,game.scene.img, 0, 0);
+	mlx_loop(game.mlx);
+
 	return (0);
 }
