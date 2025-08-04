@@ -66,7 +66,6 @@ void	pixel_put(t_data *buff, int x, int y, unsigned int color)
 typedef struct s_game {
 	void	*win;
 	void	*mlx;
-	t_vec2	player;
 	t_data scene;
 } t_game;
 
@@ -172,25 +171,6 @@ void draw_line(t_data *buff, t_vec2 p1, t_vec2 p2, int color)
 				p.x += 1;
 			}
 		}
-		p.y = p1.y;
-		if (p.y > p2.y)
-		{
-			while (p.y > p2.y)
-			{
-				p.x = p.y / k - c;
-				pixel_put(buff, p.x, p.y, color);
-				p.y -= 1;
-			}
-		}
-		else
-		{
-			while (p.y < p2.y)
-			{
-				p.x = p.y / k - c;
-				pixel_put(buff, p.x, p.y, color);
-				p.y += 1;
-			}
-		}
 	}
 }
 
@@ -283,15 +263,6 @@ t_data new_img_buff(t_game *game, int width, int height)
 	return (img);
 }
 
-t_vec2 vec2_new(double x, double y)
-{
-	t_vec2 vector;
-
-	vector.x = x;
-	vector.y = y;
-	return (vector);
-}
-
 
 void init_game(t_game *game)
 {
@@ -302,7 +273,15 @@ void init_game(t_game *game)
 	if (!game->win)
 		ft_exit_error("Faild to allocate window");
 	game->scene = new_img_buff(game, WIN_W, WIN_H);
-	game->player = vec2_new(50, 50);
+}
+
+t_vec2 vec2_new(double x, double y)
+{
+	t_vec2 vector;
+
+	vector.x = x;
+	vector.y = y;
+	return (vector);
 }
 
 int	key_even_handler(int event_c_)
@@ -362,19 +341,16 @@ void clear_img(t_data *img)
 
 #define FRAME_RATE 60
 #define ONE_FRAME_TIME 1000 / FRAME_RATE
-
 int fun(t_game *game)
 {
 	static time_t last_frame_time;
 
-	if (curr_time_ms() - last_frame_time < ONE_FRAME_TIME)
-		return (0);
+	
+	// 	return (0);
 	last_frame_time = curr_time_ms();
-	clear_img(&game->scene);
+	// clear_img(&game->scene);
 	draw_grid(&game->scene);
-	draw_circle(&game->scene, mouse_pos, 5, GREEN);
-	draw_line(&game->scene, game->player, mouse_pos, RED);
-	draw_circle(&game->scene, vec2_new(game->player.x, game->player.y), 5, GREEN);
+	draw_circle(&game->scene, vec2_new(mouse_pos.x, mouse_pos.y), 5, GREEN);
 	mlx_put_image_to_window(game->mlx, game->win,game->scene.img, 0, 0);
 	return (0);
 }

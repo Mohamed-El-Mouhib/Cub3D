@@ -12,8 +12,6 @@
 # include <string.h>
 # include <unistd.h>
 
-# define WIN_H 500
-# define WIN_W 525
 
 # define MAP_HEIGHT 6
 # define MAP_WIDTH 6
@@ -29,6 +27,8 @@ typedef struct	s_data
 	int		bpp;
 	int		line_len;
 	int		endian;
+	int width;
+	int height;
 }	t_data;
 
 typedef struct s_parse
