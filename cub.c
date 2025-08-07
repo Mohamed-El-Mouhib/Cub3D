@@ -21,27 +21,6 @@
 # define WIN_H (TILE_SIZE *11 + 1)
 # define WIN_W (TILE_SIZE * 11 + 1)
 
-t_parse	*box(void)
-{
-	static t_parse var;
-
-	return	(&var);
-}
-
-t_cal	*iterators(void)
-{
-	static t_cal	var;
-
-	return  (&var);
-}
-
-t_movment	*pmo(void)
-{
-	static t_movment pp;
-
-	return (&pp);
-}
-
 t_ray	arr[105];
 
 int map[MAP_HEIGHT][MAP_WIDTH] = {
@@ -67,6 +46,7 @@ typedef struct s_game {
 	void	*win;
 	void	*mlx;
 	t_vec2	player;
+	t_vec2	mouse_pos;
 	t_data scene;
 } t_game;
 
@@ -138,59 +118,21 @@ void draw_horizontal_line(t_data *buff, t_vec2 p1, double len, int color)
 
 void draw_line(t_data *buff, t_vec2 p1, t_vec2 p2, int color)
 {
-	double k;
-	double c;
-	t_vec2 p;
-	t_vec2 sub;
+	t_vec2 delta;
+	float steps;
+	t_vec2 inc;
 
-	sub = vec2_sub(p1, p2);
-	if (sub.x == 0)
-		k = 0;
-	else
-		k = sub.y / sub.x;
-	c = p1.y - k*p1.x;
-	if (k == 0)
-		draw_vertical_line(buff, p1, p2.y - p1.y, color);
-	else
+	delta = vec2_sub(p2, p1);
+	steps = fmax(fabs(delta.x), fabs(delta.y));
+	inc.x = delta.x / steps;
+	inc.y = delta.y / steps;
+	int i = 0;
+	while (i <= steps)
 	{
-		p.x = p1.x;
-		if (p.x > p2.x)
-		{
-			while (p.x > p2.x)
-			{
-				p.y = p.x *k + c;
-				pixel_put(buff, p.x, p.y, color);
-				p.x -= 1;
-			}
-		}
-		else
-		{
-			while (p.x < p2.x)
-			{
-				p.y = p.x *k + c;
-				pixel_put(buff, p.x, p.y, color);
-				p.x += 1;
-			}
-		}
-		p.y = p1.y;
-		if (p.y > p2.y)
-		{
-			while (p.y > p2.y)
-			{
-				p.x = p.y / k - c;
-				pixel_put(buff, p.x, p.y, color);
-				p.y -= 1;
-			}
-		}
-		else
-		{
-			while (p.y < p2.y)
-			{
-				p.x = p.y / k - c;
-				pixel_put(buff, p.x, p.y, color);
-				p.y += 1;
-			}
-		}
+		pixel_put(buff, round(p1.x), round(p1.y), color);
+		p1.x += inc.x;
+		p1.y += inc.y;
+		i++;
 	}
 }
 
@@ -199,6 +141,7 @@ void fill_vertical_line(void *img, int cx, int cy, int x, int y, int color)
 {
 	int i;
 
+	(void) cx;
 	if (x < 0 || x >= WIN_W || y < 0 || y >= WIN_H)
 		return;
 	i = cy;
@@ -335,11 +278,10 @@ void draw_grid(t_data  *buff)
 
 
 
-t_vec2 mouse_pos;
 int handle_mouse_event(int x,int y, t_game *game)
 {
-	mouse_pos.x = x;
-	mouse_pos.y = y;
+	game->mouse_pos.x = x;
+	game->mouse_pos.y = y;
 	return (0);
 }
 
@@ -372,8 +314,8 @@ int fun(t_game *game)
 	last_frame_time = curr_time_ms();
 	clear_img(&game->scene);
 	draw_grid(&game->scene);
-	draw_circle(&game->scene, mouse_pos, 5, GREEN);
-	draw_line(&game->scene, game->player, mouse_pos, RED);
+	draw_circle(&game->scene, game->mouse_pos, 5, GREEN);
+	draw_line(&game->scene, game->player, game->mouse_pos, RED);
 	draw_circle(&game->scene, vec2_new(game->player.x, game->player.y), 5, GREEN);
 	mlx_put_image_to_window(game->mlx, game->win,game->scene.img, 0, 0);
 	return (0);
