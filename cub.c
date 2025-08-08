@@ -12,25 +12,21 @@
 
 #include "includes/cub3d.h"
 #include "includes/libft.h"
-#include <mlx.h>
-#include <stdio.h>
-#include <unistd.h>
 
-#define TILE_SIZE 50
-#define TILE_SIZE 50
-# define WIN_H (TILE_SIZE *11 + 1)
-# define WIN_W (TILE_SIZE * 11 + 1)
+#define TILE_SIZE 50.0
+#define TILE_SIZE 50.0
+# define WIN_H (TILE_SIZE * 10 + 1)
+# define WIN_W (TILE_SIZE * 10 + 1)
 
-t_ray	arr[105];
+// RGB colors
+#define RED    0xFF0000
+#define GREEN  0x00FF00
+#define BLUE   0x0000FF
+#define PURPLE 0xFF00FF
 
-int map[MAP_HEIGHT][MAP_WIDTH] = {
-  {1,1,1,1,1,1},
-  {1,0,0,0,0,1},
-  {1,0,0,0,0,1},
-  {1,0,0,0,0,1},
-  {1,0,0,0,6,1},
-  {1,1,1,1,1,1},
-};
+#define FRAME_RATE 24
+
+t_vec2 intersect;
 
 void	pixel_put(t_data *buff, int x, int y, unsigned int color)
 {
@@ -47,7 +43,9 @@ typedef struct s_game {
 	void	*mlx;
 	t_vec2	player;
 	t_vec2	mouse_pos;
+	t_vec2	dir;
 	t_data scene;
+	time_t frame_duration;
 } t_game;
 
 void ft_exit_error(char *msg)
@@ -72,9 +70,17 @@ t_vec2 vec2_sub(t_vec2 p1, t_vec2 p2)
 	return (result);
 }
 
-
 /**
- * draw_vertical_line - draw vertica line
+ * draw_vertical_line - paint vertical line string from p1
+ *
+ * @buff: buffer image to hold the image data
+ * @p1: Starting point of the vertical line
+ * @len: length of the line
+ *  if len > 0: the line will go down
+ *  if len < 0: the line will go up
+ * @color: Color of line
+ *
+ * Return: Northing.
  */
 void draw_vertical_line(t_data *buff, t_vec2 p1, double len, int color)
 {
@@ -96,6 +102,18 @@ void draw_vertical_line(t_data *buff, t_vec2 p1, double len, int color)
 	}
 }
 
+/**
+ * draw_horizontal_line - paint horizontal line string from p1
+ *
+ * @buff: buffer image to hold the image data
+ * @p1: Starting point of the horizontal line
+ * @len: length of the line
+ *  if len > 0: the line will fo right
+ *  if len < 0: the line will go left
+ * @color: Color of line
+ *
+ * Return: Northing.
+ */
 void draw_horizontal_line(t_data *buff, t_vec2 p1, double len, int color)
 {
 	t_vec2 p;
@@ -103,7 +121,7 @@ void draw_horizontal_line(t_data *buff, t_vec2 p1, double len, int color)
 	if (len < 0)
 	{
 		p1.x += len;
-		draw_vertical_line(buff, p1, len * -1, color);
+		draw_horizontal_line(buff, p1, len * -1, color);
 		return ;
 	}
 	p.x = p1.x;
@@ -116,6 +134,15 @@ void draw_horizontal_line(t_data *buff, t_vec2 p1, double len, int color)
 	}
 }
 
+/**
+ * draw_line - draw line between two points
+ *
+ * @p1: the first point
+ * @p2: the second point
+ * @color: color to use
+ *
+ * Return: Nothing
+ */
 void draw_line(t_data *buff, t_vec2 p1, t_vec2 p2, int color)
 {
 	t_vec2 delta;
@@ -235,7 +262,6 @@ t_vec2 vec2_new(double x, double y)
 	return (vector);
 }
 
-
 void init_game(t_game *game)
 {
 	game->mlx = mlx_init();
@@ -245,7 +271,8 @@ void init_game(t_game *game)
 	if (!game->win)
 		ft_exit_error("Faild to allocate window");
 	game->scene = new_img_buff(game, WIN_W, WIN_H);
-	game->player = vec2_new(50, 50);
+	game->player = vec2_new(WIN_W / 2, WIN_H / 2);
+	game->frame_duration = 1000 / FRAME_RATE;
 }
 
 int	key_even_handler(int event_c_)
@@ -255,28 +282,30 @@ int	key_even_handler(int event_c_)
 	return (0);
 }
 
-#define RED 0xFF0000
-#define GREEN 0x00FF00
-#define BLUE 0x0000FF
 
 
 void draw_grid(t_data  *buff)
 {
-	t_vec2 start = vec2_new(0, 0);
-	for (int i = 0; i  <=  WIN_H; i+= TILE_SIZE)
+	t_vec2 start;
+	int i;
+
+	start = vec2_new(0, 0);
+	i = 0;
+	while (i <= WIN_H)
 	{
 		start.y = i;
 		draw_horizontal_line(buff, start, WIN_W, RED);
+		i+= TILE_SIZE;
 	}
 	start = vec2_new(0, 0);
-	for (int i = 0; i  <=  WIN_W; i+= TILE_SIZE)
+	i = 0;
+	while (i <= WIN_W)
 	{
 		start.x = i;
 		draw_vertical_line(buff, start, WIN_H, RED);
+		i+= TILE_SIZE;
 	}
 }
-
-
 
 int handle_mouse_event(int x,int y, t_game *game)
 {
@@ -284,8 +313,6 @@ int handle_mouse_event(int x,int y, t_game *game)
 	game->mouse_pos.y = y;
 	return (0);
 }
-
-#include <sys/time.h>
 
 time_t	curr_time_ms(void)
 {
@@ -295,28 +322,81 @@ time_t	curr_time_ms(void)
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-void clear_img(t_data *img)
+void	clear_img(t_data *img)
 {
 	if (!img->addr) 
 		return ;
 	ft_bzero(img->addr, img->width * img->height * 4);
 }
 
-#define FRAME_RATE 60
-#define ONE_FRAME_TIME 1000 / FRAME_RATE
+double (*foo(double dx))(double)
+{
+	if (dx >= 0)
+		return (floor);
+	else
+		return (ceil);
+}
+
+t_vec2 next_x;
+t_vec2 next_y;
+
+
+double vec2_len_squared(t_vec2 p1, t_vec2 p2)
+{
+	return ((p1.x - p2.x)*(p1.x - p2.x) + (p1.y - p2.y)*(p1.y - p2.y));
+}
+// void vec2_len_square(t_vec2 p1, t_vec2 p2)
+// {
+// 	return ((p1.x - p2.x) * (p1.x - p2.x))
+// }
+void	intersection_points(t_vec2 p1, t_vec2 p2)
+{
+	double k;
+	double c;
+	t_vec2 sub;
+	double x,y;
+
+	sub = vec2_sub(p1, p2);
+	if (sub.x == 0)
+		k = 0;
+	else
+		k = sub.y / sub.x;
+	c = p1.y - k*p1.x;
+	// y = kx + c
+	// (y - c) / k= x
+	x = foo(sub.x)(p2.x / TILE_SIZE)*TILE_SIZE;
+	y = k*x + c;
+	next_x = vec2_new(x, y);
+	y = foo(sub.y)(p2.y / TILE_SIZE)*TILE_SIZE;
+	if (k != 0)
+		x = (y - c) / k;
+	else
+		x = c;
+	next_y = vec2_new(x, y);
+	double len_x = vec2_len_squared(next_x, p2);
+	double len_y = vec2_len_squared(next_y, p2);
+	intersect = len_x > len_y ? next_y : next_x;
+	return ;
+}
 
 int fun(t_game *game)
 {
 	static time_t last_frame_time;
 
-	if (curr_time_ms() - last_frame_time < ONE_FRAME_TIME)
+	if (curr_time_ms() - last_frame_time < game->frame_duration)
 		return (0);
+	printf("FRAME_RATE: %ld\n", 1000 / (curr_time_ms() - last_frame_time));
 	last_frame_time = curr_time_ms();
 	clear_img(&game->scene);
 	draw_grid(&game->scene);
-	draw_circle(&game->scene, game->mouse_pos, 5, GREEN);
+	draw_circle(&game->scene, game->mouse_pos, 5, RED);
 	draw_line(&game->scene, game->player, game->mouse_pos, RED);
-	draw_circle(&game->scene, vec2_new(game->player.x, game->player.y), 5, GREEN);
+	draw_circle(&game->scene, game->player, 5, RED);
+	intersection_points(game->player, game->mouse_pos);
+	draw_circle(&game->scene, next_x, 5, GREEN);
+	draw_circle(&game->scene, next_y, 5, PURPLE);
+	draw_circle(&game->scene, intersect, 8, RED);
+	// draw_line(&game->scene, next_x, next_y, PURPLE);
 	mlx_put_image_to_window(game->mlx, game->win,game->scene.img, 0, 0);
 	return (0);
 }
