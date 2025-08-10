@@ -1,6 +1,6 @@
 LINKERS       = -lmlx -lXext -lX11 -lm -Llibs -lft
-CFLAGS        = -Wall -Wextra -Iincludes
-SRC           = $(wildcard *.c) # update accordantly
+CFLAGS        = -Wall -Wextra -Iincludes  -g -g3 -ggdb3 # -fsanitize=address
+SRC           = $(wildcard *.c ./src/*.c) # update accordantly
 OBJ           = $(SRC:%.c=$(OBJDIR)/%.o)
 LIBFT_ARCHIVE = $(LIB_DIR)/libft.a
 OBJDIR        = builds
@@ -23,7 +23,8 @@ libft_rule:
 
 clean:
 	rm -rf $(OBJ)
-	make -C libft clean
+	@echo "\033[31m""it suppose to run make -C libft clean""\033[0m"
+	# make -C libft clean
 
 fclean: clean
 	rm -rf $(NAME) $(LIB_DIR)
