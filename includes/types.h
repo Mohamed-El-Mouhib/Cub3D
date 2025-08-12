@@ -57,19 +57,33 @@ typedef struct s_parse
 	t_data	data;
 }			t_parse;
 
+typedef struct s_player
+{
+	t_vec2 dir;
+	t_vec2 plane;
+	t_vec2 pos;
+	double rot_angle; // the rotation step angle
+	double rot_cos;   // cos of rotation step, calculate it once
+	double rot_sin;   // sin of rotation step, calculate it once
+}			t_player;
+
+typedef struct s_world {
+	size_t  map_width;
+	size_t  map_height;
+	int	**map;
+}			t_world;
+
 typedef struct s_game
 {
-	void	*win;
-	void	*mlx;
-	int	**map;
-	size_t map_width;
-	size_t map_height;
-	size_t screen_width;
-	size_t screen_height;
-	t_vec2	player;
-	t_vec2	mouse_pos;
-	t_vec2	dir;
-	t_data	scene;
+	t_world  world;
+	t_player player;
+	t_vec2	 mouse_pos;
+	// Rander fields
+	size_t  screen_width;
+	size_t  screen_height;
+	t_data	 scene;
+	void	 *win;
+	void	 *mlx;
 }			t_game;
 
 #endif
