@@ -21,6 +21,12 @@
 # include <stdlib.h>
 # include <unistd.h>
 
+# define FRAME_RATE 100
+# define MAP_HEIGHT 10
+# define MAP_WIDTH 10
+# define INIT_ROTATION_STEP_DEGREE 1
+# define INIT_ROTATION_STEP ((INIT_ROTATION_STEP_DEGREE * M_PI) / 180.0)
+
 /**
  * t_vec2 - Vectore represeting point at the screen
  *
@@ -70,8 +76,9 @@ typedef struct s_player
 typedef struct s_world {
 	size_t  map_width;
 	size_t  map_height;
-	int	**map;
-}			t_world;
+	 int (*map)[MAP_WIDTH];		
+}
+t_world;
 
 typedef struct s_game
 {

@@ -16,18 +16,21 @@
 # include "types.h"
 
 /* RGB COLORS */
-# define RED 0xFF0000
-# define GREEN 0x00FF00
-# define BLUE 0x0000FF
-# define PURPLE 0xFF00FF
+#define TINY_BLACK 0x1D1E2C
+# define    RED  0xFF0000
+# define  GREEN  0x00FF00
+# define   BLUE  0x0000FF
+# define PURPLE  0xFF00FF
+# define  WHITE  0xFFFFFF
 
 /* Vectors */
 t_vec2	vec2_new(double x, double y);
 t_vec2	vec2_sub(t_vec2 p1, t_vec2 p2);
 t_vec2  vec2_add(t_vec2 v1, t_vec2 v2);
 t_vec2  vec2_scale(t_vec2 v1, double factor);
-void    vec2_print(t_vec2 v, char *prefix);
+t_vec2  vec2_div(t_vec2 v1, double factor);
 double	vec2_len_squared(t_vec2 p1, t_vec2 p2);
+void    vec2_print(t_vec2 v, char *prefix);
 
 /* Common shapes grachics utilities */
 void	draw_line(t_data *buff, t_vec2 p1, t_vec2 p2, int color);

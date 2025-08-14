@@ -87,3 +87,7 @@ t_vec2 vec2_scale(t_vec2 v1, double factor)
 	return (vec2_new(v1.x * factor, v1.y * factor));
 }
 
+t_vec2 vec2_div(t_vec2 v1, double factor)
+{
+	return (vec2_new(v1.x / factor, v1.y / factor));
+}
