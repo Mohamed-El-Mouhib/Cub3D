@@ -63,8 +63,8 @@ void init_game(t_game *game)
 
 typedef enum e_rotate_dir
 {
-	ROTATE_LEFT  = -1,
-	ROTATE_RIGHT = 1
+	ROTATE_LEFT  = 1,
+	ROTATE_RIGHT = -1
 } t_rotate_dir;
 
 typedef enum e_move_dir
@@ -259,7 +259,6 @@ void dda(t_game *game)
 {
 	double camera;
 	t_vec2 ray;
-	double ray_step;
 	t_player *player;
 	t_vec2 delta_dist;
 	t_vec2 side_dist;
@@ -267,12 +266,11 @@ void dda(t_game *game)
 	int side;
 
 	player = &game->player;
-	ray_step = 2.0 / game->screen_width;
-	camera = -1;
-	while (camera <= 1)
+	for (int camera_x = 0; camera_x < (int)game->screen_width; camera_x++)
 	{
 		int mapX = player->pos.x / TILE_SIZE;
 		int mapY = player->pos.y / TILE_SIZE;
+		camera = 2.0 * camera_x / game->screen_width - 1;
 		ray = vec2_add(player->dir, vec2_scale(player->plane, camera));
 		delta_dist = init_delta_dist(ray);
 
@@ -315,22 +313,35 @@ void dda(t_game *game)
 			if (mapX < 0 || mapX >= MAP_WIDTH || mapY < 0 || mapY >= MAP_HEIGHT)
 				stop = 1;
 			if ((game->world.map)[mapY][mapX])
-				break ;
+				stop = 1;
 		}
 		double x;
 		if(side == 0)
 			x = (side_dist.x  / TILE_SIZE - delta_dist.x);
 		else
 			x = (side_dist.y  / TILE_SIZE - delta_dist.y);
-		t_vec2 mini_player_pos = vec2_div(player->pos, MINIMAP_SCALE);
-		draw_line(&game->scene, mini_player_pos, vec2_add(mini_player_pos, vec2_scale(ray, x / MINIMAP_SCALE)), PURPLE);
-		if (x > 0)
+		if ((int)x != 0)
 		{
-			double curr_x = game->screen_width * camera;
-			double curr_y =  (game->screen_height/2.0 - game->screen_height - x) / 2;
-			draw_vertical_line(&game->scene, vec2_new(curr_x, curr_y), x, RED);
+			t_vec2 mini_player_pos = vec2_div(player->pos, MINIMAP_SCALE);
+			// printf("Stupid x = %f\n", x);
+			draw_line(&game->scene, mini_player_pos, vec2_add(mini_player_pos, vec2_scale(ray, x / MINIMAP_SCALE)), MINDARO);
+			double line_height = (int) (game->screen_height / x * TILE_SIZE);
+			double h = game->screen_height;
+			int drawStart = -line_height / 2 + h / 2;
+			if(drawStart < 0)
+				drawStart = 0;
+			int drawEnd = line_height / 2 + h / 2;
+			if(drawEnd >= h)
+				drawEnd = h - 1;
+			if (side)
+			{
+				draw_line(&game->scene, vec2_new(camera_x, drawStart), vec2_new(camera_x, drawEnd), PURPLE);
+			}
+			else
+			{
+				draw_line(&game->scene, vec2_new(camera_x, drawStart), vec2_new(camera_x, drawEnd), TINY_BLACK);
+			}
 		}
-		camera += ray_step;
 	}
 }
 
@@ -380,8 +391,8 @@ void player_draw_small(t_game *game)
 
 	mini_player_pos = vec2_div(game->player.pos, MINIMAP_SCALE);
 	head = vec2_add(vec2_scale(game->player.dir, scale), mini_player_pos);
-	draw_line(&game->scene, mini_player_pos, head, PURPLE);
-	draw_filled_circle(&game->scene, mini_player_pos, 2, PURPLE);
+	draw_line(&game->scene, mini_player_pos, head, MINDARO);
+	draw_filled_circle(&game->scene, mini_player_pos, 2, WHITE);
 	// t_vec2 plane_start = vec2_add(head, vec2_scale(game->player.plane, scale));
 	// t_vec2 plane_end = vec2_add(head, vec2_scale(game->player.plane, -scale));
 	// draw_line(&game->scene, plane_start, plane_end, PURPLE);
@@ -394,14 +405,14 @@ void player_draw_small(t_game *game)
 int game_loop(t_game *game)
 {
 	image_clear(&game->scene);
-	draw_grid(&game->scene);
 	// draw_filled_square(&game->scene, vec2_new(0, 0), TILE_SIZE, PURPLE);
 	// draw_circle(&game->scene, game->mouse_pos, 5, RED);
 	// draw_line(&game->scene, game->player.pos, game->mouse_pos, RED);
 	// draw_circle(&game->scene, game->player.pos, 5, RED);
 	// intersection_points(&game->scene, game->player.pos, game->mouse_pos);
-	player_draw_small(game);
 	dda(game);
+	draw_grid(&game->scene);
+	player_draw_small(game);
 	mlx_put_image_to_window(game->mlx, game->win,game->scene.img, 0, 0);
 	return (0);
 }

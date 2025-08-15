@@ -14,7 +14,7 @@
 # define CUB3D_H
 # include "graphics.h"
 
-# define TILE_SIZE 40.0
+# define TILE_SIZE 80.0
 // # define WIN_H (TILE_SIZE * 20 + 1)
 // # define WIN_W (TILE_SIZE * 40 + 1)
 

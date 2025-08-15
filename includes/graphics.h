@@ -22,6 +22,7 @@
 # define   BLUE  0x0000FF
 # define PURPLE  0xFF00FF
 # define  WHITE  0xFFFFFF
+# define MINDARO 0xCFF27E
 
 /* Vectors */
 t_vec2	vec2_new(double x, double y);
