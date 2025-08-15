@@ -16,8 +16,8 @@ int map[MAP_HEIGHT][MAP_WIDTH] = {
 	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 	{1, 1, 0, 0, 0, 0, 0, 0, 0, 1},
 	{1, 1, 1, 1, 0, 0, 0, 0, 0, 1},
-	{1, 1, 0, 0, 0, 1, 0, 0, 0, 1},
-	{1, 1, 0, 0, 0, 1, 0, 0, 0, 1},
+	{1, 1, 0, 0, 0, 0, 0, 0, 0, 1},
+	{1, 1, 0, 0, 0, 0, 0, 0, 0, 1},
 	{1, 0, 0, 1, 1, 1, 0, 0, 0, 1},
 	{1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -143,27 +143,14 @@ int	key_even_handler(int key_code, t_game *game)
 	return (0);
 }
 
+#define MINIMAP_SCALE 4.0
+
 void draw_grid(t_data  *buff)
 {
 	t_vec2 start;
 	int i;
+	int grid_sz = TILE_SIZE / MINIMAP_SCALE;
 
-	start = vec2_new(0, 0);
-	i = 0;
-	while (i <= buff->width)
-	{
-		start.y = i;
-		draw_horizontal_line(buff, start, buff->width, RED);
-		i+= TILE_SIZE;
-	}
-	start = vec2_new(0, 0);
-	i = 0;
-	while (i <= buff->width)
-	{
-		start.x = i;
-		draw_vertical_line(buff, start, buff->height, RED);
-		i+= TILE_SIZE;
-	}
 	i = 0;
 	while (i < MAP_HEIGHT)
 	{
@@ -171,12 +158,27 @@ void draw_grid(t_data  *buff)
 		while (j < MAP_WIDTH)
 		{
 			if (map[i][j])
-				draw_filled_square(buff, vec2_new(j * TILE_SIZE,i * TILE_SIZE), TILE_SIZE, TINY_BLACK);
+				draw_filled_square(buff, vec2_new(j * grid_sz,i * grid_sz), grid_sz, RED);
 			j++;
 		}
 		i++;
 	}
-	
+	start = vec2_new(0, 0);
+	i = 0;
+	while (i <= MAP_HEIGHT)
+	{
+		draw_horizontal_line(buff, start, MAP_WIDTH * grid_sz, RED);
+		start.y += grid_sz;
+		i++;
+	}
+	start = vec2_new(0, 0);
+	i = 0;
+	while (i <= MAP_WIDTH)
+	{
+		draw_vertical_line(buff, start, MAP_HEIGHT * grid_sz, RED);
+		start.x += grid_sz;
+		i++;
+	}
 }
 
 int handle_mouse_event(int x,int y, t_game *game)
@@ -237,7 +239,7 @@ void	intersection_points(t_data *scene, t_vec2 p1, t_vec2 p2)
 	return ;
 }
 
-t_vec2 init_delta_step(t_vec2 ray)
+t_vec2 init_delta_dist(t_vec2 ray)
 {
 	t_vec2 delta_dist;
 
@@ -271,9 +273,8 @@ void dda(t_game *game)
 	{
 		int mapX = player->pos.x / TILE_SIZE;
 		int mapY = player->pos.y / TILE_SIZE;
-		// draw_line(&game->scene, player->pos, vec2_add(vec2_scale(game->player.dir, 300), game->player.pos), RED);
 		ray = vec2_add(player->dir, vec2_scale(player->plane, camera));
-		delta_dist = init_delta_step(ray);
+		delta_dist = init_delta_dist(ray);
 
 
 		if (ray.x < 0)
@@ -296,8 +297,6 @@ void dda(t_game *game)
 			side_dist.y = delta_dist.y * ((mapY + 1) * TILE_SIZE - player->pos.y);
 			step.y = 1.0;
 		}
-		// vec2_print(cord_step, "CORD_STEP");
-		// draw_circle(&game->scene, vec2_scale(vec2_new(mapX, mapY), TILE_SIZE), 4, PURPLE);
 		int stop = 0;
 		while (!stop)
 		{
@@ -319,9 +318,18 @@ void dda(t_game *game)
 				break ;
 		}
 		double x;
-		if(side == 0) x = (side_dist.x  / TILE_SIZE- delta_dist.x);
-		else          x = (side_dist.y  / TILE_SIZE- delta_dist.y);
-		draw_line(&game->scene, player->pos, vec2_add(player->pos, vec2_scale(ray, x)), PURPLE);
+		if(side == 0)
+			x = (side_dist.x  / TILE_SIZE - delta_dist.x);
+		else
+			x = (side_dist.y  / TILE_SIZE - delta_dist.y);
+		t_vec2 mini_player_pos = vec2_div(player->pos, MINIMAP_SCALE);
+		draw_line(&game->scene, mini_player_pos, vec2_add(mini_player_pos, vec2_scale(ray, x / MINIMAP_SCALE)), PURPLE);
+		if (x > 0)
+		{
+			double curr_x = game->screen_width * camera;
+			double curr_y =  (game->screen_height/2.0 - game->screen_height - x) / 2;
+			draw_vertical_line(&game->scene, vec2_new(curr_x, curr_y), x, RED);
+		}
 		camera += ray_step;
 	}
 }
@@ -363,21 +371,24 @@ size_t average(int *stats, size_t size)
 // }
 // times[curr_time++] = curr_time_ms() - last_frame_time;
 // last_frame_time = curr_time_ms();
-void draw_player(t_game *game)
+void player_draw_small(t_game *game)
 {
-	double scale = TILE_SIZE / 2;
+	double scale = TILE_SIZE / MINIMAP_SCALE;
 	t_vec2 head;
+	t_vec2 mini_player_pos;
 
-	head = vec2_add(vec2_scale(game->player.dir, scale), game->player.pos);
-	// draw_line(&game->scene, game->player.pos, head, PURPLE);
-	draw_filled_circle(&game->scene, game->player.pos, 6, RED);
-	t_vec2 plane_start = vec2_add(head, vec2_scale(game->player.plane, scale));
-	t_vec2 plane_end = vec2_add(head, vec2_scale(game->player.plane, -scale));
-	draw_line(&game->scene, plane_start, plane_end, PURPLE);
-	draw_filled_square(&game->scene, plane_start, 4, PURPLE);
-	draw_line(&game->scene, game->player.pos, plane_start, PURPLE);
-	draw_line(&game->scene, game->player.pos, plane_end, PURPLE);
-	draw_filled_square(&game->scene, plane_end, 4, PURPLE);
+
+	mini_player_pos = vec2_div(game->player.pos, MINIMAP_SCALE);
+	head = vec2_add(vec2_scale(game->player.dir, scale), mini_player_pos);
+	draw_line(&game->scene, mini_player_pos, head, PURPLE);
+	draw_filled_circle(&game->scene, mini_player_pos, 2, PURPLE);
+	// t_vec2 plane_start = vec2_add(head, vec2_scale(game->player.plane, scale));
+	// t_vec2 plane_end = vec2_add(head, vec2_scale(game->player.plane, -scale));
+	// draw_line(&game->scene, plane_start, plane_end, PURPLE);
+	// draw_filled_square(&game->scene, plane_start, 4, PURPLE);
+	// draw_line(&game->scene, game->player.pos, plane_start, PURPLE);
+	// draw_line(&game->scene, game->player.pos, plane_end, PURPLE);
+	// draw_filled_square(&game->scene, plane_end, 4, PURPLE);
 }
 
 int game_loop(t_game *game)
@@ -389,7 +400,7 @@ int game_loop(t_game *game)
 	// draw_line(&game->scene, game->player.pos, game->mouse_pos, RED);
 	// draw_circle(&game->scene, game->player.pos, 5, RED);
 	// intersection_points(&game->scene, game->player.pos, game->mouse_pos);
-	draw_player(game);
+	player_draw_small(game);
 	dda(game);
 	mlx_put_image_to_window(game->mlx, game->win,game->scene.img, 0, 0);
 	return (0);
