@@ -2,6 +2,7 @@
 #include "includes/cub3d.h"
 #include "includes/graphics.h"
 #include "includes/types.h"
+#include <fcntl.h>
 
 
 time_t	curr_time_ms(void)
@@ -59,6 +60,7 @@ void init_game(t_game *game)
 	game->player.rot_angle = INIT_ROTATION_STEP;
 	game->player.rot_cos = cos(INIT_ROTATION_STEP);
 	game->player.rot_sin = sin(INIT_ROTATION_STEP);
+	ft_bzero(game->keyboard_events, sizeof(game->keyboard_events));
 }
 
 typedef enum e_rotate_dir
@@ -119,28 +121,80 @@ void player_move(t_player *player, int speed, t_move_dir move_dir)
 
 time_t time = 0;
 
-int	key_even_handler(int key_code, t_game *game)
+enum {
+	KEY_ESCAPE,
+	KEY_RIGHT,
+	KEY_LEFT,
+	KEY_DOWN,
+	KEY_UP,
+	KEY_W,
+	KEY_A,
+	KEY_S,
+	KEY_D,
+	KEY_R,
+};
+
+int	key_release(int key_code, t_game *game)
+{
+	if (key_code == XK_Escape)
+		exit(0);
+	else if (key_code == XK_Right)
+		game->keyboard_events[KEY_RIGHT] = false;
+	else if (key_code == XK_Left)
+		game->keyboard_events[KEY_LEFT] = false;
+	else if (key_code == 'w')
+		game->keyboard_events[KEY_W] = false;
+	else if (key_code == 's')
+		game->keyboard_events[KEY_S] = false;
+	else if (key_code == 'r')
+		game->keyboard_events[KEY_R] = false;
+	else if (key_code == 'd')
+		game->keyboard_events[KEY_D] = false;
+	else if (key_code == 'a')
+		game->keyboard_events[KEY_A] = false;
+	return (0);
+}
+
+int	key_press(int key_code, t_game *game)
+{
+	if (key_code == XK_Escape)
+		exit(0);
+	else if (key_code == XK_Right)
+		game->keyboard_events[KEY_RIGHT] = true;
+	else if (key_code == XK_Left)
+		game->keyboard_events[KEY_LEFT] = true;
+	else if (key_code == 'w')
+		game->keyboard_events[KEY_W] = true;
+	else if (key_code == 's')
+		game->keyboard_events[KEY_S] = true;
+	else if (key_code == 'r')
+		game->keyboard_events[KEY_R] = true;
+	else if (key_code == 'd')
+		game->keyboard_events[KEY_D] = true;
+	else if (key_code == 'a')
+		game->keyboard_events[KEY_A] = true;
+	return (0);
+}
+
+void handle_input_events(t_game *game)
 {
 	t_player *player;
 
 	player = &game->player;
-	if (key_code == XK_Escape)
-		exit(0);
-	else if (key_code == XK_Right)
+	if (game->keyboard_events[KEY_RIGHT])
 		player_rotate(player, ROTATE_RIGHT);
-	else if (key_code == XK_Left)
+	if (game->keyboard_events[KEY_LEFT])
 		player_rotate(player, ROTATE_LEFT);
-	else if (key_code == 'w')
-		player_move(player, 1, MOVE_FORWARD);
-	else if (key_code == 's')
-		player_move(player, 1, MOVE_BACKWARD);
-	else if (key_code == 'r')
+	if (game->keyboard_events[KEY_W])
+		player_move(player, 2, MOVE_FORWARD);
+	if (game->keyboard_events[KEY_S])
+		player_move(player, 2, MOVE_BACKWARD);
+	if (game->keyboard_events[KEY_R])
 		player->pos = vec2_new(0, 0);
-	else if (key_code == 'd')
-		player_move(player, 1, MOVE_RIGHT);
-	else if (key_code == 'a')
-		player_move(player, 1, MOVE_LEFT);
-	return (0);
+	if (game->keyboard_events[KEY_D])
+		player_move(player, 2, MOVE_RIGHT);
+	if (game->keyboard_events[KEY_A])
+		player_move(player, 2, MOVE_LEFT);
 }
 
 #define MINIMAP_SCALE 4.0
@@ -188,55 +242,10 @@ int handle_mouse_event(int x,int y, t_game *game)
 	return (0);
 }
 
-double (*rounding_func(double dx))(double)
-{
-	if (dx >= 0)
-		return (floor);
-	else
-		return (ceil);
-}
 
 double sign(double x)
 {
 	return ((x > 0) - (x < 0));
-}
-
-bool out_of_boundries(t_data *scene, t_vec2 a)
-{
-	return (a.x < 0 || a.y < 0 || a.x > scene->width || a.y > scene->height);
-}
-
-void	intersection_points(t_data *scene, t_vec2 p1, t_vec2 p2)
-{
-	double k;
-	double c;
-	t_vec2 sub;
-	double x,y;
-	t_vec2 intersect;
-	t_vec2 next_x, next_y;
-
-	sub = vec2_sub(p1, p2);
-	if (sub.x == 0)
-		k = 0;
-	else
-		k = sub.y / sub.x;
-	c = p1.y - k*p1.x;
-	// p2.x -= (0.1 * (sign(sub.x)));
-	// p2.y -= (0.1 * (sign(sub.y)));
-	x = rounding_func(sub.x)(p2.x / TILE_SIZE)*TILE_SIZE;
-	y = k*x + c;
-	next_x = vec2_new(x, y);
-	y = rounding_func(sub.y)(p2.y / TILE_SIZE)*TILE_SIZE;
-	if (k != 0)
-		x = (y - c) / k;
-	else
-		x = c;
-	next_y = vec2_new(x, y);
-	double len_x = vec2_len_squared(next_x, p2);
-	double len_y = vec2_len_squared(next_y, p2);
-	intersect = len_x > len_y ? next_y : next_x;
-	draw_circle(scene, intersect, 6, PURPLE);
-	return ;
 }
 
 t_vec2 init_delta_dist(t_vec2 ray)
@@ -420,7 +429,14 @@ void player_draw_small(t_game *game)
 
 int game_loop(t_game *game)
 {
+	static time_t last_frame_time;
+
+	if (curr_time_ms() - last_frame_time < (1000 / 60))
+		return (1);
+	printf("Frame rate: %ld\n", 1000 / (curr_time_ms() - last_frame_time));
+	last_frame_time =  curr_time_ms();
 	image_clear(&game->scene);
+	handle_input_events(game);
 	// draw_filled_square(&game->scene, vec2_new(0, 0), TILE_SIZE, PURPLE);
 	// draw_circle(&game->scene, game->mouse_pos, 5, RED);
 	// draw_line(&game->scene, game->player.pos, game->mouse_pos, RED);
@@ -428,7 +444,7 @@ int game_loop(t_game *game)
 	// intersection_points(&game->scene, game->player.pos, game->mouse_pos);
 	dda(game);
 	draw_grid(&game->scene);
-	player_draw_small(game);
+	// player_draw_small(game);
 	mlx_put_image_to_window(game->mlx, game->win,game->scene.img, 0, 0);
 	return (0);
 }
@@ -441,9 +457,12 @@ int	main()
 	init_game(&game);
 
 	mlx_loop_hook(game.mlx, game_loop, &game);
-	mlx_hook(game.win, 02, 1L<<0, key_even_handler, &game);
-	mlx_hook(game.win, 03, 1L<<1, key_even_handler, &game);
-	mlx_hook(game.win, 06, 1L<<6, handle_mouse_event, &game); // for mouse
+	// mlx_hook(game.win, 02, 1L<<0, key_even_handler, &game);
+	// mlx_hook(game.win, 03, 1L<<1, key_even_handler, &game);
+	// mlx_hook(game.win, 06, 1L<<6, handle_mouse_event, &game); // for mouse
+	mlx_hook(game.win, 2, 1L << 0, key_press, &game);
+	mlx_hook(game.win, 3, 1L << 1, key_release, &game);
+
 	mlx_loop(game.mlx);
 	return (0);
 }

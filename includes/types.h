@@ -88,6 +88,7 @@ typedef struct s_game
 	// Rander fields
 	size_t  screen_width;
 	size_t  screen_height;
+	bool keyboard_events[256];
 	t_data	 scene;
 	void	 *win;
 	void	 *mlx;
