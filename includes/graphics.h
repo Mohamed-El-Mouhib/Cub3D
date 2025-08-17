@@ -16,6 +16,8 @@
 # include "types.h"
 
 /* RGB COLORS */
+# define COLOR_NYANZA 0xE5F2C9
+# define COLOR_CHAMOIOSE 0x8C705F
 # define COLOR_TINY_BLACK 0x1D1E32
 # define COLOR_RED  0xFF0000
 # define COLOR_GREEN  0x00FF00

@@ -1,4 +1,3 @@
-LINKERS       = -lmlx -lXext -lX11 -lm -Llibs -lft
 CFLAGS        = -Wall -Wextra -Iincludes  -g -g3 -ggdb3 # -fsanitize=address
 SRC           = $(wildcard *.c ./src/*.c) # update accordantly
 OBJ           = $(SRC:%.c=$(OBJDIR)/%.o)
@@ -7,10 +6,18 @@ OBJDIR        = builds
 NAME          = cub3d
 LIB_DIR       = libs
 CC            = cc
+UNAME         = $(shell uname)
+
+ifeq ($(UNAME), Linux)
+	LINKERS = -lmlx -lXext -lX11 -lm -Llibs -lft
+else
+	LINKERS = -YOUR -STUPID_MAC -D MACOS
+endif
 
 all: libft_rule $(NAME)
 
 $(NAME): $(OBJ) $(LIBFT_ARCHIVE)
+	echo $(LINKERS)
 	$(CC) $(CFLAGS) $(OBJ) $(LINKERS) -o $(NAME)
 
 $(OBJDIR)/%.o: %.c

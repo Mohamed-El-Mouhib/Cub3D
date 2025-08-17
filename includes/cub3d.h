@@ -13,6 +13,7 @@
 # ifndef CUB3D_H
 # define CUB3D_H
 # include "graphics.h"
+# include "dynamic_array.h"
 
 # define TILE_SIZE 80.0
 // # define WIN_H (TILE_SIZE * 20 + 1)
@@ -43,4 +44,6 @@ double sign(double x);
 // initializers
 void init_game(t_game *game);
 
+// Parser
+t_dyn read_map_from_file(char *filename);
 #endif

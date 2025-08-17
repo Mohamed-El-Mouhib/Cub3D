@@ -12,45 +12,34 @@
 
 #include "../includes/cub3d.h"
 
-int map[MAP_HEIGHT][MAP_WIDTH] = {
-		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 1, 1, 1, 0, 0, 0, 0, 0, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 0, 0, 1, 1, 1, 0, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-		};
+t_world init_game_world(char *filename)
+{
+	t_world world;
+	t_dyn map;
 
-
-// static t_world init_game_world(char *filename)
-// {
-// 	t_world world;
-//
-//
-//
-//
-// }
+	ft_bzero(&world, sizeof(world));
+	map = read_map_from_file(filename);
+	world.map = (char **)map.buff;
+	world.map_width = ft_strlen(world.map[0]);
+	world.map_height = map.length;
+	return (world);
+}
 
 void init_game(t_game *game)
 {
 	game->mlx = mlx_init();
 	if (!game->mlx)
 		ft_exit_error("Faild to allocate mlx");
-	game->world.map_width = MAP_WIDTH;
-	game->world.map_height = MAP_HEIGHT;
-	game->world.map = map;
-	game->screen_width = MAP_WIDTH * TILE_SIZE;
-	game->screen_height = MAP_HEIGHT * TILE_SIZE;
-	game->win = mlx_new_window(game->mlx, game->screen_width, game->screen_height, "Hello world!");
+	game->world = init_game_world("map.txt");
+	mlx_get_screen_size(game->mlx, (int *)&game->screen_width, (int *)&game->screen_height);
+	game->win = mlx_new_window(game->mlx, game->screen_width, game->screen_height, "MOUSE");
 	if (!game->win)
 		ft_exit_error("Faild to allocate window");
 	game->scene = image_new(game, game->screen_width, game->screen_height);
 	game->mouse_pos = vec2_new(0, 0);
-	game->player.pos = vec2_new(game->screen_width / 2.0, game->screen_height / 2.0);
+	game->player.pos = vec2_new(TILE_SIZE * 4, TILE_SIZE * 4);
 	// player looking up
-	game->player.dir = vec2_new(-1, 0);
+	game->player.dir = vec2_new(1, 0);
 	// field of view is 60 degree
 	game->player.plane = vec2_new(0, 0.66);
 

@@ -12,7 +12,18 @@
 # define TYPES_H
 
 # include "libft.h"
-# include <X11/keysym.h>
+# ifndef MACOS
+#  include <X11/keysym.h>
+# else
+#  define XK_Escape 69
+#  define XK_Right 69
+#  define XK_Left 69
+#  define XK_w 69
+#  define XK_s 69
+#  define XK_r 69
+#  define XK_d 69
+#  define XK_a 69
+# endif
 # include <fcntl.h>
 # include <math.h>
 # include <mlx.h>
@@ -21,10 +32,8 @@
 # include <stdlib.h>
 # include <unistd.h>
 
-# define FRAME_RATE 100
-# define MAP_HEIGHT 10
-# define MAP_WIDTH 10
-# define INIT_ROTATION_STEP_DEGREE 1
+# define FRAME_RATE 24
+# define INIT_ROTATION_STEP_DEGREE 2
 # define INIT_ROTATION_STEP ((INIT_ROTATION_STEP_DEGREE * M_PI) / 180.0)
 
 /**
@@ -76,7 +85,7 @@ typedef struct s_player
 typedef struct s_world {
 	size_t  map_width;
 	size_t  map_height;
-	 int (*map)[MAP_WIDTH];
+	char **map;
 }
 t_world;
 
@@ -141,8 +150,8 @@ typedef struct s_dda_alog
 	t_vec2 delta_dist;
 	t_vec2 side_dist;
 	t_vec2 step_dir;
-	t_vec2 wall_top;
-	t_vec2 wall_bottom;
+	t_vec2 line_start;
+	t_vec2 line_end;
 	t_vec2 map_pos;
 	t_vec2 ray;
 	double ray_size;
@@ -151,6 +160,7 @@ typedef struct s_dda_alog
 } t_dda_ctx;
 
 // player movements
+//
 typedef enum e_rotate_dir
 {
 	ROTATE_LEFT  = 1,

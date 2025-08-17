@@ -43,18 +43,18 @@ void draw_fov_in_minimap(t_game *game, t_dda_ctx *dda)
 
 void minimap_draw_walls(t_game *game)
 {
-	int i;
+	size_t i = 0;
+	size_t j;
 	int grid_sz;
 
 	grid_sz = TILE_SIZE / MINIMAP_SCALE;
-	i = 0;
-	while (i < MAP_HEIGHT)
+	while (i < game->world.map_height)
 	{
-		int j = 0;
-		while (j < MAP_WIDTH)
+		j = 0;
+		while (j < game->world.map_width)
 		{
-			if (game->world.map[i][j])
-				draw_filled_square(&game->scene, vec2_new(j * grid_sz,i * grid_sz), grid_sz, COLOR_RED);
+			if (game->world.map[i][j] == '1')
+				draw_filled_square(&game->scene, vec2_new(j * grid_sz, i * grid_sz), grid_sz, COLOR_GREEN);
 			j++;
 		}
 		i++;
@@ -65,7 +65,7 @@ void minimap_daw_grid(t_game *game)
 {
 	t_data *buff;
 	t_vec2 start;
-	int i;
+	size_t i;
 	int grid_sz;
 
 	grid_sz = TILE_SIZE / MINIMAP_SCALE;
@@ -73,17 +73,17 @@ void minimap_daw_grid(t_game *game)
 
 	start = vec2_new(0, 0);
 	i = 0;
-	while (i <= MAP_HEIGHT)
+	while (i <= game->world.map_height)
 	{
-		draw_horizontal_line(buff, start, MAP_WIDTH * grid_sz, COLOR_RED);
+		draw_horizontal_line(buff, start, game->world.map_width * grid_sz, COLOR_RED);
 		start.y += grid_sz;
 		i++;
 	}
 	start = vec2_new(0, 0);
 	i = 0;
-	while (i <= MAP_WIDTH)
+	while (i <= game->world.map_width)
 	{
-		draw_vertical_line(buff, start, MAP_HEIGHT * grid_sz, COLOR_RED);
+		draw_vertical_line(buff, start, game->world.map_height * grid_sz, COLOR_RED);
 		start.x += grid_sz;
 		i++;
 	}
@@ -91,7 +91,7 @@ void minimap_daw_grid(t_game *game)
 
 void draw_minimap(t_game *game)
 {
-	minimap_daw_grid(game);
 	minimap_draw_walls(game);
+	minimap_daw_grid(game);
 	minimap_draw_player(game);
 }

@@ -19,15 +19,15 @@ int	key_release(int key_code, t_game *game)
 		game->keyboard_events[KEY_RIGHT] = false;
 	else if (key_code == XK_Left)
 		game->keyboard_events[KEY_LEFT] = false;
-	else if (key_code == 'w')
+	else if (key_code == XK_w)
 		game->keyboard_events[KEY_W] = false;
-	else if (key_code == 's')
+	else if (key_code == XK_s)
 		game->keyboard_events[KEY_S] = false;
-	else if (key_code == 'r')
+	else if (key_code == XK_r)
 		game->keyboard_events[KEY_R] = false;
-	else if (key_code == 'd')
+	else if (key_code == XK_d)
 		game->keyboard_events[KEY_D] = false;
-	else if (key_code == 'a')
+	else if (key_code == XK_a)
 		game->keyboard_events[KEY_A] = false;
 	return (0);
 }
@@ -67,10 +67,9 @@ void game_handle_keyboard_events(t_game *game)
 	if (game->keyboard_events[KEY_S])
 		player_move(player, 2, MOVE_BACKWARD);
 	if (game->keyboard_events[KEY_R])
-		player->pos = vec2_new(0, 0);
+		game->player.pos = vec2_new(TILE_SIZE * 4, TILE_SIZE * 4);
 	if (game->keyboard_events[KEY_D])
 		player_move(player, 2, MOVE_RIGHT);
 	if (game->keyboard_events[KEY_A])
 		player_move(player, 2, MOVE_LEFT);
 }
-

@@ -41,9 +41,7 @@ void init_delta_dist(t_dda_ctx *dda)
  */
 void find_first_hitting_wall(t_game *game, t_dda_ctx *dda)
 {
-	int stop = 0;
-
-	while (!stop)
+	while (1)
 	{
 		if (dda->side_dist.x < dda->side_dist.y)
 		{
@@ -57,10 +55,10 @@ void find_first_hitting_wall(t_game *game, t_dda_ctx *dda)
 			dda->map_pos.y += (int)dda->step_dir.y;
 			dda->side = 1;
 		}
-		if (dda->map_pos.x < 0 || dda->map_pos.x >= MAP_WIDTH || dda->map_pos.y < 0 || dda->map_pos.y >= MAP_HEIGHT)
-			stop = 1;
-		if ((game->world.map)[(int)dda->map_pos.y][(int)dda->map_pos.x])
-			stop = 1;
+		if (dda->map_pos.x < 0 || dda->map_pos.x >= game->world.map_width || dda->map_pos.y < 0 || dda->map_pos.y >= game->world.map_height)
+			break ;
+		if ((game->world.map)[(int)dda->map_pos.y][(int)dda->map_pos.x] == '1')
+			break ;
 	}
 }
 
@@ -106,6 +104,7 @@ void dda_init_map_pos(t_player *player, t_dda_ctx *dda)
 {
 	dda->map_pos.x = (int) (player->pos.x / TILE_SIZE);
 	dda->map_pos.y = (int) (player->pos.y / TILE_SIZE);
+	vec2_print(dda->map_pos, "MAP POSITION");
 }
 
 /**
@@ -149,14 +148,14 @@ void calculate_wall_boundaries(t_game *game, t_dda_ctx *dda, int x)
 
 	line_height = game->screen_height / dda->hit_dist * TILE_SIZE;
 	h = game->screen_height;
-	dda->wall_top.y = (h - line_height) / 2;
-	if(dda->wall_top.y < 0)
-		dda->wall_top.y = 0;
-	dda->wall_bottom.y = (line_height + h) / 2;
-	if(dda->wall_bottom.y >= h)
-		dda->wall_bottom.y = h - 1;
-	dda->wall_top.x = x;
-	dda->wall_bottom.x = x;
+	dda->line_start.y = (h - line_height) / 2;
+	if(dda->line_start.y < 0)
+		dda->line_start.y = 0;
+	dda->line_end.y = (line_height + h) / 2;
+	if(dda->line_end.y >= h)
+		dda->line_end.y = h - 1;
+	dda->line_start.x = x;
+	dda->line_end.x = x;
 }
 
 /**
@@ -183,9 +182,9 @@ void perform_dda(t_game *game, t_dda_ctx *dda, int x)
 void your_beutiful_randring_logic(t_game *game, t_dda_ctx *dda)
 {
 	if (dda->side)
-		draw_line(&game->scene, dda->wall_top, dda->wall_bottom, COLOR_PURPLE);
+		draw_line(&game->scene, dda->line_start, dda->line_end, 0xC5D86D);
 	else
-		draw_line(&game->scene, dda->wall_top, dda->wall_bottom, COLOR_TINY_BLACK);
+		draw_line(&game->scene, dda->line_start, dda->line_end, 0x86615C);
 }
 
 void raycast_draw_walls(t_game *game)
