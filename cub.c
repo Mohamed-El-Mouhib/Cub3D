@@ -271,23 +271,23 @@ void init_delta_dist(t_dda_algo *dda)
 		dda->delta_dist.y = 1e30;
 }
 
-int _dda(t_game *game, t_dda_algo *dda, t_vec2 *side_dist, t_vec2 delta_dist, t_vec2 step)
+int _dda(t_game *game, t_dda_algo *dda)
 {
 	int stop = 0;
 	int side;
 
 	while (!stop)
 	{
-		if (side_dist->x < side_dist->y)
+		if (dda->side_dist.x < dda->side_dist.y)
 		{
-			side_dist->x += (delta_dist.x * TILE_SIZE);
-			dda->map_pos.x += step.x;
+			dda->side_dist.x += (dda->delta_dist.x * TILE_SIZE);
+			dda->map_pos.x += dda->step_dir.x;
 			side = 0;
 		}
 		else
 		{
-			side_dist->y += (delta_dist.y * TILE_SIZE);
-			dda->map_pos.y += step.y;
+			dda->side_dist.y += (dda->delta_dist.y * TILE_SIZE);
+			dda->map_pos.y += dda->step_dir.y;
 			side = 1;
 		}
 		if (dda->map_pos.x < 0 || dda->map_pos.x >= MAP_WIDTH || dda->map_pos.y < 0 || dda->map_pos.y >= MAP_HEIGHT)
@@ -340,7 +340,7 @@ void dda(t_game *game)
 
 
 		calculate_dist_sides_steps_dir(&game->player, &dda, dda.map_pos.x, dda.map_pos.y);
-		side = _dda(game, &dda, &dda.side_dist, dda.delta_dist, dda.step_dir);
+		side = _dda(game, &dda);
 		double x;
 		if(side == 0)
 			x = (dda.side_dist.x  / TILE_SIZE - dda.delta_dist.x);
