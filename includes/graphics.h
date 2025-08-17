@@ -16,13 +16,13 @@
 # include "types.h"
 
 /* RGB COLORS */
-#define TINY_BLACK 0x1D1E32
-# define    RED  0xFF0000
-# define  GREEN  0x00FF00
-# define   BLUE  0x0000FF
-# define PURPLE  0xFF00FF
-# define  WHITE  0xFFFFFF
-# define MINDARO 0xCFF27E
+# define COLOR_TINY_BLACK 0x1D1E32
+# define COLOR_RED  0xFF0000
+# define COLOR_GREEN  0x00FF00
+# define COLOR_BLUE  0x0000FF
+# define COLOR_PURPLE  0xFF00FF
+# define COLOR_WHITE  0xFFFFFF
+# define COLOR_MINDARO 0xCFF27E
 
 /* Vectors */
 t_vec2	vec2_new(double x, double y);

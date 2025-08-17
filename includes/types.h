@@ -76,7 +76,7 @@ typedef struct s_player
 typedef struct s_world {
 	size_t  map_width;
 	size_t  map_height;
-	 int (*map)[MAP_WIDTH];		
+	 int (*map)[MAP_WIDTH];
 }
 t_world;
 
@@ -93,5 +93,76 @@ typedef struct s_game
 	void	 *win;
 	void	 *mlx;
 }			t_game;
+
+/**
+ *       ^
+ *       N
+ *  < E     W >
+ *       S
+ *       🢓
+ */
+typedef enum e_wall_side
+{
+	WALL_NORTH, 
+	WALL_SOUTH,
+	WALL_EAST,
+	WALL_WEST
+}	t_wall_side;
+
+typedef enum e_keycode{
+	KEY_ESCAPE = 0,
+	KEY_RIGHT,
+	KEY_LEFT,
+	KEY_DOWN,
+	KEY_UP,
+	KEY_W,
+	KEY_A,
+	KEY_S,
+	KEY_D,
+	KEY_R,
+} t_keycode;
+
+/**
+ * t_dda_algo - the dda context
+ *
+ * @delta_dist:    Distance between next x-side and next y-side
+ * @side_dist:     Distance from player to first x-side / y-side
+ * @step_dir:      Where to move next in the grid in x-side and y-side
+ * @ray_size:      Normalized ray size relative to screen
+ * @hit_dist:      Perpendicular distance to first wall hit
+ * @map_pos:       Current cell position in map grid
+ * @ray:           Current ray direction
+ * @side:          this hit side (NORTH, ...)
+ * @wall_top:      Screen coordinates of top of wall slice
+ * @wall_bottom:   Screen coordinates of bottom of wall slice
+ */
+typedef struct s_dda_alog
+{
+	t_vec2 delta_dist;
+	t_vec2 side_dist;
+	t_vec2 step_dir;
+	t_vec2 wall_top;
+	t_vec2 wall_bottom;
+	t_vec2 map_pos;
+	t_vec2 ray;
+	double ray_size;
+	double hit_dist;
+	t_wall_side side;
+} t_dda_ctx;
+
+// player movements
+typedef enum e_rotate_dir
+{
+	ROTATE_LEFT  = 1,
+	ROTATE_RIGHT = -1
+} t_rotate_dir;
+
+typedef enum e_move_dir
+{
+	MOVE_FORWARD,
+	MOVE_BACKWARD,
+	MOVE_LEFT,
+	MOVE_RIGHT,
+} t_move_dir;
 
 #endif

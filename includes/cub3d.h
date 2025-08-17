@@ -18,5 +18,29 @@
 // # define WIN_H (TILE_SIZE * 20 + 1)
 // # define WIN_W (TILE_SIZE * 40 + 1)
 
+// minimap
+void draw_minimap(t_game *game);
+void draw_fov_in_minimap(t_game *game, t_dda_ctx *dda);
+void raycast_draw_walls(t_game *game);
+
+// Keyboard events
+int	key_press(int key_code, t_game *game);
+int	key_release(int key_code, t_game *game);
+void    game_handle_keyboard_events(t_game *game);
+
+// player movements
+void player_rotate(t_player *player, t_rotate_dir rot_dir);
+void player_move(t_player *player, int speed, t_move_dir move_dir);
+
+// Mouse events
+int handle_mouse_event(int x,int y, t_game *game);
+
+// Utils
+void ft_exit_error(char *msg);
+time_t	curr_time_ms(void);
+double sign(double x);
+
+// initializers
+void init_game(t_game *game);
 
 #endif
