@@ -271,7 +271,7 @@ void init_delta_dist(t_dda_algo *dda)
 		dda->delta_dist.y = 1e30;
 }
 
-int _dda(t_game *game, t_vec2 *side_dist, int *mapX, int *mapY, t_vec2 delta_dist, t_vec2 step)
+int _dda(t_game *game, t_dda_algo *dda, t_vec2 *side_dist, t_vec2 delta_dist, t_vec2 step)
 {
 	int stop = 0;
 	int side;
@@ -281,18 +281,18 @@ int _dda(t_game *game, t_vec2 *side_dist, int *mapX, int *mapY, t_vec2 delta_dis
 		if (side_dist->x < side_dist->y)
 		{
 			side_dist->x += (delta_dist.x * TILE_SIZE);
-			*mapX += step.x;
+			dda->map_pos.x += step.x;
 			side = 0;
 		}
 		else
 		{
 			side_dist->y += (delta_dist.y * TILE_SIZE);
-			*mapY += step.y;
+			dda->map_pos.y += step.y;
 			side = 1;
 		}
-		if (*mapX < 0 || *mapX >= MAP_WIDTH || *mapY < 0 || *mapY >= MAP_HEIGHT)
+		if (dda->map_pos.x < 0 || dda->map_pos.x >= MAP_WIDTH || dda->map_pos.y < 0 || dda->map_pos.y >= MAP_HEIGHT)
 			stop = 1;
-		if ((game->world.map)[*mapY][*mapX])
+		if ((game->world.map)[(int)dda->map_pos.y][(int)dda->map_pos.x])
 			stop = 1;
 	}
 	return (side);
@@ -332,15 +332,15 @@ void dda(t_game *game)
 	player = &game->player;
 	for (int camera_x = 0; camera_x < (int)game->screen_width; camera_x++)
 	{
-		int mapX = player->pos.x / TILE_SIZE;
-		int mapY = player->pos.y / TILE_SIZE;
+		dda.map_pos.x = player->pos.x / TILE_SIZE;
+		dda.map_pos.y = player->pos.y / TILE_SIZE;
 		camera = 2.0 * camera_x / game->screen_width - 1;
 		dda.ray = vec2_add(player->dir, vec2_scale(player->plane, camera));
 		init_delta_dist(&dda);
 
 
-		calculate_dist_sides_steps_dir(&game->player, &dda, mapX, mapY);
-		side = _dda(game, &dda.side_dist, &mapX, &mapY, dda.delta_dist, dda.step_dir);
+		calculate_dist_sides_steps_dir(&game->player, &dda, dda.map_pos.x, dda.map_pos.y);
+		side = _dda(game, &dda, &dda.side_dist, dda.delta_dist, dda.step_dir);
 		double x;
 		if(side == 0)
 			x = (dda.side_dist.x  / TILE_SIZE - dda.delta_dist.x);
