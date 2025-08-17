@@ -6,7 +6,7 @@
 /*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 10:38:40 by aljbari           #+#    #+#             */
-/*   Updated: 2025/08/17 10:38:40 by aljbari          ###   ########.fr       */
+/*   Updated: 2025/08/17 19:05:33 by your_login       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../includes/cub3d.h"
@@ -40,15 +40,15 @@ int	key_press(int key_code, t_game *game)
 		game->keyboard_events[KEY_RIGHT] = true;
 	else if (key_code == XK_Left)
 		game->keyboard_events[KEY_LEFT] = true;
-	else if (key_code == 'w')
+	else if (key_code == XK_w)
 		game->keyboard_events[KEY_W] = true;
-	else if (key_code == 's')
+	else if (key_code == XK_s)
 		game->keyboard_events[KEY_S] = true;
-	else if (key_code == 'r')
+	else if (key_code == XK_r)
 		game->keyboard_events[KEY_R] = true;
-	else if (key_code == 'd')
+	else if (key_code == XK_d)
 		game->keyboard_events[KEY_D] = true;
-	else if (key_code == 'a')
+	else if (key_code == XK_a)
 		game->keyboard_events[KEY_A] = true;
 	return (0);
 }

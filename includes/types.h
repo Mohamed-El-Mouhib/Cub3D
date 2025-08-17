@@ -1,10 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   types.h                                            :+:      :+:    :+:   */ /*                                                    +:+ +:+         +:+     */ /*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
+/*   types.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aljbari    <aljbari@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/09 20:11:39 by aljbari           #+#    #+#             */
-/*   Updated: 2025/08/09 20:14:07 by aljbari          ###   ########.fr       */
+/*   Created: 2025/08/17 18:53:45 by your_login        #+#    #+#             */
+/*   Updated: 2025/08/17 19:02:29 by your_login       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -12,21 +14,22 @@
 # define TYPES_H
 
 # include "libft.h"
-# ifndef MACOS
-#  include <X11/keysym.h>
-# else
-#  define XK_Escape 69
-#  define XK_Right 69
-#  define XK_Left 69
-#  define XK_w 69
-#  define XK_s 69
-#  define XK_r 69
-#  define XK_d 69
-#  define XK_a 69
-# endif
+// # ifndef MACOS
+// // #  include <X11/keysym.h>
+// // # include <mlx.h>
+// # else
+# include "../../mlx/mlx.h"
+#  define XK_Escape 53
+#  define XK_Right 123
+#  define XK_Left 124
+#  define XK_a 0
+#  define XK_s 1
+#  define XK_d 2
+#  define XK_w 13
+#  define XK_r 15
+// # endif
 # include <fcntl.h>
 # include <math.h>
-# include <mlx.h>
 # include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>

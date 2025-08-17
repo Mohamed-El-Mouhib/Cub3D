@@ -6,7 +6,7 @@
 /*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 11:05:39 by aljbari           #+#    #+#             */
-/*   Updated: 2025/08/17 11:05:39 by aljbari          ###   ########.fr       */
+/*   Updated: 2025/08/17 18:57:59 by your_login       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,9 @@ void init_game(t_game *game)
 	if (!game->mlx)
 		ft_exit_error("Faild to allocate mlx");
 	game->world = init_game_world("map.txt");
-	mlx_get_screen_size(game->mlx, (int *)&game->screen_width, (int *)&game->screen_height);
+	// mlx_get_screen_size(game->mlx, (int *)&game->screen_width, (int *)&game->screen_height);
+	game->screen_width = 1920;
+	game->screen_height = 1080;
 	game->win = mlx_new_window(game->mlx, game->screen_width, game->screen_height, "MOUSE");
 	if (!game->win)
 		ft_exit_error("Faild to allocate window");
