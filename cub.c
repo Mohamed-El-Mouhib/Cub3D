@@ -268,6 +268,7 @@ typedef struct s_dda_alog
 {
 	t_vec2 map_pos;
 	t_vec2 side_dist;
+	t_vec2 delta_dist;
 	t_vec2 step_dir;
 	t_vec2 ray;
 	int side;
@@ -302,9 +303,9 @@ int _dda(t_game *game, t_vec2 *side_dist, int *mapX, int *mapY, t_vec2 delta_dis
 void dda(t_game *game)
 {
 	double camera;
+	t_dda_algo dda;
 	t_vec2 ray;
 	t_player *player;
-	t_vec2 delta_dist;
 	t_vec2 side_dist;
 	t_vec2 step;
 	int side;
@@ -316,35 +317,35 @@ void dda(t_game *game)
 		int mapY = player->pos.y / TILE_SIZE;
 		camera = 2.0 * camera_x / game->screen_width - 1;
 		ray = vec2_add(player->dir, vec2_scale(player->plane, camera));
-		delta_dist = init_delta_dist(ray);
+		dda.delta_dist = init_delta_dist(ray);
 
 
 		if (ray.x < 0)
 		{
-			side_dist.x = delta_dist.x * (player->pos.x - mapX * TILE_SIZE);
+			side_dist.x = dda.delta_dist.x * (player->pos.x - mapX * TILE_SIZE);
 			step.x = -1.0;
 		}
 		else
 		{
-			side_dist.x = delta_dist.x * ((mapX + 1) * TILE_SIZE - player->pos.x);
+			side_dist.x = dda.delta_dist.x * ((mapX + 1) * TILE_SIZE - player->pos.x);
 			step.x = 1.0;
 		}
 		if (ray.y < 0)
 		{
-			side_dist.y = delta_dist.y * (player->pos.y - mapY * TILE_SIZE);
+			side_dist.y = dda.delta_dist.y * (player->pos.y - mapY * TILE_SIZE);
 			step.y = -1.0;
 		}
 		else
 		{
-			side_dist.y = delta_dist.y * ((mapY + 1) * TILE_SIZE - player->pos.y);
+			side_dist.y = dda.delta_dist.y * ((mapY + 1) * TILE_SIZE - player->pos.y);
 			step.y = 1.0;
 		}
-		side = _dda(game, &side_dist, &mapX, &mapY, delta_dist, step);
+		side = _dda(game, &side_dist, &mapX, &mapY, dda.delta_dist, step);
 		double x;
 		if(side == 0)
-			x = (side_dist.x  / TILE_SIZE - delta_dist.x);
+			x = (side_dist.x  / TILE_SIZE - dda.delta_dist.x);
 		else
-			x = (side_dist.y  / TILE_SIZE - delta_dist.y);
+			x = (side_dist.y  / TILE_SIZE - dda.delta_dist.y);
 		if ((int)x != 0)
 		{
 			t_vec2 mini_player_pos = vec2_div(player->pos, MINIMAP_SCALE);
