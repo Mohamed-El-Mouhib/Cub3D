@@ -304,7 +304,6 @@ void dda(t_game *game)
 {
 	double camera;
 	t_dda_algo dda;
-	t_vec2 ray;
 	t_player *player;
 	t_vec2 step;
 	int side;
@@ -315,11 +314,11 @@ void dda(t_game *game)
 		int mapX = player->pos.x / TILE_SIZE;
 		int mapY = player->pos.y / TILE_SIZE;
 		camera = 2.0 * camera_x / game->screen_width - 1;
-		ray = vec2_add(player->dir, vec2_scale(player->plane, camera));
-		dda.delta_dist = init_delta_dist(ray);
+		dda.ray = vec2_add(player->dir, vec2_scale(player->plane, camera));
+		dda.delta_dist = init_delta_dist(dda.ray);
 
 
-		if (ray.x < 0)
+		if (dda.ray.x < 0)
 		{
 			dda.side_dist.x = dda.delta_dist.x * (player->pos.x - mapX * TILE_SIZE);
 			step.x = -1.0;
@@ -329,7 +328,7 @@ void dda(t_game *game)
 			dda.side_dist.x = dda.delta_dist.x * ((mapX + 1) * TILE_SIZE - player->pos.x);
 			step.x = 1.0;
 		}
-		if (ray.y < 0)
+		if (dda.ray.y < 0)
 		{
 			dda.side_dist.y = dda.delta_dist.y * (player->pos.y - mapY * TILE_SIZE);
 			step.y = -1.0;
@@ -349,7 +348,7 @@ void dda(t_game *game)
 		{
 			t_vec2 mini_player_pos = vec2_div(player->pos, MINIMAP_SCALE);
 			// printf("Stupid x = %f\n", x);
-			draw_line(&game->scene, mini_player_pos, vec2_add(mini_player_pos, vec2_scale(ray, x / MINIMAP_SCALE)), MINDARO);
+			draw_line(&game->scene, mini_player_pos, vec2_add(mini_player_pos, vec2_scale(dda.ray, x / MINIMAP_SCALE)), MINDARO);
 			double line_height = (int) (game->screen_height / x * TILE_SIZE);
 			double h = game->screen_height;
 			int drawStart = -line_height / 2 + h / 2;
