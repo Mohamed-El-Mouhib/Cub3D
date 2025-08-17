@@ -199,7 +199,20 @@ void handle_input_events(t_game *game)
 
 #define MINIMAP_SCALE 4.0
 
-void draw_grid(t_data  *buff)
+void minimap_draw_player(t_game *game)
+{
+	double scale = TILE_SIZE / MINIMAP_SCALE;
+	t_vec2 head;
+	t_vec2 mini_player_pos;
+
+
+	mini_player_pos = vec2_div(game->player.pos, MINIMAP_SCALE);
+	head = vec2_add(vec2_scale(game->player.dir, scale), mini_player_pos);
+	draw_line(&game->scene, mini_player_pos, head, MINDARO);
+	draw_filled_circle(&game->scene, mini_player_pos, 2, WHITE);
+}
+
+void minimap_daw_grid(t_data *buff)
 {
 	t_vec2 start;
 	int i;
@@ -234,6 +247,11 @@ void draw_grid(t_data  *buff)
 		i++;
 	}
 }
+void draw_minimap(t_game *game)
+{
+	minimap_daw_grid(&game->scene);
+	minimap_draw_player(game);
+}
 
 int handle_mouse_event(int x,int y, t_game *game)
 {
@@ -244,15 +262,16 @@ int handle_mouse_event(int x,int y, t_game *game)
 
 typedef struct s_dda_alog
 {
-	t_vec2 map_pos;
-	t_vec2 side_dist;
 	t_vec2 delta_dist;
+	t_vec2 side_dist;
 	t_vec2 step_dir;
-	t_vec2 ray;
-	t_player *player;
-	int side;
 	double ray_size;
 	double hit_dist;
+	t_vec2 map_pos;
+	t_vec2 ray;
+	int side;
+	t_vec2 wall_top;
+	t_vec2 wall_bottom;
 } t_dda_algo;
 
 
@@ -261,6 +280,13 @@ double sign(double x)
 	return ((x > 0) - (x < 0));
 }
 
+/**
+ * init_delta_dist - initialize ray delta distances
+ * @dda: pointer to dda algorithm context
+ *
+ * Delta distances represent the length a ray has to travel in order to
+ * move exactly one tile unit in the x or y direction
+ */
 void init_delta_dist(t_dda_algo *dda)
 {
 	if (dda->ray.x != 0)
@@ -273,7 +299,15 @@ void init_delta_dist(t_dda_algo *dda)
 		dda->delta_dist.y = 1e30;
 }
 
-void _dda(t_game *game, t_dda_algo *dda)
+/**
+ * find_first_hitting_wall - run DDA loop until a wall or map edge is hit
+ * This will aslo set the side of wall
+ *
+ * @game: pointer to game context
+ * @dda: pointer to dda algorithm context
+ *
+ */
+void find_first_hitting_wall(t_game *game, t_dda_algo *dda)
 {
 	int stop = 0;
 
@@ -298,7 +332,15 @@ void _dda(t_game *game, t_dda_algo *dda)
 	}
 }
 
-void calculate_dist_sides_steps_dir(t_player *player, t_dda_algo *dda)
+/**
+ * init_side_dist_and_step - compute step direction and initial side distance
+ * - side distances (distance to first x/y wall grid)
+ * - step direction (which way the we will move in the map)
+ *
+ * @player: pointer to player
+ * @dda: pointer to dda algorithm context
+ */
+void init_side_dist_and_step(t_player *player, t_dda_algo *dda)
 {
 	if (dda->ray.x < 0)
 	{
@@ -322,118 +364,130 @@ void calculate_dist_sides_steps_dir(t_player *player, t_dda_algo *dda)
 	}
 }
 
+/**
+ * init_map_pos - set the position of player in the grip map
+ *
+ * @player: pointer to player
+ * @dda: pointer to dda algorithm context
+ */
 void dda_init_map_pos(t_player *player, t_dda_algo *dda)
 {
 	dda->map_pos.x = (int) (player->pos.x / TILE_SIZE);
 	dda->map_pos.y = (int) (player->pos.y / TILE_SIZE);
 }
 
-
-void calculate_current_ray(t_game *game, t_dda_algo *dda, double camera_x)
+/**
+ * compute_ray_dir - calculates ray direction based on player direction and
+ * calculate current camera plane slice
+ *
+ * @game: pointer to game context
+ * @dda: pointer to dda algorithm context
+ * @x: current screen column
+ */
+void compute_ray_dir(t_game *game, t_dda_algo *dda, double x)
 {
-	dda->ray_size = 2.0 * camera_x / game->screen_width - 1;
+	dda->ray_size = 2.0 * x / game->screen_width - 1;
 	dda->ray = vec2_add(game->player.dir, vec2_scale(game->player.plane, dda->ray_size));
 }
 
-void dda(t_game *game)
+/**
+ * compute_dist_to_hit_wall - compute perpendicular distance to the hit wall
+ *
+ * @dda: pointer to dda algorithm context
+ */
+void compute_dist_to_hit_wall(t_dda_algo *dda)
+{
+	if(dda->side == 0)
+		dda->hit_dist = (dda->side_dist.x  / TILE_SIZE - dda->delta_dist.x);
+	else
+		dda->hit_dist = (dda->side_dist.y  / TILE_SIZE - dda->delta_dist.y);
+}
+
+/**
+ * compute_wall_boundaries - calculate wall slice screen coordinates
+ *
+ * @game: pointer to game context
+ * @dda: pointer to dda algorithm context
+ * @x: current screen column
+ */
+void calculate_wall_boundaries(t_game *game, t_dda_algo *dda, int x)
+{
+	double line_height;
+	double h;
+
+	line_height = game->screen_height / dda->hit_dist * TILE_SIZE;
+	h = game->screen_height;
+	dda->wall_top.y = (h - line_height) / 2;
+	if(dda->wall_top.y < 0)
+		dda->wall_top.y = 0;
+	dda->wall_bottom.y = (line_height + h) / 2;
+	if(dda->wall_bottom.y >= h)
+		dda->wall_bottom.y = h - 1;
+	dda->wall_top.x = x;
+	dda->wall_bottom.x = x;
+}
+
+/**
+ * perform_dda - run all DDA initialization and stepping
+ *
+ * @game: pointer to game context
+ * @dda: pointer to dda algorithm context
+ * @x: screen column
+ *
+ * High-level function to compute ray, run DDA, and calculate hit distance, for
+ * every time this function runs, you'll find all the necessary info in the dda
+ * context, changing the x, means changing the current column
+ */
+void perform_dda(t_game *game, t_dda_algo *dda, int x)
+{
+	dda_init_map_pos(&game->player, dda);
+	compute_ray_dir(game, dda, x);
+	init_delta_dist(dda);
+	init_side_dist_and_step(&game->player, dda);
+	find_first_hitting_wall(game, dda);
+	compute_dist_to_hit_wall(dda);
+}
+
+void draw_fov_in_minimap(t_game *game, t_dda_algo *dda)
+{
+	t_vec2 mini_player_pos; // the player position in the minimap
+	t_vec2 mini_hit_point;  // where the ray hits in minimap?
+
+	mini_player_pos = vec2_div(game->player.pos, MINIMAP_SCALE);
+	mini_hit_point = vec2_add(mini_player_pos, 
+			   vec2_scale(dda->ray, dda->hit_dist / MINIMAP_SCALE)
+			   );
+	draw_line(&game->scene, 
+	   mini_player_pos, 
+	   mini_hit_point
+	   ,MINDARO);
+}
+
+void your_beutiful_randring_logic(t_game *game, t_dda_algo *dda)
+{
+	if (dda->side)
+		draw_line(&game->scene, dda->wall_top, dda->wall_bottom, PURPLE);
+	else
+		draw_line(&game->scene, dda->wall_top, dda->wall_bottom, TINY_BLACK);
+}
+
+void draw_walls(t_game *game)
 {
 	t_dda_algo dda;
-	t_player *player;
 
-	player = &game->player;
-	for (int camera_x = 0; camera_x < (int)game->screen_width; camera_x++)
+	for (int x = 0; x < (int)game->screen_width; x++)
 	{
-		dda_init_map_pos(&game->player, &dda);
-		// dda.ray = vec2_add(player->dir, vec2_scale(player->plane, camera));
-		calculate_current_ray(game, &dda, camera_x);
-		init_delta_dist(&dda);
-		calculate_dist_sides_steps_dir(&game->player, &dda);
-		_dda(game, &dda);
-		if(dda.side == 0)
-			dda.hit_dist = (dda.side_dist.x  / TILE_SIZE - dda.delta_dist.x);
-		else
-			dda.hit_dist = (dda.side_dist.y  / TILE_SIZE - dda.delta_dist.y);
+		perform_dda(game, &dda, x);
 		if ((int)dda.hit_dist != 0)
 		{
-			t_vec2 mini_player_pos = vec2_div(player->pos, MINIMAP_SCALE);
-			// printf("Stupid x = %f\n", x);
-			draw_line(&game->scene, mini_player_pos, vec2_add(mini_player_pos, vec2_scale(dda.ray, dda.hit_dist / MINIMAP_SCALE)), MINDARO);
-			double line_height = (int) (game->screen_height / dda.hit_dist * TILE_SIZE);
-			double h = game->screen_height;
-			int drawStart = -line_height / 2 + h / 2;
-			if(drawStart < 0)
-				drawStart = 0;
-			int drawEnd = line_height / 2 + h / 2;
-			if(drawEnd >= h)
-				drawEnd = h - 1;
-			if (dda.side)
-			{
-				draw_line(&game->scene, vec2_new(camera_x, drawStart), vec2_new(camera_x, drawEnd), PURPLE);
-			}
-			else
-			{
-				draw_line(&game->scene, vec2_new(camera_x, drawStart), vec2_new(camera_x, drawEnd), TINY_BLACK);
-			}
+			calculate_wall_boundaries(game, &dda, x);
+			draw_fov_in_minimap(game, &dda);
+			your_beutiful_randring_logic(game, &dda);
 		}
 	}
 }
 
-int times[10];
 
-/**
- * average - calculate the average of numbers
- *
- * @stats: array of numbers
- * @size: array size
- *
- * Return: average value
- */
-size_t average(int *stats, size_t size)
-{
-	size_t sum;
-	size_t i;
-
-	i = 0;
-	sum = 0;
-	while (i < size)
-	{
-		sum += stats[i++];
-	}
-	return (sum/size);
-}
-
-// time stats to be added later:
-// static time_t last_frame_time;
-// static size_t curr_time;
-//
-// if (curr_time == 10)
-// {
-// 	size_t avg = average(times, curr_time);
-// 	if (avg > 0)
-// 		printf("AVG_FRAME_RATE: %ld\n", 1000/ avg);
-// 	curr_time = 0;
-// }
-// times[curr_time++] = curr_time_ms() - last_frame_time;
-// last_frame_time = curr_time_ms();
-void player_draw_small(t_game *game)
-{
-	double scale = TILE_SIZE / MINIMAP_SCALE;
-	t_vec2 head;
-	t_vec2 mini_player_pos;
-
-
-	mini_player_pos = vec2_div(game->player.pos, MINIMAP_SCALE);
-	head = vec2_add(vec2_scale(game->player.dir, scale), mini_player_pos);
-	draw_line(&game->scene, mini_player_pos, head, MINDARO);
-	draw_filled_circle(&game->scene, mini_player_pos, 2, WHITE);
-	// t_vec2 plane_start = vec2_add(head, vec2_scale(game->player.plane, scale));
-	// t_vec2 plane_end = vec2_add(head, vec2_scale(game->player.plane, -scale));
-	// draw_line(&game->scene, plane_start, plane_end, PURPLE);
-	// draw_filled_square(&game->scene, plane_start, 4, PURPLE);
-	// draw_line(&game->scene, game->player.pos, plane_start, PURPLE);
-	// draw_line(&game->scene, game->player.pos, plane_end, PURPLE);
-	// draw_filled_square(&game->scene, plane_end, 4, PURPLE);
-}
 
 int game_loop(t_game *game)
 {
@@ -445,14 +499,8 @@ int game_loop(t_game *game)
 	last_frame_time =  curr_time_ms();
 	image_clear(&game->scene);
 	handle_input_events(game);
-	// draw_filled_square(&game->scene, vec2_new(0, 0), TILE_SIZE, PURPLE);
-	// draw_circle(&game->scene, game->mouse_pos, 5, RED);
-	// draw_line(&game->scene, game->player.pos, game->mouse_pos, RED);
-	// draw_circle(&game->scene, game->player.pos, 5, RED);
-	// intersection_points(&game->scene, game->player.pos, game->mouse_pos);
-	dda(game);
-	draw_grid(&game->scene);
-	// player_draw_small(game);
+	draw_walls(game);
+	draw_minimap(game);
 	mlx_put_image_to_window(game->mlx, game->win,game->scene.img, 0, 0);
 	return (0);
 }
