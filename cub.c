@@ -6,7 +6,7 @@
 /*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 17:28:28 by aljbari           #+#    #+#             */
-/*   Updated: 2025/08/17 17:28:28 by aljbari          ###   ########.fr       */
+/*   Updated: 2025/08/17 19:06:22 by your_login       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,6 @@ int	main()
 	t_game game;
 
 	init_game(&game);
-	if (XK_a == 69)
-		ft_exit_error("Update your keys keycode\n");
 	mlx_loop_hook(game.mlx, game_loop, &game);
 	mlx_hook(game.win, 06, 1L<<6, handle_mouse_event, &game); // Our mouse friend
 	mlx_hook(game.win, 2, 1L << 0, key_press, &game);         // if key pressed
