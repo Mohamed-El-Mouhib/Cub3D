@@ -305,7 +305,6 @@ void dda(t_game *game)
 	double camera;
 	t_dda_algo dda;
 	t_player *player;
-	t_vec2 step;
 	int side;
 
 	player = &game->player;
@@ -321,24 +320,24 @@ void dda(t_game *game)
 		if (dda.ray.x < 0)
 		{
 			dda.side_dist.x = dda.delta_dist.x * (player->pos.x - mapX * TILE_SIZE);
-			step.x = -1.0;
+		dda.step_dir.x = -1.0;
 		}
 		else
 		{
 			dda.side_dist.x = dda.delta_dist.x * ((mapX + 1) * TILE_SIZE - player->pos.x);
-			step.x = 1.0;
+			dda.step_dir.x = 1.0;
 		}
 		if (dda.ray.y < 0)
 		{
 			dda.side_dist.y = dda.delta_dist.y * (player->pos.y - mapY * TILE_SIZE);
-			step.y = -1.0;
+			dda.step_dir.y = -1.0;
 		}
 		else
 		{
 			dda.side_dist.y = dda.delta_dist.y * ((mapY + 1) * TILE_SIZE - player->pos.y);
-			step.y = 1.0;
+			dda.step_dir.y = 1.0;
 		}
-		side = _dda(game, &dda.side_dist, &mapX, &mapY, dda.delta_dist, step);
+		side = _dda(game, &dda.side_dist, &mapX, &mapY, dda.delta_dist, dda.step_dir);
 		double x;
 		if(side == 0)
 			x = (dda.side_dist.x  / TILE_SIZE - dda.delta_dist.x);
