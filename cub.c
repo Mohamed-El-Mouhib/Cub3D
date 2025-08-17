@@ -251,6 +251,7 @@ typedef struct s_dda_alog
 	t_vec2 ray;
 	t_player *player;
 	int side;
+	double hit_dist;
 } t_dda_algo;
 
 
@@ -271,55 +272,59 @@ void init_delta_dist(t_dda_algo *dda)
 		dda->delta_dist.y = 1e30;
 }
 
-int _dda(t_game *game, t_dda_algo *dda)
+void _dda(t_game *game, t_dda_algo *dda)
 {
 	int stop = 0;
-	int side;
 
 	while (!stop)
 	{
 		if (dda->side_dist.x < dda->side_dist.y)
 		{
 			dda->side_dist.x += (dda->delta_dist.x * TILE_SIZE);
-			dda->map_pos.x += dda->step_dir.x;
-			side = 0;
+			dda->map_pos.x += (int)dda->step_dir.x;
+			dda->side = 0;
 		}
 		else
 		{
 			dda->side_dist.y += (dda->delta_dist.y * TILE_SIZE);
-			dda->map_pos.y += dda->step_dir.y;
-			side = 1;
+			dda->map_pos.y += (int)dda->step_dir.y;
+			dda->side = 1;
 		}
 		if (dda->map_pos.x < 0 || dda->map_pos.x >= MAP_WIDTH || dda->map_pos.y < 0 || dda->map_pos.y >= MAP_HEIGHT)
 			stop = 1;
 		if ((game->world.map)[(int)dda->map_pos.y][(int)dda->map_pos.x])
 			stop = 1;
 	}
-	return (side);
 }
 
-void calculate_dist_sides_steps_dir(t_player *player, t_dda_algo *dda, int mapX, int mapY)
+void calculate_dist_sides_steps_dir(t_player *player, t_dda_algo *dda)
 {
 	if (dda->ray.x < 0)
 	{
-		dda->side_dist.x = dda->delta_dist.x * (player->pos.x - mapX * TILE_SIZE);
+		dda->side_dist.x = dda->delta_dist.x * (player->pos.x - dda->map_pos.x * TILE_SIZE);
 		dda->step_dir.x = -1.0;
 	}
 	else
 	{
-		dda->side_dist.x = dda->delta_dist.x * ((mapX + 1) * TILE_SIZE - player->pos.x);
+		dda->side_dist.x = dda->delta_dist.x * ((dda->map_pos.x + 1) * TILE_SIZE - player->pos.x);
 		dda->step_dir.x = 1.0;
 	}
 	if (dda->ray.y < 0)
 	{
-		dda->side_dist.y = dda->delta_dist.y * (player->pos.y - mapY * TILE_SIZE);
+		dda->side_dist.y = dda->delta_dist.y * (player->pos.y - dda->map_pos.y * TILE_SIZE);
 		dda->step_dir.y = -1.0;
 	}
 	else
 	{
-		dda->side_dist.y = dda->delta_dist.y * ((mapY + 1) * TILE_SIZE - player->pos.y);
+		dda->side_dist.y = dda->delta_dist.y * ((dda->map_pos.y + 1) * TILE_SIZE - player->pos.y);
 		dda->step_dir.y = 1.0;
 	}
+}
+
+void dda_init_map_pos(t_player *player, t_dda_algo *dda)
+{
+	dda->map_pos.x = (int) (player->pos.x / TILE_SIZE);
+	dda->map_pos.y = (int) (player->pos.y / TILE_SIZE);
 }
 
 void dda(t_game *game)
@@ -327,31 +332,26 @@ void dda(t_game *game)
 	double camera;
 	t_dda_algo dda;
 	t_player *player;
-	int side;
 
 	player = &game->player;
 	for (int camera_x = 0; camera_x < (int)game->screen_width; camera_x++)
 	{
-		dda.map_pos.x = player->pos.x / TILE_SIZE;
-		dda.map_pos.y = player->pos.y / TILE_SIZE;
 		camera = 2.0 * camera_x / game->screen_width - 1;
+		dda_init_map_pos(&game->player, &dda);
 		dda.ray = vec2_add(player->dir, vec2_scale(player->plane, camera));
 		init_delta_dist(&dda);
-
-
-		calculate_dist_sides_steps_dir(&game->player, &dda, dda.map_pos.x, dda.map_pos.y);
-		side = _dda(game, &dda);
-		double x;
-		if(side == 0)
-			x = (dda.side_dist.x  / TILE_SIZE - dda.delta_dist.x);
+		calculate_dist_sides_steps_dir(&game->player, &dda);
+		_dda(game, &dda);
+		if(dda.side == 0)
+			dda.hit_dist = (dda.side_dist.x  / TILE_SIZE - dda.delta_dist.x);
 		else
-			x = (dda.side_dist.y  / TILE_SIZE - dda.delta_dist.y);
-		if ((int)x != 0)
+			dda.hit_dist = (dda.side_dist.y  / TILE_SIZE - dda.delta_dist.y);
+		if ((int)dda.hit_dist != 0)
 		{
 			t_vec2 mini_player_pos = vec2_div(player->pos, MINIMAP_SCALE);
 			// printf("Stupid x = %f\n", x);
-			draw_line(&game->scene, mini_player_pos, vec2_add(mini_player_pos, vec2_scale(dda.ray, x / MINIMAP_SCALE)), MINDARO);
-			double line_height = (int) (game->screen_height / x * TILE_SIZE);
+			draw_line(&game->scene, mini_player_pos, vec2_add(mini_player_pos, vec2_scale(dda.ray, dda.hit_dist / MINIMAP_SCALE)), MINDARO);
+			double line_height = (int) (game->screen_height / dda.hit_dist * TILE_SIZE);
 			double h = game->screen_height;
 			int drawStart = -line_height / 2 + h / 2;
 			if(drawStart < 0)
@@ -359,7 +359,7 @@ void dda(t_game *game)
 			int drawEnd = line_height / 2 + h / 2;
 			if(drawEnd >= h)
 				drawEnd = h - 1;
-			if (side)
+			if (dda.side)
 			{
 				draw_line(&game->scene, vec2_new(camera_x, drawStart), vec2_new(camera_x, drawEnd), PURPLE);
 			}
