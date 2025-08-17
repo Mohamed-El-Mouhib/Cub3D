@@ -1,69 +1,49 @@
-#ifndef CUB3D_H
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cub3d.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/09 19:33:13 by aljbari           #+#    #+#             */
+/*   Updated: 2025/08/09 19:33:13 by aljbari          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+# ifndef CUB3D_H
 # define CUB3D_H
+# include "graphics.h"
+# include "dynamic_array.h"
 
-# include "libft.h"
-# include <fcntl.h>
-# include <mlx.h>
-# include <math.h>
-# include <X11/keysym.h>
-# include <stdbool.h>
-# include <stdio.h>
-# include <stdlib.h>
-# include <string.h>
-# include <unistd.h>
+# define TILE_SIZE 80.0
+// # define WIN_H (TILE_SIZE * 20 + 1)
+// # define WIN_W (TILE_SIZE * 40 + 1)
 
-# define WIN_H 500
-# define WIN_W 525
+// minimap
+void draw_minimap(t_game *game);
+void draw_fov_in_minimap(t_game *game, t_dda_ctx *dda);
+void raycast_draw_walls(t_game *game);
 
-# define MAP_HEIGHT 6
-# define MAP_WIDTH 6
-# define PI 3.14159
-# define TILE_S 60
+// Keyboard events
+int	key_press(int key_code, t_game *game);
+int	key_release(int key_code, t_game *game);
+void    game_handle_keyboard_events(t_game *game);
 
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
+// player movements
+void player_rotate(t_player *player, t_rotate_dir rot_dir);
+void player_move(t_player *player, int speed, t_move_dir move_dir);
 
-typedef struct	s_data
-{
-	void	*img;
-	char	*addr;
-	int		bpp;
-	int		line_len;
-	int		endian;
-}	t_data;
+// Mouse events
+int handle_mouse_event(int x,int y, t_game *game);
 
-typedef struct s_parse
-{
-	int	height;
-	int	width;
-	double	px;
-	double	py;
-	void	*win;
-	void	*mlx;
-	bool	is_moving;
-	double	dir_;
-	t_data	data;
-}	t_parse;
+// Utils
+void ft_exit_error(char *msg);
+time_t	curr_time_ms(void);
+double sign(double x);
 
-typedef struct	s_cal
-{
-	double	y_iter;
-	double	x_iter;
-}	t_cal;
+// initializers
+void init_game(t_game *game);
 
-typedef struct	s_ray
-{
-	double	rx;
-	double	ry;
-}	t_ray;
-
-typedef struct s_movment
-{
-	double	left_right_;
-	double	up_down_;
-	double	diroffset_;
-	bool	is_moving;
-}	t_movment;
-
-void	my_pixel_put(int x, int y, unsigned int color);
-
+// Parser
+t_dyn read_map_from_file(char *filename);
 #endif
