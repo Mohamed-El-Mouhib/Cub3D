@@ -251,6 +251,7 @@ typedef struct s_dda_alog
 	t_vec2 ray;
 	t_player *player;
 	int side;
+	double ray_size;
 	double hit_dist;
 } t_dda_algo;
 
@@ -327,18 +328,24 @@ void dda_init_map_pos(t_player *player, t_dda_algo *dda)
 	dda->map_pos.y = (int) (player->pos.y / TILE_SIZE);
 }
 
+
+void calculate_current_ray(t_game *game, t_dda_algo *dda, double camera_x)
+{
+	dda->ray_size = 2.0 * camera_x / game->screen_width - 1;
+	dda->ray = vec2_add(game->player.dir, vec2_scale(game->player.plane, dda->ray_size));
+}
+
 void dda(t_game *game)
 {
-	double camera;
 	t_dda_algo dda;
 	t_player *player;
 
 	player = &game->player;
 	for (int camera_x = 0; camera_x < (int)game->screen_width; camera_x++)
 	{
-		camera = 2.0 * camera_x / game->screen_width - 1;
 		dda_init_map_pos(&game->player, &dda);
-		dda.ray = vec2_add(player->dir, vec2_scale(player->plane, camera));
+		// dda.ray = vec2_add(player->dir, vec2_scale(player->plane, camera));
+		calculate_current_ray(game, &dda, camera_x);
 		init_delta_dist(&dda);
 		calculate_dist_sides_steps_dir(&game->player, &dda);
 		_dda(game, &dda);
