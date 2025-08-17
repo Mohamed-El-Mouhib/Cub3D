@@ -306,7 +306,6 @@ void dda(t_game *game)
 	t_dda_algo dda;
 	t_vec2 ray;
 	t_player *player;
-	t_vec2 side_dist;
 	t_vec2 step;
 	int side;
 
@@ -322,30 +321,30 @@ void dda(t_game *game)
 
 		if (ray.x < 0)
 		{
-			side_dist.x = dda.delta_dist.x * (player->pos.x - mapX * TILE_SIZE);
+			dda.side_dist.x = dda.delta_dist.x * (player->pos.x - mapX * TILE_SIZE);
 			step.x = -1.0;
 		}
 		else
 		{
-			side_dist.x = dda.delta_dist.x * ((mapX + 1) * TILE_SIZE - player->pos.x);
+			dda.side_dist.x = dda.delta_dist.x * ((mapX + 1) * TILE_SIZE - player->pos.x);
 			step.x = 1.0;
 		}
 		if (ray.y < 0)
 		{
-			side_dist.y = dda.delta_dist.y * (player->pos.y - mapY * TILE_SIZE);
+			dda.side_dist.y = dda.delta_dist.y * (player->pos.y - mapY * TILE_SIZE);
 			step.y = -1.0;
 		}
 		else
 		{
-			side_dist.y = dda.delta_dist.y * ((mapY + 1) * TILE_SIZE - player->pos.y);
+			dda.side_dist.y = dda.delta_dist.y * ((mapY + 1) * TILE_SIZE - player->pos.y);
 			step.y = 1.0;
 		}
-		side = _dda(game, &side_dist, &mapX, &mapY, dda.delta_dist, step);
+		side = _dda(game, &dda.side_dist, &mapX, &mapY, dda.delta_dist, step);
 		double x;
 		if(side == 0)
-			x = (side_dist.x  / TILE_SIZE - dda.delta_dist.x);
+			x = (dda.side_dist.x  / TILE_SIZE - dda.delta_dist.x);
 		else
-			x = (side_dist.y  / TILE_SIZE - dda.delta_dist.y);
+			x = (dda.side_dist.y  / TILE_SIZE - dda.delta_dist.y);
 		if ((int)x != 0)
 		{
 			t_vec2 mini_player_pos = vec2_div(player->pos, MINIMAP_SCALE);
