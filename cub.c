@@ -242,28 +242,6 @@ int handle_mouse_event(int x,int y, t_game *game)
 	return (0);
 }
 
-
-double sign(double x)
-{
-	return ((x > 0) - (x < 0));
-}
-
-t_vec2 init_delta_dist(t_vec2 ray)
-{
-	t_vec2 delta_dist;
-
-
-	if (ray.x != 0)
-		delta_dist.x = (fabs(1.0 / ray.x) * TILE_SIZE);
-	else
-		delta_dist.x = 1e30;
-	if (ray.y != 0)
-		delta_dist.y = (fabs(1.0 / ray.y) * TILE_SIZE);
-	else
-		delta_dist.y = 1e30;
-	return (delta_dist);
-}
-
 typedef struct s_dda_alog
 {
 	t_vec2 map_pos;
@@ -271,8 +249,27 @@ typedef struct s_dda_alog
 	t_vec2 delta_dist;
 	t_vec2 step_dir;
 	t_vec2 ray;
+	t_player *player;
 	int side;
 } t_dda_algo;
+
+
+double sign(double x)
+{
+	return ((x > 0) - (x < 0));
+}
+
+void init_delta_dist(t_dda_algo *dda)
+{
+	if (dda->ray.x != 0)
+		dda->delta_dist.x = (fabs(1.0 / dda->ray.x) * TILE_SIZE);
+	else
+		dda->delta_dist.x = 1e30;
+	if (dda->ray.y != 0)
+		dda->delta_dist.y = (fabs(1.0 / dda->ray.y) * TILE_SIZE);
+	else
+		dda->delta_dist.y = 1e30;
+}
 
 int _dda(t_game *game, t_vec2 *side_dist, int *mapX, int *mapY, t_vec2 delta_dist, t_vec2 step)
 {
@@ -300,6 +297,31 @@ int _dda(t_game *game, t_vec2 *side_dist, int *mapX, int *mapY, t_vec2 delta_dis
 	}
 	return (side);
 }
+
+void calculate_dist_sides_steps_dir(t_player *player, t_dda_algo *dda, int mapX, int mapY)
+{
+	if (dda->ray.x < 0)
+	{
+		dda->side_dist.x = dda->delta_dist.x * (player->pos.x - mapX * TILE_SIZE);
+		dda->step_dir.x = -1.0;
+	}
+	else
+	{
+		dda->side_dist.x = dda->delta_dist.x * ((mapX + 1) * TILE_SIZE - player->pos.x);
+		dda->step_dir.x = 1.0;
+	}
+	if (dda->ray.y < 0)
+	{
+		dda->side_dist.y = dda->delta_dist.y * (player->pos.y - mapY * TILE_SIZE);
+		dda->step_dir.y = -1.0;
+	}
+	else
+	{
+		dda->side_dist.y = dda->delta_dist.y * ((mapY + 1) * TILE_SIZE - player->pos.y);
+		dda->step_dir.y = 1.0;
+	}
+}
+
 void dda(t_game *game)
 {
 	double camera;
@@ -314,29 +336,10 @@ void dda(t_game *game)
 		int mapY = player->pos.y / TILE_SIZE;
 		camera = 2.0 * camera_x / game->screen_width - 1;
 		dda.ray = vec2_add(player->dir, vec2_scale(player->plane, camera));
-		dda.delta_dist = init_delta_dist(dda.ray);
+		init_delta_dist(&dda);
 
 
-		if (dda.ray.x < 0)
-		{
-			dda.side_dist.x = dda.delta_dist.x * (player->pos.x - mapX * TILE_SIZE);
-		dda.step_dir.x = -1.0;
-		}
-		else
-		{
-			dda.side_dist.x = dda.delta_dist.x * ((mapX + 1) * TILE_SIZE - player->pos.x);
-			dda.step_dir.x = 1.0;
-		}
-		if (dda.ray.y < 0)
-		{
-			dda.side_dist.y = dda.delta_dist.y * (player->pos.y - mapY * TILE_SIZE);
-			dda.step_dir.y = -1.0;
-		}
-		else
-		{
-			dda.side_dist.y = dda.delta_dist.y * ((mapY + 1) * TILE_SIZE - player->pos.y);
-			dda.step_dir.y = 1.0;
-		}
+		calculate_dist_sides_steps_dir(&game->player, &dda, mapX, mapY);
 		side = _dda(game, &dda.side_dist, &mapX, &mapY, dda.delta_dist, dda.step_dir);
 		double x;
 		if(side == 0)
