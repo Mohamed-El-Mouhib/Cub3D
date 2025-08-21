@@ -15,18 +15,18 @@
 
 # include "libft.h"
 // # ifndef MACOS
-// // #  include <X11/keysym.h>
-// // # include <mlx.h>
+#  include <X11/keysym.h>
+# include <mlx.h>
 // # else
-# include "../../mlx/mlx.h"
-#  define XK_Escape 53
-#  define XK_Right 123
-#  define XK_Left 124
-#  define XK_a 0
-#  define XK_s 1
-#  define XK_d 2
-#  define XK_w 13
-#  define XK_r 15
+// # include "../../mlx/mlx.h"
+// #  define XK_Escape 53
+// #  define XK_Right 123
+// #  define XK_Left 124
+// #  define XK_a 0
+// #  define XK_s 1
+// #  define XK_d 2
+// #  define XK_w 13
+// #  define XK_r 15
 // # endif
 # include <fcntl.h>
 # include <math.h>
@@ -62,6 +62,19 @@ typedef struct s_data
 	int		height;
 }			t_data;
 
+typedef struct s_parse
+{
+	int		height;
+	int		width;
+	double	px;
+	double	py;
+	void	*win;
+	void	*mlx;
+	bool	is_moving;
+	double	dir_;
+	t_data	data;
+}			t_parse;
+
 typedef struct s_player
 {
 	t_vec2 dir;
@@ -79,21 +92,6 @@ typedef struct s_world {
 }
 t_world;
 
-
-typedef struct s_images
-{
-	t_data	image[2];
-	char	*walltex_[2];
-	int	Dimensions[2][2];
-}	t_images;
-
-typedef struct s_mapping
-{
-	double	hit_x;
-	double	hit_y;
-	int	i_index;
-}	t_mapping;
-
 typedef struct s_game
 {
 	t_world  world;
@@ -104,7 +102,6 @@ typedef struct s_game
 	size_t  screen_height;
 	bool keyboard_events[256];
 	t_data	 scene;
-	t_images frames;
 	void	 *win;
 	void	 *mlx;
 }			t_game;
@@ -181,5 +178,4 @@ typedef enum e_move_dir
 	MOVE_RIGHT,
 } t_move_dir;
 
-void	draw_texture_line(t_game *game, t_dda_ctx *info);
 #endif
