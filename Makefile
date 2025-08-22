@@ -11,7 +11,7 @@ UNAME         = $(shell uname)
 ifeq ($(UNAME), Linux)
 	LINKERS = -lmlx -lXext -lX11 -lm -Llibs -lft
 else
-	LINKERS = -L../mlx -lmlx -lm -Llibs -lft -framework OpenGL -framework AppKit -D MACOS
+	LINKERS = -L../mlx -lmlx -lm -Llibs -lft -framework OpenGL -framework AppKit
 endif
 
 all: libft_rule $(NAME)
