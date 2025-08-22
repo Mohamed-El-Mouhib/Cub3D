@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "includes/cub3d.h"
-#include "includes/graphics.h"
 
 void game_rander(t_game *game)
 {
@@ -57,10 +56,14 @@ void	prepare_wall_images(t_game *game)
 {
 	void	*tmp;
 
-	tmp = mlx_xpm_file_to_image(game->mlx,"t1.xpm",&game->frames.Dimensions[0][0],&game->frames.Dimensions[0][1]);
-	game->frames.walltex_[0] = mlx_get_data_addr(tmp,&game->frames.image[0].bpp,&game->frames.image[0].line_len,&game->frames.image[0].endian);
-	tmp = mlx_xpm_file_to_image(game->mlx,"t2.xpm",&game->frames.Dimensions[1][0],&game->frames.Dimensions[1][1]);
-	game->frames.walltex_[1] = mlx_get_data_addr(tmp,&game->frames.image[1].bpp,&game->frames.image[1].line_len,&game->frames.image[1].endian);
+	tmp = mlx_xpm_file_to_image(game->mlx,"t1.xpm",
+		&game->frames.Dimensions[0][0], &game->frames.Dimensions[0][1]);
+	game->frames.walltex_[0] = mlx_get_data_addr(tmp,&game->frames.image[0].bpp,
+		&game->frames.image[0].line_len,&game->frames.image[0].endian);
+	tmp = mlx_xpm_file_to_image(game->mlx,"t2.xpm",&game->frames.Dimensions[1][0],
+		&game->frames.Dimensions[1][1]);
+	game->frames.walltex_[1] = mlx_get_data_addr(tmp,&game->frames.image[1].bpp,
+		&game->frames.image[1].line_len,&game->frames.image[1].endian);
 }
 
 int	main()
@@ -68,8 +71,8 @@ int	main()
 	t_game game;
 
 	init_game(&game);
-	mlx_loop_hook(game.mlx, game_loop, &game);
 	prepare_wall_images(&game);
+	mlx_loop_hook(game.mlx, game_loop, &game);
 	mlx_hook(game.win, 06, 1L<<6, handle_mouse_event, &game); // Our mouse friend
 	mlx_hook(game.win, 2, 1L << 0, key_press, &game);         // if key pressed
 	mlx_hook(game.win, 3, 1L << 1, key_release, &game);       // if key released
