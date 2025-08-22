@@ -38,6 +38,7 @@ double	hit_points(t_game *game, t_dda_ctx *info)
  *              then scaled by the texture height.
  *         Both x and y are clamped to the valid range [0, texture size - 1].
  * @offs:  The color offset in the texture.
+ * @i:	   The current row the wall.
  * @wallh: The height of the wall.
  *
  * This function ensures the texture coordinates are within bounds and
