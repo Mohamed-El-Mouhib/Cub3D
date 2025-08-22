@@ -13,8 +13,10 @@
 #include "../includes/cub3d.h"
 
 /**
- * hit_point - function exetract the hitpoint from other informations
- * return:	the first intersection of the wall 
+ * hit_point - Extracts coordinate of the wall hit point.
+ * @hit:   Vector of the hit point. For a horizontal wall, use the x coordinate.
+ *         For a vertical wall, use the y coordinate. Both are normalized by TILE_SIZE.
+ * return: The intersection point on the wall.
 */
 double	hit_points(t_game *game, t_dda_ctx *info)
 {
@@ -28,12 +30,19 @@ double	hit_points(t_game *game, t_dda_ctx *info)
 }
 
 /**
- * get_color_info - function calcuate the the vecture of the right color depend
- *	on vectore of first hit of the wall
- * @vec:	the vectore of the pixel color on the texture
- * @offs:	the color vector on the texture
- * @wallh:	wall height
-*/
+ * get_color_info - Calculates the texture coordinates for the correct color.
+ * @vec:   The vector representing the texture coordinates (x, y).
+ *         - x: Calculated from the fractional part of the wall hit position,
+ *              scaled by the texture width.
+ *         - y: Calculated from the current row on the wall, divided by wall height,
+ *              then scaled by the texture height.
+ *         Both x and y are clamped to the valid range [0, texture size - 1].
+ * @offs:  The color offset in the texture.
+ * @wallh: The height of the wall.
+ *
+ * This function ensures the texture coordinates are within bounds and
+ * returns the correct color vector from the texture map.
+ */
 unsigned int get_color_info(t_game *game, t_dda_ctx *info, int i)
 {
 	t_vec2	vec;
@@ -55,12 +64,12 @@ unsigned int get_color_info(t_game *game, t_dda_ctx *info, int i)
 	return *(unsigned int *)(game->frames.walltex_[info->side] + offs);
 }
 /**
- * draw_texture_line - testing is everything how can I help you today?
- * @i: iterator for drawing ceiling, wall and floor
- * 	while i is still less than the start of the line it goona set the pixel to ceiling color,
- * 	and if the i is in the range of the line_start < i <line_end it gonna set the pixel using get_color_info
- * 	and the opposite of the first instruct while it's outside of the wall range the floor color
- * @px: stores the color of the current pixel that gonna sent to image
+ * draw_texture_line - Draws a vertical line with ceiling, wall, and floor colors.
+ * @i: Current pixel position in the column.
+ *    - If i < line_start: set pixel to ceiling color.
+ *    - If line_start <= i < line_end: set pixel using get_color_info (wall).
+ *    - If i >= line_end: set pixel to floor color.
+ * @px: Color value to be set for the current pixel.
  *
  */
 void	draw_texture_line(t_game *game, t_dda_ctx *info)
