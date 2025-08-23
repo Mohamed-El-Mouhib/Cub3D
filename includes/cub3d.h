@@ -46,4 +46,7 @@ void init_game(t_game *game);
 
 // Parser
 t_dyn read_map_from_file(char *filename);
+
+// textures
+void	draw_texture_line(t_game *game, t_dda_ctx *info);
 #endif

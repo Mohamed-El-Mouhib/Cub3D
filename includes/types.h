@@ -14,10 +14,7 @@
 # define TYPES_H
 
 # include "libft.h"
-// # ifndef MACOS
-// // #  include <X11/keysym.h>
-// // # include <mlx.h>
-// # else
+# ifdef __APPLE__
 # include "../../mlx/mlx.h"
 #  define XK_Escape 53
 #  define XK_Right 123
@@ -27,7 +24,10 @@
 #  define XK_d 2
 #  define XK_w 13
 #  define XK_r 15
-// # endif
+# else
+#  include <X11/keysym.h>
+# include <mlx.h>
+# endif
 # include <fcntl.h>
 # include <math.h>
 # include <stdbool.h>
@@ -92,6 +92,13 @@ typedef struct s_world {
 }
 t_world;
 
+typedef struct s_frames
+{
+	t_data	image[2];
+	char	*walltex_[2];
+	int	Dimensions[2][2];
+}	t_frames;
+
 typedef struct s_game
 {
 	t_world  world;
@@ -102,6 +109,7 @@ typedef struct s_game
 	size_t  screen_height;
 	bool keyboard_events[256];
 	t_data	 scene;
+	t_frames	frames;
 	void	 *win;
 	void	 *mlx;
 }			t_game;

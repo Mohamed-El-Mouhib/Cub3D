@@ -32,8 +32,8 @@ void init_game(t_game *game)
 		ft_exit_error("Faild to allocate mlx");
 	game->world = init_game_world("map.txt");
 	// mlx_get_screen_size(game->mlx, (int *)&game->screen_width, (int *)&game->screen_height);
-	game->screen_width = 1920;
-	game->screen_height = 1080;
+	game->screen_width = 1280;
+	game->screen_height = 720;
 	game->win = mlx_new_window(game->mlx, game->screen_width, game->screen_height, "MOUSE");
 	if (!game->win)
 		ft_exit_error("Faild to allocate window");

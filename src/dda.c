@@ -104,7 +104,7 @@ void dda_init_map_pos(t_player *player, t_dda_ctx *dda)
 {
 	dda->map_pos.x = (int) (player->pos.x / TILE_SIZE);
 	dda->map_pos.y = (int) (player->pos.y / TILE_SIZE);
-	vec2_print(dda->map_pos, "MAP POSITION");
+	// vec2_print(dda->map_pos, "MAP POSITION");
 }
 
 /**
@@ -179,13 +179,6 @@ void perform_dda(t_game *game, t_dda_ctx *dda, int x)
 	compute_dist_to_hit_wall(dda);
 }
 
-void your_beutiful_randring_logic(t_game *game, t_dda_ctx *dda)
-{
-	if (dda->side)
-		draw_line(&game->scene, dda->line_start, dda->line_end, 0xC5D86D);
-	else
-		draw_line(&game->scene, dda->line_start, dda->line_end, 0x86615C);
-}
 
 void raycast_draw_walls(t_game *game)
 {
@@ -198,7 +191,7 @@ void raycast_draw_walls(t_game *game)
 		{
 			calculate_wall_boundaries(game, &dda, x);
 			draw_fov_in_minimap(game, &dda);
-			your_beutiful_randring_logic(game, &dda);
+			draw_texture_line(game, &dda);
 		}
 	}
 }
