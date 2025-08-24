@@ -22,20 +22,6 @@ void game_rander(t_game *game)
 bool is_frame_ready()
 {
 	static time_t last_frame_time;
-	static time_t one_frame_time = 1000 / FRAME_RATE;
-	time_t now;
-
-	now = curr_time_ms();
-	if (now - last_frame_time < one_frame_time)
-		return (true);
-	// printf("FPS: %lu\n", 1000 / (now - last_frame_time));
-	last_frame_time = now;
-	return (true);
-}
-
-int game_loop(t_game *game)
-{
-	static time_t last_frame_time;
 	static int frames;
 
 	if (curr_time_ms() - last_frame_time > 1000)
@@ -44,26 +30,52 @@ int game_loop(t_game *game)
 		last_frame_time = curr_time_ms();
 		frames = 0;
 	}
-	// if (!is_frame_ready())
-	// 	return (0);
+	// if (now - last_frame_time < one_frame_time)
+	// 	return (false);
+	frames++;
+	return (true);
+}
+
+int game_loop(t_game *game)
+{
+	if (!is_frame_ready())
+		return (0);
 	game_handle_keyboard_events(game);
 	game_rander(game);
-	frames++;
 	return (0);
 }
 
+/*
+ * prepare_wall_images: loads wall textures from files and stores them in the frames struct.
+ * @tmp:   temporary variable that stores the result of the texture loading function (mlx_xpm_file_to_image).
+ * @x:     variable that holds the width of the texture.
+ * @y:     variable that holds the height of the texture.
+ * return: this function does not return a value.
+ */
 void	prepare_wall_images(t_game *game)
 {
 	void	*tmp;
+	int	x;
+	int	y;
+	int	bpp;
+	int	endian;
+	int	line_len;
 
-	tmp = mlx_xpm_file_to_image(game->mlx,"t1.xpm",
-		&game->frames.Dimensions[0][0], &game->frames.Dimensions[0][1]);
-	game->frames.walltex_[0] = mlx_get_data_addr(tmp,&game->frames.image[0].bpp,
-		&game->frames.image[0].line_len,&game->frames.image[0].endian);
-	tmp = mlx_xpm_file_to_image(game->mlx,"t2.xpm",&game->frames.Dimensions[1][0],
-		&game->frames.Dimensions[1][1]);
-	game->frames.walltex_[1] = mlx_get_data_addr(tmp,&game->frames.image[1].bpp,
-		&game->frames.image[1].line_len,&game->frames.image[1].endian);
+	tmp = mlx_xpm_file_to_image(game->mlx, "t1.xpm", &x, &y);
+	game->frames.walltex_[0].addr = mlx_get_data_addr(tmp,&bpp, &line_len, &endian);
+	game->frames.walltex_[0].height = y;
+	game->frames.walltex_[0].width = x;
+	game->frames.walltex_[0].bpp = bpp;
+	game->frames.walltex_[0].line_len = line_len;
+	game->frames.walltex_[0].endian = endian;
+	tmp = mlx_xpm_file_to_image(game->mlx,"t2.xpm", &x, &y);
+	game->frames.walltex_[1].addr = mlx_get_data_addr(tmp, &bpp, &line_len, &endian);
+	game->frames.walltex_[1].height = y;
+	game->frames.walltex_[1].width = x;
+	game->frames.walltex_[1].bpp = bpp;
+	game->frames.walltex_[1].line_len = line_len;
+	game->frames.walltex_[1].endian = endian;
+
 }
 
 int	main()
