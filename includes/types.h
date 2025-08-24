@@ -62,19 +62,6 @@ typedef struct s_data
 	int		height;
 }			t_data;
 
-typedef struct s_parse
-{
-	int		height;
-	int		width;
-	double	px;
-	double	py;
-	void	*win;
-	void	*mlx;
-	bool	is_moving;
-	double	dir_;
-	t_data	data;
-}			t_parse;
-
 typedef struct s_player
 {
 	t_vec2 dir;
@@ -92,11 +79,13 @@ typedef struct s_world {
 }
 t_world;
 
+/*
+ * @t_framse:	struct holding wall textures and their boundaries
+ * @image:	array of t_data, each storing image info (bpp, address, line length, endian)
+ */
 typedef struct s_frames
 {
-	t_data	image[2];
-	char	*walltex_[2];
-	int	Dimensions[2][2];
+	t_data	walltex_[2];
 }	t_frames;
 
 typedef struct s_game
@@ -167,6 +156,7 @@ typedef struct s_dda_alog
 	t_vec2 ray;
 	double ray_size;
 	double hit_dist;
+	double line_height;
 	t_wall_side side;
 } t_dda_ctx;
 
