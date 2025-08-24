@@ -48,22 +48,23 @@ unsigned int get_color_info(t_game *game, t_dda_ctx *info, int i)
 {
 	t_vec2	vec;
 	int	offs;
-	double	wallh;
 
-	wallh = (double)(info->line_end.y - info->line_start.y);
-	vec.x = fmod(hit_points(game, info), 1.0) * game->frames.Dimensions[info->side][0];
+	vec.x = fmod(hit_points(game, info), 1.0) * game->frames.walltex_[info->side].width;
 	if (vec.x < 0)
 		vec.x = 0;
-	else if (vec.x >= game->frames.Dimensions[info->side][0])
-		vec.x = game->frames.Dimensions[info->side][0] - 1;
-	vec.y = (i / wallh) * game->frames.Dimensions[info->side][1];
+	else if (vec.x >= game->frames.walltex_[info->side].width)
+		vec.x = game->frames.walltex_[info->side].width;
+
+	vec.y = (double)(i / info->line_height) * game->frames.walltex_[info->side].height;
 	if (vec.y < 0)
 		vec.y = 0;
-	else if (vec.y >= game->frames.Dimensions[info->side][1])
-		vec.y = game->frames.Dimensions[info->side][1] - 1;
-	offs = (int)vec.y * game->frames.image[info->side].line_len + (int)vec.x * (game->frames.image[info->side].bpp / 8);
-	return *(unsigned int *)(game->frames.walltex_[info->side] + offs);
+	else if (vec.y >= game->frames.walltex_[info->side].height)
+		vec.y = game->frames.walltex_[info->side].height - 1;
+
+	offs = (int)vec.y * game->frames.walltex_[info->side].line_len + (int)vec.x * (game->frames.walltex_[info->side].bpp / 8);
+	return *(unsigned int *)(game->frames.walltex_[info->side].addr + offs);
 }
+
 /**
  * draw_texture_line - Draws a vertical line with ceiling, wall, and floor colors.
  * @i: Current pixel position in the column.
