@@ -1,4 +1,4 @@
-CFLAGS        = -Wall -Wextra -Iincludes -O3#- g -g3 -ggdb3 # -fsanitize=address
+CFLAGS        = -Wall -Wextra -Iincludes -O3#-g -g3 -ggdb3 # -fsanitize=address
 SRC           = $(wildcard *.c ./src/*.c) # update accordantly
 OBJ           = $(SRC:%.c=$(OBJDIR)/%.o)
 LIBFT_ARCHIVE = $(LIB_DIR)/libft.a
