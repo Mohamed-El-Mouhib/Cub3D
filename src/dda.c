@@ -149,13 +149,10 @@ void calculate_wall_boundaries(t_game *game, t_dda_ctx *dda, int x)
 	line_height = game->screen_height / dda->hit_dist * TILE_SIZE;
 	h = game->screen_height;
 	dda->line_start.y = (h - line_height) / 2;
-	if(dda->line_start.y < 0)
-		dda->line_start.y = 0;
 	dda->line_end.y = (line_height + h) / 2;
-	if(dda->line_end.y >= h)
-		dda->line_end.y = h - 1;
 	dda->line_start.x = x;
 	dda->line_end.x = x;
+	dda->line_height = line_height;
 }
 
 /**
