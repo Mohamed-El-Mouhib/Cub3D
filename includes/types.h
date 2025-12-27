@@ -199,8 +199,8 @@ typedef struct s_dda_alog
 //
 typedef enum e_rotate_dir
 {
-	ROTATE_LEFT  = 1,
-	ROTATE_RIGHT = -1
+	ROTATE_LEFT  = -1,
+	ROTATE_RIGHT = 1
 } t_rotate_dir;
 
 typedef enum e_move_dir
