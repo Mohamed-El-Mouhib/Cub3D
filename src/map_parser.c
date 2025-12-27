@@ -51,7 +51,7 @@ void validate_map_or_exit(t_dyn *lines)
 	}
 }
 
-bool is_valid_char(char c)
+inline bool is_valid_char(char c)
 {
 	return (ft_strchr(MAP_VALID_CHARACHTERS, c));
 }
@@ -92,20 +92,20 @@ void delete_last_newline(char *line)
 	}
 }
 
-void	check_map_name(char *filename, t_error *err)
+t_error	check_map_name(char *filename)
 {
 	if (!filename || !*filename)
 	{
 		if (!filename)
-			*err = NO_FILENAME;
+			return(NO_FILENAME);
 		else
-			*err = INVALID_FILENAME;
+			return(INVALID_FILENAME);
 	}
-	else if (ft_strncmp(ft_strrchr(filename, '.'), ".cub", 5) &&
+	else if (!ft_strncmp(ft_strrchr(filename, '.'), ".cub", 5) &&
 		ft_strlen(filename) > 4)
-		*err = NO_ERR;
+		return(NO_ERR);
 	else
-		*err = INVALID_FILENAME;
+		return(INVALID_FILENAME);
 }
 
 void	error_indexing(t_error	err)
@@ -113,13 +113,14 @@ void	error_indexing(t_error	err)
 	if (err == NO_ERR)
 		return;
 	if (err == NO_FILENAME)
-		ft_putstr_fd("error\nplease provide filename example: ./path/to/map.cub\n", 2);
+		printf("error\nplease provide filename example: ./path/to/map.cub\n");
 	else if (err == INVALID_FILENAME)
-		ft_putstr_fd("error\nplease provide valid filename with `.cub` extension\n", 2);
+		printf("error\nplease provide valid filename with `.cub` extension\n");
 	else if (err == INVALID_CHAR)
-		ft_putstr_fd("error\nan invalid character found inside the map\n", 2);
+		printf("error\nan invalid character found inside the map\n");
 	else if (err == EMPY_FILE)
-		ft_putstr_fd("error\nthe map file should not be empty\n", 2);
+		printf("error\nthe map file should not be empty\n");
+	
 	exit(1);
 }
 
@@ -130,8 +131,8 @@ t_dyn read_map_from_file(char *filename)
 	char	*line;
 	int	fd;
 
-	err = NO_ERR;
-	check_map_name(filename, &err);
+	err = check_map_name(filename);
+	error_indexing(err);
 	fd = open_file(filename);
 	lines = dyn_init();
 	while (1)
