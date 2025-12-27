@@ -24,18 +24,17 @@ t_world init_game_world(char *filename)
 	ft_bzero(&world, sizeof(world));
 	map = read_map_from_file(filename);
 	world.map = (char **)map.buff;
-	world.map_width = ft_strlen(world.map[0]);
-	world.map_height = map.length;
+	world.map_width = ft_strlen(world.map[0]); //must be changed
+	world.map_height = map.length; //must be changed
 	return (world);
 }
 
 void init_game(t_game *game)
 {
-	game->world = init_game_world("map.txt");
+	game->world = init_game_world("map.cub");
 	game->mlx = mlx_init();
 	if (!game->mlx)
 		ft_exit_error("Faild to allocate mlx");
-	// mlx_get_screen_size(game->mlx, (int *)&game->screen_width, (int *)&game->screen_height);
 	game->screen_width = 1280;
 	game->screen_height = 720;
 	game->win = mlx_new_window(game->mlx, game->screen_width, game->screen_height, "MOUSE");
