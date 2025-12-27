@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
+#include <stdlib.h>
 #define MAP_VALID_CHARACHTERS "01NSEW "
 
 int open_file(char *filename)
@@ -20,6 +21,7 @@ int open_file(char *filename)
 	fd = open(filename, O_RDONLY);
 	if (fd < 0)
 	{
+		ft_putstr_fd("error\n", 2);
 		perror(filename);
 		exit(1);
 	}
@@ -90,12 +92,46 @@ void delete_last_newline(char *line)
 	}
 }
 
+void	check_map_name(char *filename, t_error *err)
+{
+	if (!filename || !*filename)
+	{
+		if (!filename)
+			*err = NO_FILENAME;
+		else
+			*err = INVALID_FILENAME;
+	}
+	else if (ft_strncmp(ft_strrchr(filename, '.'), ".cub", 5) &&
+		ft_strlen(filename) > 4)
+		*err = NO_ERR;
+	else
+		*err = INVALID_FILENAME;
+}
+
+void	error_indexing(t_error	err)
+{
+	if (err == NO_ERR)
+		return;
+	if (err == NO_FILENAME)
+		ft_putstr_fd("error\nplease provide filename example: ./path/to/map.cub\n", 2);
+	else if (err == INVALID_FILENAME)
+		ft_putstr_fd("error\nplease provide valid filename with `.cub` extension\n", 2);
+	else if (err == INVALID_CHAR)
+		ft_putstr_fd("error\nan invalid character found inside the map\n", 2);
+	else if (err == EMPY_FILE)
+		ft_putstr_fd("error\nthe map file should not be empty\n", 2);
+	exit(1);
+}
+
 t_dyn read_map_from_file(char *filename)
 {
-	t_dyn lines;
-	char *line;
-	int fd;
+	t_dyn	lines;
+	t_error	err;
+	char	*line;
+	int	fd;
 
+	err = NO_ERR;
+	check_map_name(filename, &err);
 	fd = open_file(filename);
 	lines = dyn_init();
 	while (1)
