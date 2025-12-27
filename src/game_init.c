@@ -6,11 +6,15 @@
 /*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 11:05:39 by aljbari           #+#    #+#             */
-/*   Updated: 2025/08/17 18:57:59 by your_login       ###   ########.fr       */
+/*   Updated: 2025/11/17 22:49:38 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
+
+void	evaluate_file_content(t_dyn *map, t_world *world)
+{
+}
 
 t_world init_game_world(char *filename)
 {
@@ -27,10 +31,10 @@ t_world init_game_world(char *filename)
 
 void init_game(t_game *game)
 {
+	game->world = init_game_world("map.txt");
 	game->mlx = mlx_init();
 	if (!game->mlx)
 		ft_exit_error("Faild to allocate mlx");
-	game->world = init_game_world("map.txt");
 	// mlx_get_screen_size(game->mlx, (int *)&game->screen_width, (int *)&game->screen_height);
 	game->screen_width = 1280;
 	game->screen_height = 720;
@@ -50,5 +54,8 @@ void init_game(t_game *game)
 	game->player.rot_cos = cos(INIT_ROTATION_STEP);
 	game->player.rot_sin = sin(INIT_ROTATION_STEP);
 	ft_bzero(game->keyboard_events, sizeof(game->keyboard_events));
+	
+	// an assign an instance to imaginary enemy so i can implement one
+	game->enemy.pos = vec2_new(TILE_SIZE * 2, TILE_SIZE * 2);
 }
 
