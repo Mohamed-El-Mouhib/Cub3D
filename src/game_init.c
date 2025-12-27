@@ -12,9 +12,9 @@
 
 #include "../includes/cub3d.h"
 
-void	evaluate_file_content(t_dyn *map, t_world *world)
-{
-}
+// void	evaluate_file_content(t_dyn *map, t_world *world)
+// {
+// }
 
 t_world init_game_world(char *filename)
 {
