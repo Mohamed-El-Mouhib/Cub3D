@@ -6,13 +6,12 @@
 /*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 10:29:11 by aljbari           #+#    #+#             */
-/*   Updated: 2025/08/17 10:29:11 by aljbari          ###   ########.fr       */
+/*   Updated: 2025/11/17 22:53:04 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../includes/cub3d.h"
 
 #define MINIMAP_SCALE 4.0
-
 void minimap_draw_player(t_game *game)
 {
 	double scale = TILE_SIZE / MINIMAP_SCALE;
@@ -24,6 +23,16 @@ void minimap_draw_player(t_game *game)
 	head = vec2_add(vec2_scale(game->player.dir, scale), mini_player_pos);
 	draw_line(&game->scene, mini_player_pos, head, COLOR_MINDARO);
 	draw_filled_circle(&game->scene, mini_player_pos, 2, COLOR_WHITE);
+}
+
+void minimap_draw_enemy(t_game *game)
+{
+	// double scale = TILE_SIZE / MINIMAP_SCALE;
+	t_vec2 mini_enemy_pos;
+
+	mini_enemy_pos = vec2_div(game->enemy.pos, MINIMAP_SCALE);
+	draw_filled_circle(&game->scene, mini_enemy_pos, 5, COLOR_PURPLE);
+	draw_circle(&game->scene, mini_enemy_pos, 16, COLOR_PURPLE);
 }
 
 void draw_fov_in_minimap(t_game *game, t_dda_ctx *dda)
@@ -94,4 +103,5 @@ void draw_minimap(t_game *game)
 	minimap_draw_walls(game);
 	minimap_daw_grid(game);
 	minimap_draw_player(game);
+	minimap_draw_enemy(game);
 }

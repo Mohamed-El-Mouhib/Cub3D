@@ -6,7 +6,7 @@
 /*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 17:28:28 by aljbari           #+#    #+#             */
-/*   Updated: 2025/08/17 19:06:22 by your_login       ###   ########.fr       */
+/*   Updated: 2025/11/17 22:29:10 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,6 @@ bool is_frame_ready()
 		last_frame_time = curr_time_ms();
 		frames = 0;
 	}
-	// if (now - last_frame_time < one_frame_time)
-	// 	return (false);
 	frames++;
 	return (true);
 }

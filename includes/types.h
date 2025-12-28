@@ -6,7 +6,7 @@
 /*   By: aljbari    <aljbari@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:53:45 by your_login        #+#    #+#             */
-/*   Updated: 2025/08/17 19:02:29 by your_login       ###   ########.fr       */
+/*   Updated: 2025/11/17 22:39:41 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@
 # define INIT_ROTATION_STEP_DEGREE 2
 # define INIT_ROTATION_STEP ((INIT_ROTATION_STEP_DEGREE * M_PI) / 180.0)
 
+typedef int t_color;
+
 /**
  * t_vec2 - Vectore represeting point at the screen
  *
@@ -50,6 +52,15 @@ typedef struct s_vec2
 	double	x;
 	double	y;
 }			t_vec2;
+
+typedef enum e_error
+{
+	NO_FILENAME,
+	EMPY_FILE,
+	INVALID_FILENAME,
+	INVALID_CHAR,
+	NO_ERR,
+}	t_error;
 
 typedef struct s_data
 {
@@ -76,6 +87,8 @@ typedef struct s_world {
 	size_t  map_width;
 	size_t  map_height;
 	char **map;
+	t_color	ceiling;
+	t_color	floor;
 }
 t_world;
 
@@ -87,6 +100,27 @@ typedef struct s_frames
 {
 	t_data	walltex_[2];
 }	t_frames;
+
+typedef enum
+{
+	CHASE,
+	IDLE,
+}	t_stat;
+
+/*
+ * @instance:	the instance of the enemy
+ * @pos:			vectore holding enemy position in map
+ * @t_ai:		struct holding the instance of the enemy AI if they exist in the map
+ * @t_stat:		enum holding the status of the enemy
+ * @speed:		movement speed of the enemy
+ */
+typedef struct s_char
+{
+	t_data	instance;
+	t_vec2	pos;
+	float		speed;
+	t_stat	stat;
+}	t_ai;
 
 typedef struct s_game
 {
@@ -101,6 +135,7 @@ typedef struct s_game
 	t_frames	frames;
 	void	 *win;
 	void	 *mlx;
+	t_ai	enemy;
 }			t_game;
 
 /**
@@ -164,8 +199,8 @@ typedef struct s_dda_alog
 //
 typedef enum e_rotate_dir
 {
-	ROTATE_LEFT  = 1,
-	ROTATE_RIGHT = -1
+	ROTATE_LEFT  = -1,
+	ROTATE_RIGHT = 1
 } t_rotate_dir;
 
 typedef enum e_move_dir

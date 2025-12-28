@@ -44,24 +44,17 @@ double	hit_points(t_game *game, t_dda_ctx *info)
  * This function ensures the texture coordinates are within bounds and
  * returns the correct color vector from the texture map.
  */
-unsigned int get_color_info(t_game *game, t_dda_ctx *info, int i)
+unsigned int get_color_info(t_game *game, t_dda_ctx *info, int i, t_vec2 *vec)
 {
-	t_vec2	vec;
 	int	offs;
 
-	vec.x = fmod(hit_points(game, info), 1.0) * game->frames.walltex_[info->side].width;
-	if (vec.x < 0)
-		vec.x = 0;
-	else if (vec.x >= game->frames.walltex_[info->side].width)
-		vec.x = game->frames.walltex_[info->side].width;
+	vec->y = (double)(i / info->line_height) * game->frames.walltex_[info->side].height;
+	if (vec->y < 0)
+		vec->y = 0;
+	else if (vec->y >= game->frames.walltex_[info->side].height)
+		vec->y = game->frames.walltex_[info->side].height - 1;
 
-	vec.y = (double)(i / info->line_height) * game->frames.walltex_[info->side].height;
-	if (vec.y < 0)
-		vec.y = 0;
-	else if (vec.y >= game->frames.walltex_[info->side].height)
-		vec.y = game->frames.walltex_[info->side].height - 1;
-
-	offs = (int)vec.y * game->frames.walltex_[info->side].line_len + (int)vec.x * (game->frames.walltex_[info->side].bpp / 8);
+	offs = (int)vec->y * game->frames.walltex_[info->side].line_len + (int)vec->x * (game->frames.walltex_[info->side].bpp / 8);
 	return *(unsigned int *)(game->frames.walltex_[info->side].addr + offs);
 }
 
@@ -77,19 +70,23 @@ unsigned int get_color_info(t_game *game, t_dda_ctx *info, int i)
 void	draw_texture_line(t_game *game, t_dda_ctx *info)
 {
 	size_t		i;
+	t_vec2		vec;
 	unsigned int	px;
 
-	i = 0;
-	while (i < game->screen_height)
+	i = -1;
+	vec.x = fmod(hit_points(game, info), 1.0) * game->frames.walltex_[info->side].width;
+	if (vec.x < 0)
+		vec.x = 0;
+	else if (vec.x >= game->frames.walltex_[info->side].width)
+		vec.x = game->frames.walltex_[info->side].width;
+	while (++i < game->screen_height)
 	{
 		if (i < info->line_start.y)
-			px = COLOR_BLUE;
+			px = COLOR_BLUE; // this supposed to be ceiling
 		else if (i > info->line_end.y)
-			px = COLOR_NYANZA;
+			px = COLOR_NYANZA; // this supposed to be floor
 		else
-			px = get_color_info(game, info, i - info->line_start.y);
-		image_put_pixel(&game->scene,
-		info->line_start.x, i, px);
-		i++;
+			px = get_color_info(game, info, i - info->line_start.y, &vec);
+		image_put_pixel(&game->scene, info->line_start.x, i, px);
 	}
 }
