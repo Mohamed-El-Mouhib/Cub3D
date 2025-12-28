@@ -54,7 +54,7 @@ void init_game(t_game *game)
 	game->player.rot_sin = sin(INIT_ROTATION_STEP);
 	ft_bzero(game->keyboard_events, sizeof(game->keyboard_events));
 	
-	// an assign an instance to imaginary enemy so i can implement one
+	// assignment an instance to imaginary enemy
 	game->enemy.pos = vec2_new(TILE_SIZE * 2, TILE_SIZE * 2);
 }
 
