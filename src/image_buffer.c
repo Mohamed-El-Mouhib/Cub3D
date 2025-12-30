@@ -61,3 +61,24 @@ void	image_put_pixel(t_data *buff, int x, int y, unsigned int color)
 	offset = (y * buff->line_len + x * (buff->bpp / 8));
 	*((unsigned int *)(buff->addr + offset)) = color;
 }
+
+bool image_load_xpm(t_game *game, t_data *buff, char *path)
+{
+	t_data img_data;
+
+	printf("Info: Loading the XPM file: '%s'\n", path);
+	img_data.img = mlx_xpm_file_to_image(game->mlx, path, &img_data.width, &img_data.height);
+	if (!buff)
+	{
+		printf("Error: %s: Null buffer pointer provided when opening '%s'\n", __func__, path);
+		return (false);
+	}
+	if (!img_data.img)
+	{
+		printf("Error: '%s': Failed to load XPM file\n", path);
+		return (false);
+	}
+	img_data.addr = mlx_get_data_addr(img_data.img, &img_data.bpp, &img_data.line_len, &img_data.endian);
+	*buff = img_data;
+	return (true);
+}
