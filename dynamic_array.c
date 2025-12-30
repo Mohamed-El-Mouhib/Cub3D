@@ -14,16 +14,16 @@
 
 static int	dynamic_ensure_capacity(t_dyn *arr)
 {
-	size_t	required_capacity;
-	size_t	new_capacity;
+	size_t	req_cap;
+	size_t	new_cap;
 	void	**new_buff;
 
-	required_capacity = arr->length + 1;
-	if (arr->capacity >= required_capacity)
+	req_cap = arr->length + 1;
+	if (arr->capacity >= req_cap)
 		return (0);
-	new_capacity = arr->capacity * 2;
-	printf("DEBUG: DYN REALLOC %zu => %zu\n", arr->length, new_capacity);
-	new_buff = malloc(new_capacity * sizeof(void *));
+	new_cap = arr->capacity * 2;
+	printf("DEBUG: DYN REALLOC %zu => %zu\n", arr->length, new_cap);
+	new_buff = malloc(new_cap * sizeof(void *));
 	if (!new_buff)
 	{
 		perror("dyn_malloc");
@@ -32,7 +32,7 @@ static int	dynamic_ensure_capacity(t_dyn *arr)
 	ft_memcpy(new_buff, arr->buff, arr->length * sizeof(void *));
 	free(arr->buff);
 	arr->buff = new_buff;
-	arr->capacity = new_capacity;
+	arr->capacity = new_cap;
 	return (0);
 }
 
@@ -61,7 +61,7 @@ void *dyn_at(t_dyn *arr, size_t index)
 {
 	if (index >= arr->length)
 	{
-		write(2, DYN_INDEX_ERROR, ft_strlen(DYN_INDEX_ERROR));
+		printf("Error: index %zu out of range (length: %zu)\n", index, arr->length);
 		exit(1);
 	}
 	return (arr->buff[index]);
@@ -87,5 +87,14 @@ t_dyn	dyn_init(void)
 	dyn.length = 0;
 	dyn.capacity = INIT_DYN_ARRAY_SIZE;
 	dyn.buff = malloc(dyn.capacity * sizeof(void *));
+	return (dyn);
+}
+
+t_dyn	*dyn_init_ptr(void)
+{
+	t_dyn	*dyn;
+
+	dyn = malloc(sizeof(t_dyn));
+	*dyn = dyn_init();
 	return (dyn);
 }
