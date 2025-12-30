@@ -4,3 +4,4 @@ libs/*
 cub3d
 .DS_Store
 .vscode
+textures/
