@@ -25,6 +25,7 @@
 # define COLOR_PURPLE  0xFF00FF
 # define COLOR_WHITE  0xFFFFFF
 # define COLOR_MINDARO 0xCFF27E
+# define COLOR_IGNORE 0x7AD861
 
 /* Vectors */
 t_vec2	vec2_new(double x, double y);
@@ -48,5 +49,6 @@ void	draw_horizontal_line(t_data *buff, t_vec2 p1, double len, int color);
 void	image_clear(t_data *img);
 t_data	image_new(t_game *game, int width, int height);
 void	image_put_pixel(t_data *buff, int x, int y, unsigned int color);
+bool image_load_xpm(t_game *game, t_data *buff, char *path);
 
 #endif /* GRAPHICS_H */
