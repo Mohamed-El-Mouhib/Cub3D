@@ -11,6 +11,7 @@
 #ifndef TYPES_H
 # define TYPES_H
 
+#include "dynamic_array.h"
 # include "libft.h"
 # ifdef __APPLE__
 # include "../../mlx/mlx.h"
@@ -95,14 +96,35 @@ typedef struct s_data
 	int		height;
 }			t_data;
 
+typedef struct s_animation {
+	size_t start;
+	size_t end;
+	size_t curr;
+	int    dir;
+	size_t duration;
+	size_t is_running;
+	time_t last_changed;
+} t_animation;
+
+enum t_player_stats {
+	PLAYER_SHOOTING = 0,
+	PLAYER_WALKING,
+	PLAYER_BORED,
+	PLAYER_IDLE,
+	PLAYER_STATS_NBR
+};
+
 typedef struct s_player
 {
 	t_vec2 dir;
 	t_vec2 plane;
 	t_vec2 pos;
+	t_vec2 bob;
+	int speed;
+	int bob_timer;
+	t_animation *animations[PLAYER_STATS_NBR];
+	size_t state;
 	double rot_angle; // the rotation step angle
-	double rot_cos;   // cos of rotation step, calculate it once
-	double rot_sin;   // sin of rotation step, calculate it once
 }			t_player;
 
 typedef struct s_world {
@@ -189,6 +211,8 @@ typedef struct s_game
 	t_color	ceiling;
 	t_color	floor;
 	t_ai	enemy;
+	t_dyn *assets;
+	time_t tick;
 }			t_game;
 
 /**

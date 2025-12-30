@@ -13,7 +13,6 @@
 # ifndef CUB3D_H
 # define CUB3D_H
 # include "graphics.h"
-# include "dynamic_array.h"
 
 # define TILE_SIZE 80.0
 // # define WIN_H (TILE_SIZE * 20 + 1)
@@ -31,7 +30,7 @@ void    game_handle_keyboard_events(t_game *game);
 
 // player movements
 void player_rotate(t_player *player, t_rotate_dir rot_dir);
-void player_move(t_player *player, int speed, t_move_dir move_dir);
+void player_move(t_player *player, t_move_dir move_dir);
 
 // Mouse events
 int handle_mouse_event(int x,int y, t_game *game);
@@ -43,6 +42,7 @@ double sign(double x);
 
 // initializers
 void init_game(t_game *game, char *filename);
+void init_player(t_game *game);
 
 // Parser
 bool parse_content(char *filename, t_game* game);
@@ -55,4 +55,13 @@ bool is_valid_char(char c);
 
 // error
 void	error_indexing(void);
+// assets factory
+int assets_load_xpm(t_game *game, char *path);
+t_animation *init_animation(size_t start, size_t end, int duration);
+t_animation *load_animation_frames(t_game *game, char **paths, size_t size);
+
+// animations
+void init_player_animations(t_game *game);
+void player_update_bobing(t_game *game);
+
 #endif

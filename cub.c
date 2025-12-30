@@ -12,21 +12,77 @@
 
 #include "includes/cub3d.h"
 
+void draw_frame(t_game *game, t_data *data, double noise_x, double noise_y)
+{
+	unsigned int color;
+	unsigned int offset;
+	unsigned int ignore_color;
+	int x_off;
+	int y_off;
+
+	x_off = game->scene.width - data->width + noise_x;
+	y_off = game->scene.height - data->height + noise_y + 30; // 30 is for image to go down a bit
+	offset = (0 * data->line_len + 0 * (data->bpp / 8));
+	color = *((unsigned int *)(data->addr + offset));
+	ignore_color = color;
+
+	for (int y = 0; y < data->height; y++)
+	{
+		for (int x = 0; x < data->width; x++)
+		{
+			offset = (y * data->line_len + x * (data->bpp / 8));
+			color = *((unsigned int *)(data->addr + offset));
+			if (color == ignore_color)
+				continue;
+			image_put_pixel(&game->scene, x + x_off, y + y_off, color);
+		}
+	}
+}
+
+void player_render_frame(t_game *game)
+{
+	t_animation *anim;
+
+	anim = game->player.animations[game->player.state];
+	if (!anim->is_running || (size_t)(game->tick - anim->last_changed) < anim->duration)
+	{
+		draw_frame(game, dyn_at(game->assets, anim->start + anim->curr), game->player.bob.x, game->player.bob.y);
+		return ;
+	}
+	anim->last_changed = game->tick;
+	anim->curr += anim->dir;
+	if (anim->curr > anim->end)
+	{
+		anim->dir = -1;
+		anim->curr = anim->end;
+	}
+	if (anim->curr < anim->start)
+	{
+		anim->dir = +1;
+		anim->curr = anim->start;
+	}
+	draw_frame(game, dyn_at(game->assets, anim->start + anim->curr), game->player.bob.x, game->player.bob.y);
+}
+
+
 void game_rander(t_game *game)
 {
 	raycast_draw_walls(game);
 	draw_minimap(game);
-	mlx_put_image_to_window(game->mlx, game->win,game->scene.img, 0, 0);
+	player_update_bobing(game);
+	player_render_frame(game);
+	mlx_put_image_to_window(game->mlx, game->win, game->scene.img, 0, 0);
 }
+
 
 bool is_frame_ready()
 {
 	static time_t last_frame_time;
 	static int frames;
 
-	if (curr_time_ms() - last_frame_time > 1000)
+	if (curr_time_ms() - last_frame_time > 4000)
 	{
-		printf("FRAMES: %d\n", frames);
+		printf("FRAMES: %d\n", frames/4);
 		last_frame_time = curr_time_ms();
 		frames = 0;
 	}
@@ -38,6 +94,7 @@ int game_loop(t_game *game)
 {
 	if (!is_frame_ready())
 		return (0);
+	game->tick = curr_time_ms();
 	game_handle_keyboard_events(game);
 	game_rander(game);
 	return (0);

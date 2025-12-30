@@ -63,13 +63,13 @@ void game_handle_keyboard_events(t_game *game)
 	if (game->keyboard_events[KEY_LEFT])
 		player_rotate(player, ROTATE_LEFT);
 	if (game->keyboard_events[KEY_W])
-		player_move(player, 2, MOVE_FORWARD);
+		player_move(player, MOVE_FORWARD);
 	if (game->keyboard_events[KEY_S])
-		player_move(player, 2, MOVE_BACKWARD);
+		player_move(player, MOVE_BACKWARD);
 	if (game->keyboard_events[KEY_R])
 		game->player.pos = vec2_new(TILE_SIZE * 4, TILE_SIZE * 4);
 	if (game->keyboard_events[KEY_D])
-		player_move(player, 2, MOVE_RIGHT);
+		player_move(player, MOVE_RIGHT);
 	if (game->keyboard_events[KEY_A])
-		player_move(player, 2, MOVE_LEFT);
+		player_move(player, MOVE_LEFT);
 }
