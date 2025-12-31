@@ -64,13 +64,7 @@ void player_render_frame(t_game *game)
 	draw_frame(game, dyn_at(game->assets, anim->start + anim->curr), game->player.bob.x + game->player.sway, game->player.bob.y);
 }
 
-void player_update_sway(t_game *game)
-{
-	double smooth_speed;
 
-	smooth_speed = 3;
-	game->player.sway *= (1 - smooth_speed * game->dt);
-}
 
 void game_rander(t_game *game)
 {
@@ -79,6 +73,8 @@ void game_rander(t_game *game)
 	player_update_bobing(game);
 	player_update_sway(game);
 	player_render_frame(game);
+	player_update_pos_lr(game);
+	player_update_pos_fb(game);
 	mlx_put_image_to_window(game->mlx, game->win, game->scene.img, 0, 0);
 }
 
