@@ -53,15 +53,26 @@ int	key_press(int key_code, t_game *game)
 	return (0);
 }
 
+#define PLAYER_MAX_SWAY 90
+#define PLAYER_SWAY_PAR_FRAME 170
+
 void game_handle_keyboard_events(t_game *game)
 {
 	t_player *player;
 
 	player = &game->player;
 	if (game->keyboard_events[KEY_RIGHT])
+	{
 		player_rotate(player, ROTATE_RIGHT);
+		if (player->sway > -PLAYER_MAX_SWAY)
+			player->sway -= PLAYER_SWAY_PAR_FRAME * game->dt;
+	}
 	if (game->keyboard_events[KEY_LEFT])
+	{
 		player_rotate(player, ROTATE_LEFT);
+		if (player->sway < PLAYER_MAX_SWAY)
+			player->sway += PLAYER_SWAY_PAR_FRAME * game->dt;
+	}
 	if (game->keyboard_events[KEY_W])
 		player_move(player, MOVE_FORWARD);
 	if (game->keyboard_events[KEY_S])

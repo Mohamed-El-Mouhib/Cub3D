@@ -66,6 +66,8 @@ void init_player(t_game *game)
 	game->player.pos = vec2_new(TILE_SIZE * 4, TILE_SIZE * 4);
 	game->player.dir = vec2_new(1, 0);
 	game->player.plane = vec2_new(0, 0.66);
+	game->player.bob = vec2_new(0, 0);
+	game->player.sway = 0;
 	game->player.rot_angle = INIT_ROTATION_STEP;
 	game->player.speed = 3;
 	init_player_animations(game);

@@ -14,6 +14,10 @@
 # define CUB3D_H
 # include "graphics.h"
 
+// Animation Configuration
+#define PLAYER_MAX_SWAY 90
+#define PLAYER_SWAY_PAR_FRAME 170
+
 # define TILE_SIZE 80.0
 // # define WIN_H (TILE_SIZE * 20 + 1)
 // # define WIN_W (TILE_SIZE * 40 + 1)
