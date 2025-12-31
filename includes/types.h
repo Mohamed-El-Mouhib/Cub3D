@@ -98,8 +98,8 @@ typedef struct s_player
 	t_vec2 plane;
 	t_vec2 pos;
 	t_vec2 bob;
+	double sway;
 	int speed;
-	int bob_timer;
 	t_animation *animations[PLAYER_STATS_NBR];
 	size_t state;
 	double rot_angle; // the rotation step angle
@@ -160,6 +160,7 @@ typedef struct s_game
 	t_ai	enemy;
 	t_dyn *assets;
 	time_t tick;
+	double dt; // delta time
 }			t_game;
 
 /**

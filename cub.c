@@ -46,7 +46,7 @@ void player_render_frame(t_game *game)
 	anim = game->player.animations[game->player.state];
 	if (!anim->is_running || (size_t)(game->tick - anim->last_changed) < anim->duration)
 	{
-		draw_frame(game, dyn_at(game->assets, anim->start + anim->curr), game->player.bob.x, game->player.bob.y);
+		draw_frame(game, dyn_at(game->assets, anim->start + anim->curr), game->player.bob.x + game->player.sway, game->player.bob.y);
 		return ;
 	}
 	anim->last_changed = game->tick;
@@ -61,15 +61,23 @@ void player_render_frame(t_game *game)
 		anim->dir = +1;
 		anim->curr = anim->start;
 	}
-	draw_frame(game, dyn_at(game->assets, anim->start + anim->curr), game->player.bob.x, game->player.bob.y);
+	draw_frame(game, dyn_at(game->assets, anim->start + anim->curr), game->player.bob.x + game->player.sway, game->player.bob.y);
 }
 
+void player_update_sway(t_game *game)
+{
+	double smooth_speed;
+
+	smooth_speed = 3;
+	game->player.sway *= (1 - smooth_speed * game->dt);
+}
 
 void game_rander(t_game *game)
 {
 	raycast_draw_walls(game);
 	draw_minimap(game);
 	player_update_bobing(game);
+	player_update_sway(game);
 	player_render_frame(game);
 	mlx_put_image_to_window(game->mlx, game->win, game->scene.img, 0, 0);
 }
@@ -94,6 +102,8 @@ int game_loop(t_game *game)
 {
 	if (!is_frame_ready())
 		return (0);
+	time_t ct = curr_time_ms();
+	game->dt = (ct - game->tick) / 1000.0;
 	game->tick = curr_time_ms();
 	game_handle_keyboard_events(game);
 	game_rander(game);
