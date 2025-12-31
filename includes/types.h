@@ -99,7 +99,8 @@ typedef struct s_player
 	t_vec2 pos;
 	t_vec2 bob;
 	double sway;
-	int speed;
+	double speed_fb; //  forward/backword speed
+	double speed_lr; // left/right speed
 	t_animation *animations[PLAYER_STATS_NBR];
 	size_t state;
 	double rot_angle; // the rotation step angle
@@ -180,6 +181,7 @@ typedef enum e_wall_side
 
 typedef enum e_keycode{
 	KEY_ESCAPE = 0,
+	KEY_SHIFT_L,
 	KEY_RIGHT,
 	KEY_LEFT,
 	KEY_DOWN,

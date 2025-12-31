@@ -29,3 +29,8 @@ double sign(double x)
 {
 	return ((x > 0) - (x < 0));
 }
+
+double lerp(double start, double end, double t)
+{
+    return (start + (end - start) * t);
+}

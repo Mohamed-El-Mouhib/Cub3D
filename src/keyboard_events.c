@@ -20,15 +20,23 @@ int	key_release(int key_code, t_game *game)
 	else if (key_code == XK_Left)
 		game->keyboard_events[KEY_LEFT] = false;
 	else if (key_code == XK_w)
+	{
 		game->keyboard_events[KEY_W] = false;
+		game->player.state = PLAYER_IDLE;
+	}
 	else if (key_code == XK_s)
+	{
 		game->keyboard_events[KEY_S] = false;
+		game->player.state = PLAYER_IDLE;
+	}
 	else if (key_code == XK_r)
 		game->keyboard_events[KEY_R] = false;
 	else if (key_code == XK_d)
 		game->keyboard_events[KEY_D] = false;
 	else if (key_code == XK_a)
 		game->keyboard_events[KEY_A] = false;
+	else if (key_code == XK_Shift_L)
+		game->keyboard_events[KEY_SHIFT_L] = false;
 	return (0);
 }
 
@@ -41,20 +49,25 @@ int	key_press(int key_code, t_game *game)
 	else if (key_code == XK_Left)
 		game->keyboard_events[KEY_LEFT] = true;
 	else if (key_code == XK_w)
+	{
 		game->keyboard_events[KEY_W] = true;
+		game->player.state = PLAYER_WALKING;
+	}
 	else if (key_code == XK_s)
+	{
 		game->keyboard_events[KEY_S] = true;
+		game->player.state = PLAYER_WALKING;
+	}
 	else if (key_code == XK_r)
 		game->keyboard_events[KEY_R] = true;
 	else if (key_code == XK_d)
 		game->keyboard_events[KEY_D] = true;
 	else if (key_code == XK_a)
 		game->keyboard_events[KEY_A] = true;
+	else if (key_code == XK_Shift_L)
+		game->keyboard_events[KEY_SHIFT_L] = true;
 	return (0);
 }
-
-#define PLAYER_MAX_SWAY 90
-#define PLAYER_SWAY_PAR_FRAME 170
 
 void game_handle_keyboard_events(t_game *game)
 {
@@ -64,23 +77,12 @@ void game_handle_keyboard_events(t_game *game)
 	if (game->keyboard_events[KEY_RIGHT])
 	{
 		player_rotate(player, ROTATE_RIGHT);
-		if (player->sway > -PLAYER_MAX_SWAY)
-			player->sway -= PLAYER_SWAY_PAR_FRAME * game->dt;
 	}
 	if (game->keyboard_events[KEY_LEFT])
 	{
 		player_rotate(player, ROTATE_LEFT);
-		if (player->sway < PLAYER_MAX_SWAY)
-			player->sway += PLAYER_SWAY_PAR_FRAME * game->dt;
 	}
-	if (game->keyboard_events[KEY_W])
-		player_move(player, MOVE_FORWARD);
-	if (game->keyboard_events[KEY_S])
-		player_move(player, MOVE_BACKWARD);
 	if (game->keyboard_events[KEY_R])
 		game->player.pos = vec2_new(TILE_SIZE * 4, TILE_SIZE * 4);
-	if (game->keyboard_events[KEY_D])
-		player_move(player, MOVE_RIGHT);
-	if (game->keyboard_events[KEY_A])
-		player_move(player, MOVE_LEFT);
+
 }

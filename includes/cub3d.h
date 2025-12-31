@@ -15,8 +15,14 @@
 # include "graphics.h"
 
 // Animation Configuration
+// Sway
 #define PLAYER_MAX_SWAY 90
-#define PLAYER_SWAY_PAR_FRAME 170
+#define PLAYER_SWAY_SPEED 10
+
+// Moving
+#define PLAYER_MOVE_SPEED 40.0   // Max speed
+#define PLAYER_ACCEL_RATE 4.0    // How fast you reach max speed
+
 
 # define TILE_SIZE 80.0
 // # define WIN_H (TILE_SIZE * 20 + 1)
@@ -43,6 +49,7 @@ int handle_mouse_event(int x,int y, t_game *game);
 void ft_exit_error(char *msg);
 time_t	curr_time_ms(void);
 double sign(double x);
+double lerp(double start, double end, double t);
 
 // initializers
 void init_game(t_game *game);
@@ -62,5 +69,8 @@ t_animation *load_animation_frames(t_game *game, char **paths, size_t size);
 // animations
 void init_player_animations(t_game *game);
 void player_update_bobing(t_game *game);
+void player_update_pos_lr(t_game *game);
+void player_update_pos_fb(t_game *game);
+void player_update_sway(t_game *game);
 
 #endif

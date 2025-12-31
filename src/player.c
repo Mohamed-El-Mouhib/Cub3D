@@ -43,7 +43,7 @@ void player_move(t_player *player, t_move_dir move_dir)
 {
 	int speed;
 
-	speed = player->speed;
+	speed = player->speed_fb;
 	if (move_dir == MOVE_LEFT)
 		player->pos.x += player->dir.x * speed * -1;
 	else if (move_dir == MOVE_RIGHT) 
@@ -69,6 +69,7 @@ void init_player(t_game *game)
 	game->player.bob = vec2_new(0, 0);
 	game->player.sway = 0;
 	game->player.rot_angle = INIT_ROTATION_STEP;
-	game->player.speed = 3;
+	game->player.speed_fb = 0;
+	game->player.speed_lr = 0;
 	init_player_animations(game);
 }
