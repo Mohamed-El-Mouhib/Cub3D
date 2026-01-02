@@ -26,17 +26,24 @@ void player_rotate(t_player *player, t_rotate_dir rot_dir)
 {
 	t_vec2 dir;
 	t_vec2 plane;
+	double c;
+	double s;
 
-	dir.x = player->dir.x * player->rot_cos - player->dir.y * player->rot_sin * rot_dir;
-	dir.y = player->dir.x * player->rot_sin * rot_dir + player->dir.y * player->rot_cos;
-	plane.x = player->plane.x * player->rot_cos - player->plane.y * player->rot_sin * rot_dir;
-	plane.y = player->plane.x * player->rot_sin * rot_dir + player->plane.y * player->rot_cos;
+	c = cos(INIT_ROTATION_STEP);
+	s = sin(INIT_ROTATION_STEP);
+	dir.x = player->dir.x * c - player->dir.y * s * rot_dir;
+	dir.y = player->dir.x * s * rot_dir + player->dir.y * c;
+	plane.x = player->plane.x * c - player->plane.y * s * rot_dir;
+	plane.y = player->plane.x * s * rot_dir + player->plane.y * c;
 	player->dir = dir;
 	player->plane = plane;
 }
 
-void player_move(t_player *player, int speed, t_move_dir move_dir)
+void player_move(t_player *player, t_move_dir move_dir)
 {
+	int speed;
+
+	speed = player->speed;
 	if (move_dir == MOVE_LEFT)
 		player->pos.x += player->dir.x * speed * -1;
 	else if (move_dir == MOVE_RIGHT) 
@@ -54,3 +61,12 @@ void player_move(t_player *player, int speed, t_move_dir move_dir)
 }
 
 
+void init_player(t_game *game)
+{
+	game->player.pos = vec2_new(TILE_SIZE * 4, TILE_SIZE * 4);
+	game->player.dir = vec2_new(1, 0);
+	game->player.plane = vec2_new(0, 0.66);
+	game->player.rot_angle = INIT_ROTATION_STEP;
+	game->player.speed = 3;
+	init_player_animations(game);
+}

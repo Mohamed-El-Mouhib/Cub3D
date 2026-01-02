@@ -15,8 +15,6 @@
 
 #define ADD_NEW_ELEMENT_FAIL \
 "Warning: attempting to add new element to empty dyncamic array, call dyn init first\n"
-#define  DYN_INDEX_ERROR \
-"Warning: dynamic array index out of range\n"
 
 #define INIT_DYN_ARRAY_SIZE 16
 
@@ -28,6 +26,7 @@ typedef struct s_dyn {
 } t_dyn;
 
 t_dyn	dyn_init(void);
+t_dyn	*dyn_init_ptr(void);
 void dyn_erase(t_dyn *arr, void delete_func(void *));
 void	dyn_add_back(t_dyn *arr, void *elem);
 void dyn_foreach(t_dyn *arr, void f(void *));

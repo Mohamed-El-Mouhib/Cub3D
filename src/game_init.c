@@ -31,6 +31,7 @@ t_world init_game_world(char *filename)
 
 void init_game(t_game *game)
 {
+	ft_bzero(game, sizeof(*game));
 	game->world = init_game_world("map.cub");
 	game->mlx = mlx_init();
 	if (!game->mlx)
@@ -42,17 +43,9 @@ void init_game(t_game *game)
 		ft_exit_error("Faild to allocate window");
 	game->scene = image_new(game, game->screen_width, game->screen_height);
 	game->mouse_pos = vec2_new(0, 0);
-	game->player.pos = vec2_new(TILE_SIZE * 4, TILE_SIZE * 4);
-	// player looking up
-	game->player.dir = vec2_new(1, 0);
-	// field of view is 60 degree
-	game->player.plane = vec2_new(0, 0.66);
-
-	// The rotation angle calcualte the cos,sin once to cache it to reuse later
-	game->player.rot_angle = INIT_ROTATION_STEP;
-	game->player.rot_cos = cos(INIT_ROTATION_STEP);
-	game->player.rot_sin = sin(INIT_ROTATION_STEP);
+	game->assets = dyn_init_ptr();
 	ft_bzero(game->keyboard_events, sizeof(game->keyboard_events));
+	init_player(game);
 	
 	// assignment an instance to imaginary enemy
 	game->enemy.pos = vec2_new(TILE_SIZE * 2, TILE_SIZE * 2);
