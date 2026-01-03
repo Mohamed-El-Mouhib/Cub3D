@@ -12,6 +12,7 @@
 
 #include "../includes/cub3d.h"
 #include <stdlib.h>
+#include <unistd.h>
 
 bool init_game_world(char *filename, t_game* game)
 {
@@ -20,7 +21,13 @@ bool init_game_world(char *filename, t_game* game)
 	if (!parse_content(filename, game))
 	{
 		error_indexing();
-		exit(2);
+		exit(1);
+	}
+	if (game->player.pos.x == -1 && game->player.pos.y)
+	{
+		init_error(NO_PLAYER, 0,0, NULL);
+		error_indexing();
+		exit(1);
 	}
 	return (true);
 }
