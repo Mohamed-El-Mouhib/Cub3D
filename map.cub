@@ -2,8 +2,8 @@ WE /asdasdasdasdasd.xpm
 EA ./asdasdasdasdasd.xpm
 SO ./asdasdasdasdasd.xpm
 NO FirstValue.xpm               
-C 0,0,0
-F 0,0,0
+C 0,0,255
+F 255,0,0
 
 
 
