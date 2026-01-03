@@ -34,3 +34,12 @@ double lerp(double start, double end, double t)
 {
     return (start + (end - start) * t);
 }
+
+t_vec2 vec2_lerp(t_vec2 start, t_vec2 end, double factor)
+{
+	t_vec2 res;
+
+	res.x = lerp(start.x, end.x, factor);
+	res.y = lerp(start.y, end.y, factor);
+	return (res);
+}

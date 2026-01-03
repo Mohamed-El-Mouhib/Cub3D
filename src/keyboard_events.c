@@ -36,7 +36,7 @@ int	key_release(int key_code, t_game *game)
 	else if (key_code == XK_a)
 		game->keyboard_events[KEY_A] = false;
 	else if (key_code == XK_Shift_L)
-		game->keyboard_events[KEY_SHIFT_L] = false;
+		game->player.max_speed = PLAYER_WALK_SPEED;
 	return (0);
 }
 
@@ -65,8 +65,19 @@ int	key_press(int key_code, t_game *game)
 	else if (key_code == XK_a)
 		game->keyboard_events[KEY_A] = true;
 	else if (key_code == XK_Shift_L)
-		game->keyboard_events[KEY_SHIFT_L] = true;
+		game->player.max_speed = PLAYER_RUN_SPEED;
 	return (0);
+}
+
+
+void set_input_dir(t_game *game)
+{
+	t_vec2 input_dir;
+
+	input_dir.y = game->keyboard_events[KEY_W] - game->keyboard_events[KEY_S];
+	input_dir.x = game->keyboard_events[KEY_D] - game->keyboard_events[KEY_A];
+	game->player.input_dir = input_dir;
+
 }
 
 void game_handle_keyboard_events(t_game *game)
@@ -84,5 +95,7 @@ void game_handle_keyboard_events(t_game *game)
 	}
 	if (game->keyboard_events[KEY_R])
 		game->player.pos = vec2_new(TILE_SIZE * 4, TILE_SIZE * 4);
+	else
+	set_input_dir(game);
 
 }

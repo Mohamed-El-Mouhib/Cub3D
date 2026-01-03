@@ -11,6 +11,15 @@
 /* ************************************************************************** */
 #include "../includes/graphics.h"
 
+t_vec2 vec2_zero(void)
+{
+	t_vec2 vector;
+
+	vector.x = 0;
+	vector.y = 0;
+	return (vector);
+}
+
 t_vec2 vec2_new(double x, double y)
 {
 	t_vec2 vector;

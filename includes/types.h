@@ -99,8 +99,10 @@ typedef struct s_player
 	t_vec2 pos;
 	t_vec2 bob;
 	double sway;
-	double speed_fb; //  forward/backword speed
-	double speed_lr; // left/right speed
+	t_vec2 velocity;
+	t_vec2 input_dir;
+	double speed;
+	double max_speed;
 	t_animation *animations[PLAYER_STATS_NBR];
 	size_t state;
 	double rot_angle; // the rotation step angle
