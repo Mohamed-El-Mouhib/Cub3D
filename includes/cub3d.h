@@ -80,8 +80,4 @@ void player_update_pos_lr(t_game *game);
 void player_update_pos_fb(t_game *game);
 void player_update_sway(t_game *game);
 
-bool is_valid_char(char c);
-
-// error
-void	error_indexing(void);
 #endif
