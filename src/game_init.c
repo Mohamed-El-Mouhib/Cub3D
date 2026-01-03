@@ -11,27 +11,24 @@
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
+#include <stdlib.h>
 
-// void	evaluate_file_content(t_dyn *map, t_world *world)
-// {
-// }
-
-t_world init_game_world(char *filename)
+bool init_game_world(char *filename, t_game* game)
 {
-	t_world world;
-	t_dyn map;
-
-	ft_bzero(&world, sizeof(world));
-	map = read_map_from_file(filename);
-	world.map = (char **)map.buff;
-	world.map_width = ft_strlen(world.map[0]); //must be changed
-	world.map_height = map.length; //must be changed
-	return (world);
+	ft_bzero(game, sizeof(t_game));
+	game->player.pos = vec2_new(-1, -1);
+	if (!parse_content(filename, game))
+	{
+		error_indexing();
+		exit(2);
+	}
+	return (true);
 }
 
-void init_game(t_game *game)
+void init_game(t_game *game, char *filename)
 {
-	game->world = init_game_world("map.cub");
+	if (!init_game_world(filename, game))
+		return;
 	game->mlx = mlx_init();
 	if (!game->mlx)
 		ft_exit_error("Faild to allocate mlx");
@@ -42,9 +39,9 @@ void init_game(t_game *game)
 		ft_exit_error("Faild to allocate window");
 	game->scene = image_new(game, game->screen_width, game->screen_height);
 	game->mouse_pos = vec2_new(0, 0);
-	game->player.pos = vec2_new(TILE_SIZE * 4, TILE_SIZE * 4);
-	// player looking up
-	game->player.dir = vec2_new(1, 0);
+        // game->player.pos = vec2_new(TILE_SIZE * 4, TILE_SIZE * 4);
+        // player looking up
+        game->player.dir = vec2_new(1, 0);
 	// field of view is 60 degree
 	game->player.plane = vec2_new(0, 0.66);
 
