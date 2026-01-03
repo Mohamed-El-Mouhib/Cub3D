@@ -29,6 +29,7 @@
 
 /* Vectors */
 t_vec2	vec2_new(double x, double y);
+t_vec2	vec2_zero(void);
 t_vec2	vec2_sub(t_vec2 p1, t_vec2 p2);
 t_vec2  vec2_add(t_vec2 v1, t_vec2 v2);
 t_vec2  vec2_scale(t_vec2 v1, double factor);

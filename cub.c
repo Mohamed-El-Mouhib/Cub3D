@@ -21,7 +21,7 @@ void draw_frame(t_game *game, t_data *data, double noise_x, double noise_y)
 	int y_off;
 
 	x_off = game->scene.width - data->width + noise_x;
-	y_off = game->scene.height - data->height + noise_y + 30; // 30 is for image to go down a bit
+	y_off = game->scene.height - data->height + noise_y + 40; // 30 is for image to go down a bit
 	offset = (0 * data->line_len + 0 * (data->bpp / 8));
 	color = *((unsigned int *)(data->addr + offset));
 	ignore_color = color;
@@ -64,17 +64,57 @@ void player_render_frame(t_game *game)
 	draw_frame(game, dyn_at(game->assets, anim->start + anim->curr), game->player.bob.x + game->player.sway, game->player.bob.y);
 }
 
+void player_update_pos(t_game *game)
+{
+	game->player.pos = vec2_add(game->player.pos, game->player.velocity);
+}
 
+// void player_update_speed(t_game *game)
+// {
+// 	double target_speed;
+//
+// 	if (!game->player.input_dir.x && !game->player.input_dir.y)
+// 		target_speed = 0;
+// 	else
+// 		target_speed = game->player.max_speed;
+//
+// 	if (fabs(game->player.speed) < 0.1) 
+// 		game->player.speed = 0;
+// 	game->player.speed = lerp(game->player.speed, target_speed, 0.05);
+// }
+
+
+void player_update_velocity(t_game *game)
+{
+	t_vec2 forward;
+	t_vec2 right;
+	t_player *p;
+	t_vec2 target_vel;
+
+	p = &game->player;
+	right = vec2_new(-p->dir.y, p->dir.x);
+	forward = p->dir;
+	right =  vec2_scale(right, p->input_dir.x);
+	forward = vec2_scale(forward, p->input_dir.y);
+	target_vel = vec2_scale(vec2_add(forward, right), p->max_speed * game->dt);
+	p->velocity = vec2_lerp(p->velocity, target_vel, PLAYER_ACCEL_RATE);
+	if (fabs(p->velocity.x) < 0.001)
+		p->velocity.x = 0;
+	if (fabs(p->velocity.y) < 0.001)
+		p->velocity.y = 0;
+	p->speed = hypot(p->velocity.x, p->velocity.y) * 100;
+}
 
 void game_rander(t_game *game)
 {
 	raycast_draw_walls(game);
 	draw_minimap(game);
 	player_update_bobing(game);
+	printf("SPEED: %f\n", game->player.speed);
 	player_update_sway(game);
+	player_update_velocity(game);
+	player_update_pos(game);
 	player_render_frame(game);
-	player_update_pos_lr(game);
-	player_update_pos_fb(game);
 	mlx_put_image_to_window(game->mlx, game->win, game->scene.img, 0, 0);
 }
 
