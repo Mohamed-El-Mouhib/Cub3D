@@ -11,30 +11,25 @@
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
-#include <stdlib.h>
 
 bool init_game_world(char *filename, t_game* game)
 {
 	ft_bzero(game, sizeof(t_game));
 	game->player.pos = vec2_new(-1, -1);
 	if (!parse_content(filename, game))
-	{
-		error_indexing();
-		exit(1);
-	}
+		return (false);
 	if (game->player.pos.x == -1 && game->player.pos.y)
-	{
-		init_error(NO_PLAYER, 0,0, NULL);
-		error_indexing();
-		exit(1);
-	}
+		return (init_error(NO_PLAYER, 0,0, NULL), false);
 	return (true);
 }
 
 void init_game(t_game *game, char *filename)
 {
 	if (!init_game_world(filename, game))
+	{
+		error_indexing();
 		return;
+	}
 	game->mlx = mlx_init();
 	if (!game->mlx)
 		ft_exit_error("Faild to allocate mlx");
