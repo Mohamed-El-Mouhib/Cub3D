@@ -56,6 +56,7 @@ t_vec2 vec2_lerp(t_vec2 start, t_vec2 end, double factor);
 // initializers
 void init_game(t_game *game, char *filename);
 void init_player(t_game *game);
+void init_game(t_game *game, char *filename);
 
 // Parser
 bool parse_content(char *filename, t_game* game);
@@ -80,4 +81,8 @@ void player_update_pos_lr(t_game *game);
 void player_update_pos_fb(t_game *game);
 void player_update_sway(t_game *game);
 
+bool is_valid_char(char c);
+
+// error
+void	error_indexing(void);
 #endif
