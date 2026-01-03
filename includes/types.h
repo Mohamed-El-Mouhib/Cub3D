@@ -1,7 +1,5 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   types.h                                            :+:      :+:    :+:   */
+/*                                                                            */ /*                                                        :::      ::::::::   */ /*   types.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aljbari    <aljbari@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -39,6 +37,19 @@
 # define INIT_ROTATION_STEP_DEGREE 2
 # define INIT_ROTATION_STEP ((INIT_ROTATION_STEP_DEGREE * M_PI) / 180.0)
 
+#define	FILENAME_ERR "Error\nplease provide filename example: ./path/to/map.cub\n"
+#define	PATH_ERR "Error\n'%s' %d:%d - invalid .xpm asset path\n"
+#define	IN_FILENAME_ERR "Error\n'%s' must have a .cub extension.\n"
+#define	IN_SYNX_ERR "Error\n'%s' %d:%d - syntax error\n"
+#define	IN_CHAR_ERR "Error\n'%s' %d:%d - invalid character '%c'\n"
+#define	IN_COLOR_ERR "Error\n'%s' %d:%d - invalid color\n"
+#define	PLAYER_ERR "Error\n'%s' %d:%d invalid number of player instance\n"
+#define	UNFINISHED_ERR "Error\n'%s' is incomplete or missing required settings.\n"
+#define	COMMAS_ERR "Error\n'%s': invalid number of commas\n"
+#define	CLOSE_ERR "Error\n'%s' %d:%d unclosed wall found (%c)\n"
+#define	MAP_ERR "Error\n'%s': does not contain a valid map\n"
+#define	NO_PLAYER_ERR "Error\n'%s': does not specify a player start position\n"
+
 typedef int t_color;
 
 /**
@@ -70,6 +81,7 @@ typedef enum e_error_type
 	COMMAS,
 	UNCLOSED,
 	NO_MAP,
+	NO_PLAYER,
 }	t_error_type;
 
 typedef struct s_data
