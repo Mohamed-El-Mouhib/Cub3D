@@ -53,14 +53,24 @@ typedef struct s_vec2
 	double	y;
 }			t_vec2;
 
-typedef enum e_error
+typedef enum e_error_type
 {
+	NO_ERR = 0,
 	NO_FILENAME,
-	EMPY_FILE,
+	EMPTY_FILE,
 	INVALID_FILENAME,
+	INVALID_SYNX,
+	INVALID_EXT,
 	INVALID_CHAR,
-	NO_ERR,
-}	t_error;
+	INVALID_PATH,
+	INVALID_COLOR,
+	DOUBLE_P_INSTANCE,
+	NO_P_INSTANCE,
+	UNFINISHED,
+	COMMAS,
+	UNCLOSED,
+	NO_MAP,
+}	t_error_type;
 
 typedef struct s_data
 {
@@ -87,8 +97,6 @@ typedef struct s_world {
 	size_t  map_width;
 	size_t  map_height;
 	char **map;
-	t_color	ceiling;
-	t_color	floor;
 }
 t_world;
 
@@ -98,8 +106,28 @@ t_world;
  */
 typedef struct s_frames
 {
-	t_data	walltex_[2];
+	t_data	walls[4];
 }	t_frames;
+
+typedef struct s_err
+{
+	int	    line;
+	int	    cpos;
+	void*     ptr;
+	char*     file;
+	t_error_type err;
+}	t_err;
+
+typedef struct s_ParseConfig
+{
+	char*    ptr[6];
+	char**	map;
+	size_t	map_width;
+	size_t	map_height;
+	t_color  f;
+	t_color  c;
+	t_err  error;
+}	t_config;
 
 typedef enum
 {
@@ -122,6 +150,17 @@ typedef struct s_char
 	t_stat	stat;
 }	t_ai;
 
+typedef enum e_token
+{
+	NO = 0,
+	SO,
+	WE,
+	EA,
+	F,
+	C,
+	NOT,
+}	t_token;
+
 typedef struct s_game
 {
 	t_world  world;
@@ -135,6 +174,8 @@ typedef struct s_game
 	t_frames	frames;
 	void	 *win;
 	void	 *mlx;
+	t_color	ceiling;
+	t_color	floor;
 	t_ai	enemy;
 }			t_game;
 
