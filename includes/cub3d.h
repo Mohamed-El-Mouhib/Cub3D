@@ -42,11 +42,16 @@ time_t	curr_time_ms(void);
 double sign(double x);
 
 // initializers
-void init_game(t_game *game);
+void init_game(t_game *game, char *filename);
 
 // Parser
-t_dyn read_map_from_file(char *filename);
+bool parse_content(char *filename, t_game* game);
 
 // textures
 void	draw_texture_line(t_game *game, t_dda_ctx *info);
+
+bool is_valid_char(char c);
+
+// error
+void	error_indexing(void);
 #endif
