@@ -30,18 +30,6 @@ void	init_error(t_error_type type, int line, int index, void* p)
 }
 
 
-#define	FILENAME_ERR "Error\nplease provide filename example: ./path/to/map.cub\n"
-#define	PATH_ERR "Error\n'%s' %d:%d - invalid .xpm asset path\n"
-#define	IN_FILENAME_ERR "Error\n'%s' must have a .cub extension.\n"
-#define	IN_SYNX_ERR "Error\n'%s' %d:%d - syntax error\n"
-#define	IN_CHAR_ERR "Error\n'%s' %d:%d - invalid character '%c'\n"
-#define	IN_COLOR_ERR "Error\n'%s' %d:%d - invalid color\n"
-#define	PLAYER_ERR "Error\n'%s' %d:%d invalid number of player instance\n"
-#define	UNFINISHED_ERR "Error\n'%s' is incomplete or missing required settings.\n"
-#define	COMMAS_ERR "Error\n'%s': invalid number of commas\n"
-#define	CLOSE_ERR "Error\n'%s' %d:%d unclosed wall found (%c)\n"
-#define	MAP_ERR "Error\n'%s': map is not found\n"
-
 void	error_indexing(void)
 {
 	if (info()->error.err == NO_FILENAME)
@@ -66,6 +54,8 @@ void	error_indexing(void)
 		printf(CLOSE_ERR, info()->error.file, info()->error.line, info()->error.cpos, *(char*)info()->error.ptr);
 	else if (info()->error.err== NO_MAP)
 		printf(MAP_ERR, info()->error.file);
+	else if (info()->error.err == NO_PLAYER)
+		printf(NO_PLAYER_ERR, info()->error.file);
 }
 
 bool is_valid_char(char c)
@@ -187,12 +177,9 @@ void	reform_map_lines(size_t bigest, t_dyn* dyn)
 	}
 }
 
-bool	validate_map(t_game* game, t_dyn* dyn)
+bool	validate_map(t_game* game, t_dyn* dyn, size_t i)
 {
 	int	(bigst), (j), (len);
-	size_t i;
-
-	i = 0;
 	bigst = 0;
 	while (i < info()->map_height)
 	{
@@ -212,6 +199,7 @@ bool	validate_map(t_game* game, t_dyn* dyn)
 		}
 		i++;
 	}
+	game->world.map_width = bigst;
 	return (reform_map_lines(bigst, dyn), true);
 }
 
@@ -322,16 +310,10 @@ bool	check_map_line(char** line, size_t len, size_t j)
 				|| line[j][i + 1] == ' ' || ft_strlen(line[j - 1]) <= i
 				|| line[j - 1][i] == ' ' || j == len - 1
 				|| ft_strlen(line[j + 1]) <= i || line[j + 1][i] == ' ')
-			{
-				printf("line %zu:%zu error: unclosed wall found (%c)\n", j, i, line[j][i]);
-				return false;
-			}
+				return (init_error(UNCLOSED, j, i, &line[j][i]), false);
 		}
 		else if (!is_valid_char(line[j][i]))
-		{
-			printf("line %zu:%zu error: invalid char (%c)\n", j, i, line[j][i]);
-			return false;
-		}
+			return (init_error(INVALID_CHAR, j, i, &line[j][i]), false);
 		++i;
 	}
 	return true;
@@ -360,7 +342,7 @@ bool	parse_map(t_game* game, t_dyn* dyn, size_t i)
 		i++;
 	}
 	info()->map_height = i - info()->map_height;
-	return (validate_map(game, dyn));
+	return (validate_map(game, dyn, 0));
 }
 
 bool extract_elements(t_dyn* dyn)
@@ -449,7 +431,6 @@ bool parse_content(char *filename, t_game* game)
 		return (false);
 	game->world.map = info()->map; //after validating the map, storing it on true map container game.world
 	game->world.map_height = info()->map_height; // setting the true lenght of the map
-	game->world.map_width = info()->map_width; // afte the reform of the map everything is
 	game->floor = info()->f;
 	game->ceiling = info()->c;
 	return (true);
