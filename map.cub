@@ -1,11 +1,10 @@
-                      WE                    /asdasdasdasdasd.xpm
-C 250,220,2
-
+WE /asdasdasdasdasd.xpm
 EA ./asdasdasdasdasd.xpm
-SO                 ./asdasdasdasdasd.xpm
-                            NO FirstValue.xpm               
+SO ./asdasdasdasdasd.xpm
+NO FirstValue.xpm               
+C 0,0,0
+F 0,0,0
 
-F                  251                  ,                       234 ,         2
 
 
 111111111111111111111111
