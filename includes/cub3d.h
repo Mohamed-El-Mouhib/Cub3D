@@ -54,7 +54,6 @@ double lerp(double start, double end, double t);
 t_vec2 vec2_lerp(t_vec2 start, t_vec2 end, double factor);
 
 // initializers
-void init_game(t_game *game, char *filename);
 void init_player(t_game *game);
 void init_game(t_game *game, char *filename);
 
