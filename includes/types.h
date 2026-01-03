@@ -98,8 +98,11 @@ typedef struct s_player
 	t_vec2 plane;
 	t_vec2 pos;
 	t_vec2 bob;
-	int speed;
-	int bob_timer;
+	double sway;
+	t_vec2 velocity;
+	t_vec2 input_dir;
+	double speed;
+	double max_speed;
 	t_animation *animations[PLAYER_STATS_NBR];
 	size_t state;
 	double rot_angle; // the rotation step angle
@@ -160,6 +163,7 @@ typedef struct s_game
 	t_ai	enemy;
 	t_dyn *assets;
 	time_t tick;
+	double dt; // delta time
 }			t_game;
 
 /**
@@ -179,6 +183,7 @@ typedef enum e_wall_side
 
 typedef enum e_keycode{
 	KEY_ESCAPE = 0,
+	KEY_SHIFT_L,
 	KEY_RIGHT,
 	KEY_LEFT,
 	KEY_DOWN,

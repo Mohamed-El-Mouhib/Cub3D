@@ -56,13 +56,29 @@ void init_player_animations(t_game *game)
 void player_update_bobing(t_game *game)
 {	
 
-	double t;
-	double bob_amount_x = 10;
-	double bob_amount_y = 20;
+	double freq;
+	double bob_amount_x;
+	double bob_amount_y;
 
-	// TODO: Make the bobing speed and brutality related to player speed
+	bob_amount_x = 4 +  game->player.speed / 3;
+	bob_amount_y = 2 + game->player.speed / 3;
+	freq = game->tick / (166.0);
+	game->player.bob.x = sin(freq) * bob_amount_x;
+	game->player.bob.y = fabs(cos(freq)) * -bob_amount_y; // bounce up
+}
 
-	t = game->tick / 166.0;
-	game->player.bob.x = sin(t) * bob_amount_x;
-	game->player.bob.y = fabs(cos(t)) * -bob_amount_y; // bounce up
+void player_update_sway(t_game *game)
+{
+	double target_sway;
+	t_player *player;
+
+	target_sway = 0;
+	player = &game->player;
+	if (game->keyboard_events[KEY_LEFT])
+		target_sway = PLAYER_MAX_SWAY;
+	else if (game->keyboard_events[KEY_RIGHT])
+		target_sway = -PLAYER_MAX_SWAY;
+	if (fabs(player->sway) < 0.1) 
+		player->sway = 0;
+	player->sway = lerp(player->sway, target_sway, PLAYER_SWAY_SPEED * game->dt);
 }

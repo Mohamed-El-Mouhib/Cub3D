@@ -14,6 +14,17 @@
 # define CUB3D_H
 # include "graphics.h"
 
+// Animation Configuration
+// Sway
+#define PLAYER_MAX_SWAY 90
+#define PLAYER_SWAY_SPEED 10
+
+// Moving
+#define PLAYER_WALK_SPEED 40.0
+#define PLAYER_RUN_SPEED 80.0
+#define PLAYER_ACCEL_RATE 0.03    // How fast you reach max speed
+
+
 # define TILE_SIZE 80.0
 // # define WIN_H (TILE_SIZE * 20 + 1)
 // # define WIN_W (TILE_SIZE * 40 + 1)
@@ -39,6 +50,8 @@ int handle_mouse_event(int x,int y, t_game *game);
 void ft_exit_error(char *msg);
 time_t	curr_time_ms(void);
 double sign(double x);
+double lerp(double start, double end, double t);
+t_vec2 vec2_lerp(t_vec2 start, t_vec2 end, double factor);
 
 // initializers
 void init_game(t_game *game);
@@ -58,5 +71,8 @@ t_animation *load_animation_frames(t_game *game, char **paths, size_t size);
 // animations
 void init_player_animations(t_game *game);
 void player_update_bobing(t_game *game);
+void player_update_pos_lr(t_game *game);
+void player_update_pos_fb(t_game *game);
+void player_update_sway(t_game *game);
 
 #endif
