@@ -11,6 +11,69 @@
 /* ************************************************************************** */
 
 #include "includes/cub3d.h"
+#include "includes/graphics.h"
+
+void draw_enemy(t_game *game)
+{
+	int numSprites = game->screen_width;
+	t_player *player = &game->player;
+	t_enemy *enemy = &game->enemy;
+	double planeX = player->plane.x;
+	double planeY = player->plane.y;
+	double posX = player->pos.x;
+	double posY = player->pos.y;
+	double dirX = player->dir.x;
+	double dirY = player->dir.y;
+	int w = game->screen_width;
+	int h = game->screen_height;
+	int texWidth = enemy->frame->width;
+	int texHeight = enemy->frame->height;
+
+
+
+	double spriteX = (enemy->pos.x - posX) / TILE_SIZE;
+	double spriteY = (enemy->pos.y - posY) / TILE_SIZE;
+
+
+	double invDet = 1.0 / (planeX * dirY - dirX * planeY);
+
+	double transformX = invDet * (dirY * spriteX - dirX * spriteY);
+	double transformY = invDet * (-planeY * spriteX + planeX * spriteY);
+
+	int spriteScreenX = (int)(((double)w / 2) * (1 + transformX / transformY));
+	int spriteHeight = abs((int)(h / (transformY)));
+
+	int drawStartY = -spriteHeight / 2 + h / 2;
+	if(drawStartY < 0)
+		drawStartY = 0;
+	int drawEndY = spriteHeight / 2 + h / 2;
+	if(drawEndY >= h)
+		drawEndY = h - 1;
+
+	int spriteWidth = abs( (int) (h / (transformY)));
+	int drawStartX = -spriteWidth / 2 + spriteScreenX;
+	if(drawStartX < 0) drawStartX = 0;
+	int drawEndX = spriteWidth / 2 + spriteScreenX;
+	if(drawEndX >= w) drawEndX = w - 1;
+
+
+
+	printf("X: %d -> %d\n", drawStartX, drawEndX);
+	printf("Y: %d -> %d\n", drawStartY, drawEndY);
+	if (transformY < 0 || spriteScreenX < -spriteWidth || spriteScreenX > w + spriteWidth || spriteHeight > 1500)
+		return ;
+	// draw_filled_square(&game->scene, vec2_new(spriteScreenX, h/2.0), spriteHeight ,COLOR_RED);
+
+	for (int  i = drawStartX; i < drawEndX; i++)
+	{
+		for (int  j = drawStartY; j < drawEndY; j++)
+		{
+			image_put_pixel(&game->scene, i, j, COLOR_RED);
+		}
+	}
+
+
+}
 
 void draw_frame(t_game *game, t_data *data, double noise_x, double noise_y)
 {
@@ -110,10 +173,10 @@ void game_rander(t_game *game)
 	raycast_draw_walls(game);
 	draw_minimap(game);
 	player_update_bobing(game);
-	printf("SPEED: %f\n", game->player.speed);
 	player_update_sway(game);
 	player_update_velocity(game);
 	player_update_pos(game);
+	draw_enemy(game);
 	player_render_frame(game);
 	mlx_put_image_to_window(game->mlx, game->win, game->scene.img, 0, 0);
 }

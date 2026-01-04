@@ -22,7 +22,7 @@
 // Moving
 #define PLAYER_WALK_SPEED 40.0
 #define PLAYER_RUN_SPEED 80.0
-#define PLAYER_ACCEL_RATE 0.03    // How fast you reach max speed
+#define PLAYER_ACCEL_RATE 1   // How fast you reach max speed
 
 
 # define TILE_SIZE 80.0

@@ -179,13 +179,12 @@ typedef enum
  * @t_stat:		enum holding the status of the enemy
  * @speed:		movement speed of the enemy
  */
-typedef struct s_char
+typedef struct s_enemy
 {
-	t_data	instance;
+	t_data	*frame;
 	t_vec2	pos;
-	float		speed;
-	t_stat	stat;
-}	t_ai;
+}	t_enemy;
+
 
 typedef enum e_token
 {
@@ -213,7 +212,8 @@ typedef struct s_game
 	void	 *mlx;
 	t_color	ceiling;
 	t_color	floor;
-	t_ai	enemy;
+	double *stripes;
+	t_enemy	enemy;
 	t_dyn *assets;
 	time_t tick;
 	double dt; // delta time
