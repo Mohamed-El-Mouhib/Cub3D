@@ -35,7 +35,7 @@
 # include <unistd.h>
 
 # define FRAME_RATE 24
-# define INIT_ROTATION_STEP_DEGREE 2
+# define INIT_ROTATION_STEP_DEGREE 2.0
 # define INIT_ROTATION_STEP ((INIT_ROTATION_STEP_DEGREE * M_PI) / 180.0)
 
 #define	FILENAME_ERR "Error\nplease provide filename example: ./path/to/map.cub\n"

@@ -15,7 +15,6 @@
 
 void draw_enemy(t_game *game)
 {
-	int numSprites = game->screen_width;
 	t_player *player = &game->player;
 	t_enemy *enemy = &game->enemy;
 	double planeX = player->plane.x;
@@ -26,8 +25,6 @@ void draw_enemy(t_game *game)
 	double dirY = player->dir.y;
 	int w = game->screen_width;
 	int h = game->screen_height;
-	int texWidth = enemy->frame->width;
-	int texHeight = enemy->frame->height;
 
 
 
@@ -52,23 +49,39 @@ void draw_enemy(t_game *game)
 
 	int spriteWidth = abs( (int) (h / (transformY)));
 	int drawStartX = -spriteWidth / 2 + spriteScreenX;
-	if(drawStartX < 0) drawStartX = 0;
+	int offsomething;
+	if(drawStartX < 0)
+	{
+		offsomething = drawStartX*-1;
+		drawStartX = 0;
+	}
 	int drawEndX = spriteWidth / 2 + spriteScreenX;
-	if(drawEndX >= w) drawEndX = w - 1;
+	if(drawEndX >= w)
+		drawEndX = w - 1;
 
-
-
-	printf("X: %d -> %d\n", drawStartX, drawEndX);
-	printf("Y: %d -> %d\n", drawStartY, drawEndY);
 	if (transformY < 0 || spriteScreenX < -spriteWidth || spriteScreenX > w + spriteWidth || spriteHeight > 1500)
 		return ;
 	// draw_filled_square(&game->scene, vec2_new(spriteScreenX, h/2.0), spriteHeight ,COLOR_RED);
 
+	int current_w = spriteWidth;
+	int current_h = spriteHeight;
+
+	int tex_w = game->enemy.frame->width;
+	int tex_h = game->enemy.frame->height;
+
+	printf("spriteSize: %dx%d\n", spriteWidth, spriteHeight);
+	printf("drawX: %dx%d, drawY: %d,%d\n", drawStartX, drawEndX, drawStartY, drawEndY);
 	for (int  i = drawStartX; i < drawEndX; i++)
 	{
 		for (int  j = drawStartY; j < drawEndY; j++)
 		{
-			image_put_pixel(&game->scene, i, j, COLOR_RED);
+			int teX = (double)(i - drawStartX + (drawStartX ? 0 : spriteWidth - drawEndX)) / current_w * tex_w;
+			int teY = (double)(j - drawStartY) / current_h * tex_h;
+			int offset = (teY * game->enemy.frame->line_len + teX * (game->enemy.frame->bpp / 8));
+			unsigned int color = *((unsigned int *)(game->enemy.frame->addr + offset));
+			// if (*(unsigned int *)game->enemy.frame->addr == color)
+			// 	continue;
+			image_put_pixel(&game->scene, i, j, color);
 		}
 	}
 
