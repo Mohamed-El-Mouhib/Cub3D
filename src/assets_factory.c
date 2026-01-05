@@ -1,6 +1,12 @@
 #include "../includes/cub3d.h"
 #include <stddef.h>
 
+
+t_data *assets_get(t_game *game, int id)
+{
+	return (dyn_at(game->assets, id));
+}
+
 /**
  * assets_load_xpm - Loading an exp
  */

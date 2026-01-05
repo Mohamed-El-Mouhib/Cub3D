@@ -62,6 +62,27 @@ void	image_put_pixel(t_data *buff, int x, int y, unsigned int color)
 	*((unsigned int *)(buff->addr + offset)) = color;
 }
 
+
+/**
+ * image_put_pixel - gives the color at using pixel position
+ *
+ * @x: The x-coordinate of the pixel
+ * @y: The y-coordinate of the pixel
+ *
+ * Return: the pixel color or UINT_MAX if failed
+ */
+unsigned int imgae_get_pixel(t_data *img, int x, int y)
+{
+	int offset;
+	unsigned int color;
+
+	if (!img || x < 0 || y < 0 || x > img->width || y > img->height)
+		return (UINT_MAX);
+	offset= (y * img->line_len + x * (img->bpp / 8));
+	color = *((unsigned int *)(img->addr + offset));
+	return (color);
+}
+
 bool image_load_xpm(t_game *game, t_data *buff, char *path)
 {
 	t_data img_data;

@@ -72,6 +72,7 @@ void	error_indexing(void);
 int assets_load_xpm(t_game *game, char *path);
 t_animation *init_animation(size_t start, size_t end, int duration);
 t_animation *load_animation_frames(t_game *game, char **paths, size_t size);
+t_data *assets_get(t_game *game, int id);
 
 // animations
 void init_player_animations(t_game *game);
@@ -79,5 +80,11 @@ void player_update_bobing(t_game *game);
 void player_update_pos_lr(t_game *game);
 void player_update_pos_fb(t_game *game);
 void player_update_sway(t_game *game);
+t_data *animation_get_frame(t_game *game, t_animation *anim);
+void animation_cycle(t_game *game, t_animation *anim);
+
+// enemy utils
+void init_enemies(t_game *game);
+void draw_enemies(t_game *game);
 
 #endif

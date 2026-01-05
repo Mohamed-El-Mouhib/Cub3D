@@ -51,5 +51,6 @@ void	image_clear(t_data *img);
 t_data	image_new(t_game *game, int width, int height);
 void	image_put_pixel(t_data *buff, int x, int y, unsigned int color);
 bool image_load_xpm(t_game *game, t_data *buff, char *path);
+unsigned int imgae_get_pixel(t_data *img, int x, int y);
 
 #endif /* GRAPHICS_H */

@@ -12,9 +12,10 @@
 
 #include "includes/cub3d.h"
 #include "includes/graphics.h"
+#include "includes/types.h"
 
 
-void draw_enemy(t_game *game);
+void draw_enemy(t_game *game, t_enemy *enemy);
 void draw_frame(t_game *game, t_data *data, double noise_x, double noise_y)
 {
 	unsigned int color;
@@ -108,6 +109,8 @@ void player_update_velocity(t_game *game)
 	p->speed = hypot(p->velocity.x, p->velocity.y) * 100;
 }
 
+
+
 void game_rander(t_game *game)
 {
 	raycast_draw_walls(game);
@@ -116,7 +119,7 @@ void game_rander(t_game *game)
 	player_update_sway(game);
 	player_update_velocity(game);
 	player_update_pos(game);
-	draw_enemy(game);
+	draw_enemies(game);
 	player_render_frame(game);
 	mlx_put_image_to_window(game->mlx, game->win, game->scene.img, 0, 0);
 }

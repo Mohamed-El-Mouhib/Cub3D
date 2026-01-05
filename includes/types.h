@@ -33,6 +33,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
+# include <limits.h>
 
 # define FRAME_RATE 24
 # define INIT_ROTATION_STEP_DEGREE 2.0
@@ -181,11 +182,13 @@ typedef enum
  */
 typedef struct s_enemy
 {
-	t_data	*frame;
 	t_vec2 s; // draw start
 	t_vec2 e; // draw end
 	t_vec2	pos;
 	int size;
+	t_vec2 camera;
+	t_animation *animation;
+	double screen; // intersaction with the screen projection
 }	t_enemy;
 
 
@@ -216,7 +219,7 @@ typedef struct s_game
 	t_color	ceiling;
 	t_color	floor;
 	double *stripes;
-	t_enemy	enemy;
+	t_dyn	*enemies;
 	t_dyn *assets;
 	time_t tick;
 	double dt; // delta time

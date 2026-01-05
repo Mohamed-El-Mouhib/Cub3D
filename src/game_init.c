@@ -46,12 +46,6 @@ void init_game(t_game *game, char *filename)
 	game->stripes = malloc(sizeof(double) * game->screen_width);
 	
 	// assignment an instance to imaginary enemy
-	game->enemy.pos = vec2_new(TILE_SIZE * 2, TILE_SIZE * 2);
-	int idx = assets_load_xpm(game, "./textures/enemy_walk/xpm/enemy_frame004.xpm");
-	if (idx < 0)
-	{
-		printf("Error: While loading enemy file\n");
-	}
-	game->enemy.frame = dyn_at(game->assets, idx);
+	init_enemies(game);
 }
 
