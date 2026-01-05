@@ -182,7 +182,10 @@ typedef enum
 typedef struct s_enemy
 {
 	t_data	*frame;
+	t_vec2 s; // draw start
+	t_vec2 e; // draw end
 	t_vec2	pos;
+	int size;
 }	t_enemy;
 
 

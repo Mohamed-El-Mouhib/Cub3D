@@ -184,6 +184,7 @@ void raycast_draw_walls(t_game *game)
 	for (int x = 0; x < (int)game->screen_width; x++)
 	{
 		perform_dda(game, &dda, x);
+		game->stripes[x] = dda.hit_dist;
 		if ((int)dda.hit_dist != 0)
 		{
 			calculate_wall_boundaries(game, &dda, x);
