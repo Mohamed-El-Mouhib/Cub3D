@@ -34,10 +34,9 @@ t_animation *init_animation(size_t start, size_t end, int duration)
 	anim->start = start;
 	anim->end = end;
 	anim->curr = start;
-	anim->dir = 1;
 	anim->duration = duration;
-	anim->is_running = true;
 	anim->last_changed = curr_time_ms();
+	anim->finished = false;
 	return (anim);
 }
 

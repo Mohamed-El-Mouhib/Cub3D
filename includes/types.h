@@ -101,17 +101,15 @@ typedef struct s_animation {
 	size_t start;
 	size_t end;
 	size_t curr;
-	int    dir;
 	size_t duration;
-	size_t is_running;
+	size_t finished;
 	time_t last_changed;
 } t_animation;
 
 enum t_player_stats {
 	PLAYER_SHOOTING = 0,
+	PLAYER_RELOAD,
 	PLAYER_WALKING,
-	PLAYER_BORED,
-	PLAYER_IDLE,
 	PLAYER_STATS_NBR
 };
 
@@ -137,6 +135,8 @@ typedef struct s_player
 	t_animation *animations[PLAYER_STATS_NBR];
 	size_t state;
 	double rot_angle; // the rotation step angle
+	int lives;
+	int ammo;
 }			t_player;
 
 typedef struct s_world {
@@ -235,6 +235,7 @@ typedef struct s_game
 	time_t tick;
 	double shake;
 	double dt; // delta time
+	t_data *numbers;
 }			t_game;
 
 /**
@@ -255,6 +256,7 @@ typedef enum e_wall_side
 typedef enum e_keycode{
 	KEY_ESCAPE = 0,
 	KEY_SHIFT_L,
+	KEY_SPACE,
 	KEY_RIGHT,
 	KEY_LEFT,
 	KEY_DOWN,

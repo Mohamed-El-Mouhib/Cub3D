@@ -2,6 +2,8 @@
 
 static char get_map_cell(t_game *game, int x, int y)
 {
+	if (x > (int)game->world.map_width || y > (int)game->world.map_height)
+		return ('1');
 	return (game->world.map[y][x]);
 }
 

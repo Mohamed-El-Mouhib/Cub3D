@@ -28,6 +28,9 @@
 #define PLAYER_ACCEL_RATE 0.1   // How fast you reach max speed
 
 
+// Equipments
+#define PLAYER_MAX_AMMO 15
+
 // enemy stuff
 #define ENEMY_WALK_SPEED 40
 

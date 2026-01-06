@@ -43,31 +43,18 @@ void draw_frame(t_game *game, t_data *data, double noise_x, double noise_y)
 	}
 }
 
+void player_update_frame(t_game *game)
+{
+	animation_cycle(game, game->player.animations[game->player.state]);
+}
+
 void player_render_frame(t_game *game)
 {
 	t_animation *anim;
 	t_data *frame;
 
 	anim = game->player.animations[game->player.state];
-	if (!anim->is_running || (size_t)(game->tick - anim->last_changed) < anim->duration)
-	{
-		frame = dyn_at(game->assets, anim->start + anim->curr);
-		draw_frame(game, frame, game->player.bob.x + game->player.sway, game->player.bob.y);
-		return ;
-	}
-	anim->last_changed = game->tick;
-	anim->curr += anim->dir;
-	if (anim->curr > anim->end)
-	{
-		anim->dir = -1;
-		anim->curr = anim->end;
-	}
-	if (anim->curr < anim->start)
-	{
-		anim->dir = +1;
-		anim->curr = anim->start;
-	}
-	frame = dyn_at(game->assets, anim->start + anim->curr);
+	frame = dyn_at(game->assets, anim->curr);
 	draw_frame(game, frame, game->player.bob.x + game->player.sway, game->player.bob.y);
 }
 
@@ -102,18 +89,27 @@ void player_update_velocity(t_game *game)
 
 void enemy_update_pos(t_game *game, t_enemy *enemy);
 void enemy_update_state(t_game *g, t_enemy *e);
+void player_update_state(t_game *game);
 
 void game_rander(t_game *game)
 {
 	raycast_draw_walls(game);
 	draw_minimap(game);
+
+	// player
 	player_update_bobing(game);
 	player_update_sway(game);
 	player_update_velocity(game);
 	player_update_pos(game);
+	player_update_state(game);
+	player_update_frame(game);
+
+	// enemy
 	enemy_update_pos(game, game->enemies->buff[0]);
 	enemy_update_state(game, game->enemies->buff[0]);
 	draw_enemies(game);
+
+	// rendering
 	player_render_frame(game);
 	game->shake = lerp(game->shake, 0, 0.2);
 	mlx_put_image_to_window(game->mlx, game->win, game->scene.img, 0, 0);

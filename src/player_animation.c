@@ -1,16 +1,5 @@
 #include "../includes/cub3d.h"
 
-static t_animation *animation_idle(t_game *game)
-{
-	size_t size;
-	static	char *paths[] = {
-		"./textures/weapon_animation/xpm/walk_frames_06.xpm",
-	};
-
-	size = sizeof(paths)/sizeof(paths[0]);
-	return load_animation_frames(game, paths, size);
-}
-
 static t_animation *animation_walking(t_game *game)
 {
 	size_t size;
@@ -26,21 +15,31 @@ static t_animation *animation_shooting(t_game *game)
 {
 	size_t size;
 	static	char *paths[] = {
-		"./textures/weapon_animation/xpm/walk_frames_06.xpm",
+		"./textures/enemy_walk/xpm/attack1.xpm",
+		"./textures/enemy_walk/xpm/attack2.xpm",
+		"./textures/enemy_walk/xpm/attack3.xpm",
+		"./textures/enemy_walk/xpm/attack4.xpm",
+		"./textures/enemy_walk/xpm/attack5.xpm",
 	};
 
 	size = sizeof(paths)/sizeof(paths[0]);
 	return load_animation_frames(game, paths, size);
 }
 
-static t_animation *animation_bored(t_game *game)
+static t_animation *animation_reload(t_game *game)
 {
 	size_t size;
 	static	char *paths[] = {
-		"./textures/weapon_animation/xpm/walk_frames_06.xpm",
+		"./textures/enemy_walk/xpm/enemy_frame005.xpm",
+		"./textures/enemy_walk/xpm/enemy_frame005.xpm",
+		"./textures/enemy_walk/xpm/enemy_frame005.xpm",
+		"./textures/enemy_walk/xpm/enemy_frame005.xpm",
+		"./textures/enemy_walk/xpm/enemy_frame005.xpm",
+		"./textures/enemy_walk/xpm/enemy_frame005.xpm",
+		"./textures/enemy_walk/xpm/enemy_frame005.xpm",
 	};
 
-	size = sizeof(paths) / sizeof(paths[0]);
+	size = sizeof(paths)/sizeof(paths[0]);
 	return load_animation_frames(game, paths, size);
 }
 
@@ -48,9 +47,8 @@ void init_player_animations(t_game *game)
 {
 	game->player.state                       = PLAYER_WALKING;
 	game->player.animations[PLAYER_WALKING]  = animation_walking(game);
-	game->player.animations[PLAYER_IDLE]     = animation_idle(game);
 	game->player.animations[PLAYER_SHOOTING] = animation_shooting(game);
-	game->player.animations[PLAYER_BORED]    = animation_bored(game);
+	game->player.animations[PLAYER_RELOAD]   = animation_reload(game);
 }
 
 void player_update_bobing(t_game *game)
