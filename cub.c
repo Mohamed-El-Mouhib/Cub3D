@@ -46,11 +46,13 @@ void draw_frame(t_game *game, t_data *data, double noise_x, double noise_y)
 void player_render_frame(t_game *game)
 {
 	t_animation *anim;
+	t_data *frame;
 
 	anim = game->player.animations[game->player.state];
 	if (!anim->is_running || (size_t)(game->tick - anim->last_changed) < anim->duration)
 	{
-		draw_frame(game, dyn_at(game->assets, anim->start + anim->curr), game->player.bob.x + game->player.sway, game->player.bob.y);
+		frame = dyn_at(game->assets, anim->start + anim->curr);
+		draw_frame(game, frame, game->player.bob.x + game->player.sway, game->player.bob.y);
 		return ;
 	}
 	anim->last_changed = game->tick;
@@ -65,27 +67,14 @@ void player_render_frame(t_game *game)
 		anim->dir = +1;
 		anim->curr = anim->start;
 	}
-	draw_frame(game, dyn_at(game->assets, anim->start + anim->curr), game->player.bob.x + game->player.sway, game->player.bob.y);
+	frame = dyn_at(game->assets, anim->start + anim->curr);
+	draw_frame(game, frame, game->player.bob.x + game->player.sway, game->player.bob.y);
 }
 
 void player_update_pos(t_game *game)
 {
 	game->player.pos = vec2_add(game->player.pos, game->player.velocity);
 }
-
-// void player_update_speed(t_game *game)
-// {
-// 	double target_speed;
-//
-// 	if (!game->player.input_dir.x && !game->player.input_dir.y)
-// 		target_speed = 0;
-// 	else
-// 		target_speed = game->player.max_speed;
-//
-// 	if (fabs(game->player.speed) < 0.1) 
-// 		game->player.speed = 0;
-// 	game->player.speed = lerp(game->player.speed, target_speed, 0.05);
-// }
 
 
 void player_update_velocity(t_game *game)
@@ -110,7 +99,9 @@ void player_update_velocity(t_game *game)
 }
 
 
+
 void enemy_update_pos(t_game *game, t_enemy *enemy);
+void enemy_update_state(t_game *g, t_enemy *e);
 
 void game_rander(t_game *game)
 {
@@ -121,8 +112,10 @@ void game_rander(t_game *game)
 	player_update_velocity(game);
 	player_update_pos(game);
 	enemy_update_pos(game, game->enemies->buff[0]);
+	enemy_update_state(game, game->enemies->buff[0]);
 	draw_enemies(game);
 	player_render_frame(game);
+	game->shake = lerp(game->shake, 0, 0.2);
 	mlx_put_image_to_window(game->mlx, game->win, game->scene.img, 0, 0);
 }
 

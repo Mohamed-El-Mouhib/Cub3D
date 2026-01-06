@@ -45,6 +45,7 @@ void init_game(t_game *game, char *filename)
 	init_player(game);
 	game->stripes = malloc(sizeof(double) * game->screen_width);
 	game->tick = curr_time_ms();
+	game->shake = 0;
 	
 	// assignment an instance to imaginary enemy
 	init_enemies(game);

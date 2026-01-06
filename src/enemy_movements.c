@@ -64,7 +64,14 @@ void enemy_update_pos(t_game *g, t_enemy *e)
 
 	dist_sq = vec2_len_squared(e->pos, g->player.pos);
 	if (dist_sq < TILE_SIZE * TILE_SIZE) 
+	{
+		if (g->tick - e->last_attack_time > 4000)
+		{
+			e->state = ENEMY_ATTACKING;
+			e->last_attack_time = g->tick;
+		}
 		return;
+	}
 	if (!has_los(g, e->pos, g->player.pos))
 		return;
 	dir = vec2_unit(e->pos, g->player.pos);
@@ -75,4 +82,38 @@ void enemy_update_pos(t_game *g, t_enemy *e)
 	next.y = e->pos.y + dir.y;
 	if (can_move(g, e->pos.x, next.y))
 		e->pos.y = next.y;
+}
+
+
+void enemy_attack_player(t_game *g, t_enemy *e)
+{
+	double   dist_sq;
+
+
+	dist_sq = vec2_len_squared(e->pos, g->player.pos);
+	if (dist_sq < TILE_SIZE * TILE_SIZE && g->shake > 15) 
+	{
+		printf("Oops: You got hit\n");
+	}
+}
+
+void enemy_update_state(t_game *g, t_enemy *e)
+{
+	t_animation *anim;
+
+	enemy_attack_player(g, e);
+	if (e->state == ENEMY_WALKING)
+		return ;
+	anim = e->animation[ENEMY_ATTACKING];
+	if (e->state == ENEMY_ATTACKING && anim->curr != anim->end)
+	{
+		if (anim->end - anim->curr == 3)
+			g->shake = 30;
+		return ;
+	}
+	else
+	{
+		e->state = ENEMY_WALKING;
+		anim->curr = anim->start;
+	}
 }

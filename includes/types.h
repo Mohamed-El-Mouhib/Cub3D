@@ -117,8 +117,9 @@ enum t_player_stats {
 
 enum t_enemy_stats {
 	ENEMY_WALKING = 0,
+	ENEMY_ATTACKING,
 	ENEMY_HARMED,
-	ENEMY_DYING,
+	ENEMY_DEAD,
 	ENEMY_STATS_NBR
 };
 
@@ -197,6 +198,7 @@ typedef struct s_enemy
 	enum t_enemy_stats state;
 	t_vec2 camera;
 	t_animation *animation[ENEMY_STATS_NBR];
+	time_t last_attack_time;
 	double screen; // intersaction with the screen projection
 }	t_enemy;
 
@@ -231,6 +233,7 @@ typedef struct s_game
 	t_dyn	*enemies;
 	t_dyn *assets;
 	time_t tick;
+	double shake;
 	double dt; // delta time
 }			t_game;
 
