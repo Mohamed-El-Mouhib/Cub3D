@@ -29,8 +29,8 @@ void player_rotate(t_player *player, t_rotate_dir rot_dir)
 	double c;
 	double s;
 
-	c = cos(INIT_ROTATION_STEP/3);
-	s = sin(INIT_ROTATION_STEP/3);
+	c = cos(INIT_ROTATION_STEP/1);
+	s = sin(INIT_ROTATION_STEP/1);
 	dir.x = player->dir.x * c - player->dir.y * s * rot_dir;
 	dir.y = player->dir.x * s * rot_dir + player->dir.y * c;
 	plane.x = player->plane.x * c - player->plane.y * s * rot_dir;

@@ -60,8 +60,8 @@ void player_update_bobing(t_game *game)
 	double bob_amount_x;
 	double bob_amount_y;
 
-	bob_amount_x = 4 +  game->player.speed / 3;
-	bob_amount_y = 2 + game->player.speed / 3;
+	bob_amount_x = 2 + game->player.speed * PLAYER_BOB_AMOUNT;
+	bob_amount_y = 4 + game->player.speed * PLAYER_BOB_AMOUNT;
 	freq = game->tick / (166.0);
 	game->player.bob.x = sin(freq) * bob_amount_x;
 	game->player.bob.y = fabs(cos(freq)) * -bob_amount_y; // bounce up

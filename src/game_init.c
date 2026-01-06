@@ -44,6 +44,7 @@ void init_game(t_game *game, char *filename)
 	ft_bzero(game->keyboard_events, sizeof(game->keyboard_events));
 	init_player(game);
 	game->stripes = malloc(sizeof(double) * game->screen_width);
+	game->tick = curr_time_ms();
 	
 	// assignment an instance to imaginary enemy
 	init_enemies(game);

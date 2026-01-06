@@ -115,6 +115,13 @@ enum t_player_stats {
 	PLAYER_STATS_NBR
 };
 
+enum t_enemy_stats {
+	ENEMY_WALKING = 0,
+	ENEMY_HARMED,
+	ENEMY_DYING,
+	ENEMY_STATS_NBR
+};
+
 typedef struct s_player
 {
 	t_vec2 dir;
@@ -185,9 +192,11 @@ typedef struct s_enemy
 	t_vec2 s; // draw start
 	t_vec2 e; // draw end
 	t_vec2	pos;
+	t_vec2 dir;
 	int size;
+	enum t_enemy_stats state;
 	t_vec2 camera;
-	t_animation *animation;
+	t_animation *animation[ENEMY_STATS_NBR];
 	double screen; // intersaction with the screen projection
 }	t_enemy;
 

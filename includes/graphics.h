@@ -34,8 +34,10 @@ t_vec2	vec2_sub(t_vec2 p1, t_vec2 p2);
 t_vec2  vec2_add(t_vec2 v1, t_vec2 v2);
 t_vec2  vec2_scale(t_vec2 v1, double factor);
 t_vec2  vec2_div(t_vec2 v1, double factor);
+double vec2_len(t_vec2 p1, t_vec2 p2);
 double	vec2_len_squared(t_vec2 p1, t_vec2 p2);
 void    vec2_print(t_vec2 v, char *prefix);
+t_vec2 vec2_unit(t_vec2 p1, t_vec2 p2);
 
 /* Common shapes grachics utilities */
 void	draw_line(t_data *buff, t_vec2 p1, t_vec2 p2, int color);

@@ -81,7 +81,7 @@ double vec2_len(t_vec2 p1, t_vec2 p2)
  */
 void vec2_print(t_vec2 v, char *prefix)
 {
-	printf("%s: Vec(%f, %f)\n", prefix, v.x, v.y);
+	printf("%s: Vec(%.2f, %.2f)\n", prefix, v.x, v.y);
 }
 
 /**
@@ -99,4 +99,10 @@ t_vec2 vec2_scale(t_vec2 v1, double factor)
 t_vec2 vec2_div(t_vec2 v1, double factor)
 {
 	return (vec2_new(v1.x / factor, v1.y / factor));
+}
+
+
+t_vec2 vec2_unit(t_vec2 from, t_vec2 to)
+{
+	return (vec2_div(vec2_sub(to, from), vec2_len(from, to)));
 }

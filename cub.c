@@ -110,6 +110,7 @@ void player_update_velocity(t_game *game)
 }
 
 
+void enemy_update_pos(t_game *game, t_enemy *enemy);
 
 void game_rander(t_game *game)
 {
@@ -119,6 +120,7 @@ void game_rander(t_game *game)
 	player_update_sway(game);
 	player_update_velocity(game);
 	player_update_pos(game);
+	enemy_update_pos(game, game->enemies->buff[0]);
 	draw_enemies(game);
 	player_render_frame(game);
 	mlx_put_image_to_window(game->mlx, game->win, game->scene.img, 0, 0);

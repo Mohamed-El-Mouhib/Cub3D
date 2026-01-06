@@ -71,7 +71,7 @@ static unsigned int get_point_color(t_game *game, t_enemy *enemy, int i, int j)
 	int y;
 	t_data *frame;
 
-	frame = animation_get_frame(game, enemy->animation);
+	frame = animation_get_frame(game, enemy->animation[enemy->state]);
 	tex_w = frame->width;
 	tex_h = frame->height;
 	if (enemy->s.x)
@@ -89,7 +89,7 @@ void draw_enemy_frame(t_game *game, t_enemy *enemy)
 	unsigned int ignore_color;
 	t_data *frame;
 
-	frame = animation_get_frame(game, enemy->animation);
+	frame = animation_get_frame(game, enemy->animation[enemy->state]);
 	ignore_color = *(unsigned int *)frame->addr;
 	for (int i = enemy->s.x; i < enemy->e.x; i++)
 	{
@@ -146,7 +146,7 @@ void draw_enemies(t_game *game)
 	for (size_t i = 0; i < game->enemies->length; i++)
 	{
 		enemy = dyn_at(game->enemies, i);
-		animation_cycle(game, enemy->animation);
+		animation_cycle(game, enemy->animation[enemy->state]);
 		draw_enemy(game, dyn_at(game->enemies, i));
 	}
 }

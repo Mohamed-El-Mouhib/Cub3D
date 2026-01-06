@@ -19,10 +19,17 @@
 #define PLAYER_MAX_SWAY 90
 #define PLAYER_SWAY_SPEED 10
 
+// bobbing
+#define PLAYER_BOB_AMOUNT 0.15
+
 // Moving
 #define PLAYER_WALK_SPEED 40.0
 #define PLAYER_RUN_SPEED 80.0
-#define PLAYER_ACCEL_RATE 1   // How fast you reach max speed
+#define PLAYER_ACCEL_RATE 0.1   // How fast you reach max speed
+
+
+// enemy stuff
+#define ENEMY_WALK_SPEED 40
 
 
 # define TILE_SIZE 80.0
