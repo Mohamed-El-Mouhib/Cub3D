@@ -231,7 +231,7 @@ bool	validate_colors(char *line, t_color* clr)
 }
 bool	validate_configs(t_token type)
 {
-	if (type < 3 && !validate_paths(info()->ptr[type]))
+	if (type <= EA && !validate_paths(info()->ptr[type]))
 		return false;
 	else if (type == F && !validate_colors(info()->ptr[type], &info()->f))
 		return false;
