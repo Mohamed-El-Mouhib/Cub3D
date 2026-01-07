@@ -18,7 +18,7 @@ bool init_game_world(char *filename, t_game* game)
 	game->player.pos = vec2_new(-1, -1);
 	if (!parse_content(filename, game))
 		return (false);
-	if (game->player.pos.x == -1 && game->player.pos.y)
+	if (game->player.pos.x == -1 && game->player.pos.y == -1)
 		return (init_error(NO_PLAYER, 0,0, NULL), false);
 	return (true);
 }
