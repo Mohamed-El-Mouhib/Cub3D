@@ -16,88 +16,34 @@
 
 
 void draw_enemy(t_game *game, t_enemy *enemy);
-void draw_frame(t_game *game, t_data *data, double noise_x, double noise_y)
-{
-	unsigned int color;
-	unsigned int offset;
-	unsigned int ignore_color;
-	int x_off;
-	int y_off;
 
-	x_off = game->scene.width - data->width + noise_x;
-	y_off = game->scene.height - data->height + noise_y + 40; // 30 is for image to go down a bit
-	offset = (0 * data->line_len + 0 * (data->bpp / 8));
-	color = *((unsigned int *)(data->addr + offset));
-	ignore_color = color;
-
-	for (int y = 0; y < data->height; y++)
-	{
-		for (int x = 0; x < data->width; x++)
-		{
-			offset = (y * data->line_len + x * (data->bpp / 8));
-			color = *((unsigned int *)(data->addr + offset));
-			if (color == ignore_color)
-				continue;
-			image_put_pixel(&game->scene, x + x_off, y + y_off, color);
-		}
-	}
-}
-
-void player_update_frame(t_game *game)
-{
-	animation_cycle(game, game->player.animations[game->player.state]);
-}
-
-void player_render_frame(t_game *game)
-{
-	t_animation *anim;
-	t_data *frame;
-
-	anim = game->player.animations[game->player.state];
-	frame = dyn_at(game->assets, anim->curr);
-	draw_frame(game, frame, game->player.bob.x + game->player.sway, game->player.bob.y);
-}
-
-void player_update_pos(t_game *game)
-{
-	game->player.pos = vec2_add(game->player.pos, game->player.velocity);
-}
-
-
-void player_update_velocity(t_game *game)
-{
-	t_vec2 forward;
-	t_vec2 right;
-	t_player *p;
-	t_vec2 target_vel;
-
-	p = &game->player;
-	right = vec2_new(-p->dir.y, p->dir.x);
-	forward = p->dir;
-	right =  vec2_scale(right, p->input_dir.x);
-	forward = vec2_scale(forward, p->input_dir.y);
-	target_vel = vec2_scale(vec2_add(forward, right), p->max_speed * game->dt);
-	p->velocity = vec2_lerp(p->velocity, target_vel, PLAYER_ACCEL_RATE);
-	if (fabs(p->velocity.x) < 0.001)
-		p->velocity.x = 0;
-	if (fabs(p->velocity.y) < 0.001)
-		p->velocity.y = 0;
-	p->speed = hypot(p->velocity.x, p->velocity.y) * 100;
-}
 
 
 
 void enemy_update_pos(t_game *game, t_enemy *enemy);
 void enemy_update_state(t_game *g, t_enemy *e);
 void player_update_state(t_game *game);
+void player_render_frame(t_game *game);
 
-void game_rander(t_game *game)
+void game_update_shaking(t_game *game)
 {
-	raycast_draw_walls(game);
-	draw_minimap(game);
+	game->shake = lerp(game->shake, 0, 0.2);
+}
 
+void game_update_time(t_game *game)
+{
+	time_t ct;
+
+	ct = curr_time_ms();
+	game->dt = (ct - game->tick) / 1000.0;
+	game->tick = curr_time_ms();
+}
+
+
+void game_update(t_game *game)
+{
 	// player
-	player_update_bobing(game);
+	player_update_bobbing(game);
 	player_update_sway(game);
 	player_update_velocity(game);
 	player_update_pos(game);
@@ -107,11 +53,18 @@ void game_rander(t_game *game)
 	// enemy
 	enemy_update_pos(game, game->enemies->buff[0]);
 	enemy_update_state(game, game->enemies->buff[0]);
-	draw_enemies(game);
 
-	// rendering
+	// game
+	game_update_time(game);
+	game_update_shaking(game);
+}
+
+void game_rander(t_game *game)
+{
+	raycast_draw_walls(game);
+	draw_minimap(game);
+	draw_enemies(game);
 	player_render_frame(game);
-	game->shake = lerp(game->shake, 0, 0.2);
 	mlx_put_image_to_window(game->mlx, game->win, game->scene.img, 0, 0);
 }
 
@@ -131,14 +84,14 @@ bool is_frame_ready()
 	return (true);
 }
 
+
+
 int game_loop(t_game *game)
 {
 	if (!is_frame_ready())
 		return (0);
-	time_t ct = curr_time_ms();
-	game->dt = (ct - game->tick) / 1000.0;
-	game->tick = curr_time_ms();
 	game_handle_keyboard_events(game);
+	game_update(game);
 	game_rander(game);
 	return (0);
 }

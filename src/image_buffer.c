@@ -71,7 +71,7 @@ void	image_put_pixel(t_data *buff, int x, int y, unsigned int color)
  *
  * Return: the pixel color or UINT_MAX if failed
  */
-unsigned int imgae_get_pixel(t_data *img, int x, int y)
+unsigned int image_get_pixel(t_data *img, int x, int y)
 {
 	int offset;
 	unsigned int color;
@@ -83,23 +83,56 @@ unsigned int imgae_get_pixel(t_data *img, int x, int y)
 	return (color);
 }
 
+/**
+ * image_load_xpm - load xpm file from the @path into the @buff
+ */
 bool image_load_xpm(t_game *game, t_data *buff, char *path)
 {
-	t_data img_data;
+	t_data img;
 
 	printf("Info: Loading the XPM file: '%s'\n", path);
-	img_data.img = mlx_xpm_file_to_image(game->mlx, path, &img_data.width, &img_data.height);
+	img.img = mlx_xpm_file_to_image(game->mlx, path, &img.width, &img.height);
 	if (!buff)
 	{
 		printf("Error: %s: Null buffer pointer provided when opening '%s'\n", __func__, path);
 		return (false);
 	}
-	if (!img_data.img)
+	if (!img.img)
 	{
 		printf("Error: '%s': Failed to load XPM file\n", path);
 		return (false);
 	}
-	img_data.addr = mlx_get_data_addr(img_data.img, &img_data.bpp, &img_data.line_len, &img_data.endian);
-	*buff = img_data;
+	img.addr = mlx_get_data_addr(img.img, &img.bpp, &img.line_len, &img.endian);
+	*buff = img;
 	return (true);
+}
+
+/**
+ * image_draw_transparent - draw the @image at (x_off, y_off) position of the
+ * screen, the color at 0,0 of the @image will be ignored, this is a dirty trick
+ * to work around the library's lack of ability to rander PNG files
+ */
+void image_draw_transparent(t_game *game, t_data *image, double x_off, double y_off)
+{
+	unsigned int ignore_color; 
+	unsigned int color; 
+	int x;
+	int y;
+
+	if (!image)
+		return ;
+	ignore_color = image_get_pixel(image, 0, 0);
+	y = 0;
+	while (y < image->height)
+	{
+		x = 0;
+		while (x < image->width)
+		{
+			color = image_get_pixel(image, x, y);
+			if (color != ignore_color)
+				image_put_pixel(&game->scene, x + x_off, y + y_off, color);
+			x++;
+		}
+		y++;
+	}
 }

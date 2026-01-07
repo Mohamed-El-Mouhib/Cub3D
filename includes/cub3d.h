@@ -49,10 +49,6 @@ int	key_press(int key_code, t_game *game);
 int	key_release(int key_code, t_game *game);
 void    game_handle_keyboard_events(t_game *game);
 
-// player movements
-void player_rotate(t_player *player, t_rotate_dir rot_dir);
-void player_move(t_player *player, t_move_dir move_dir);
-
 // Mouse events
 int handle_mouse_event(int x,int y, t_game *game);
 
@@ -64,8 +60,8 @@ double lerp(double start, double end, double t);
 t_vec2 vec2_lerp(t_vec2 start, t_vec2 end, double factor);
 
 // initializers
-void init_player(t_game *game);
 void init_game(t_game *game, char *filename);
+void player_init(t_game *game);
 
 // Parser
 bool parse_content(char *filename, t_game* game);
@@ -84,12 +80,17 @@ t_animation *init_animation(size_t start, size_t end, int duration);
 t_animation *load_animation_frames(t_game *game, char **paths, size_t size);
 t_data *assets_get(t_game *game, int id);
 
-// animations
-void init_player_animations(t_game *game);
-void player_update_bobing(t_game *game);
-void player_update_pos_lr(t_game *game);
-void player_update_pos_fb(t_game *game);
+// Player
+void player_update_bobbing(t_game *game);
 void player_update_sway(t_game *game);
+void player_update_pos(t_game *game);
+void player_update_velocity(t_game *game);
+void player_update_frame(t_game *game);
+void player_rotate(t_player *player, t_rotate_dir rot_dir);
+void player_move(t_player *player, t_move_dir move_dir);
+
+
+// Animations
 t_data *animation_get_frame(t_game *game, t_animation *anim);
 void animation_cycle(t_game *game, t_animation *anim);
 

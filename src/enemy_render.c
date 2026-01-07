@@ -80,7 +80,7 @@ static unsigned int get_point_color(t_game *game, t_enemy *enemy, int i, int j)
 		x = (i - enemy->s.x + enemy->size - enemy->e.x) / enemy->size * tex_w;
 
 	y = (j - enemy->s.y) / enemy->size * tex_h;
-	return (imgae_get_pixel(frame, x, y));
+	return (image_get_pixel(frame, x, y));
 }
 
 void draw_enemy_frame(t_game *game, t_enemy *enemy)
