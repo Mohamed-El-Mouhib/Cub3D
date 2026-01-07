@@ -54,15 +54,20 @@ double lerp(double start, double end, double t);
 t_vec2 vec2_lerp(t_vec2 start, t_vec2 end, double factor);
 
 // initializers
-void init_game(t_game *game);
 void init_player(t_game *game);
+void init_game(t_game *game, char *filename);
 
 // Parser
-t_dyn read_map_from_file(char *filename);
+bool parse_content(char *filename, t_game* game);
+void	init_error(t_error_type type, int line, int index, void* p);
 
 // textures
 void	draw_texture_line(t_game *game, t_dda_ctx *info);
 
+bool is_valid_char(char c);
+
+// error
+void	error_indexing(void);
 // assets factory
 int assets_load_xpm(t_game *game, char *path);
 t_animation *init_animation(size_t start, size_t end, int duration);

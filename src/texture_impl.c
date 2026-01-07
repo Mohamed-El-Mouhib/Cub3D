@@ -48,14 +48,14 @@ unsigned int get_color_info(t_game *game, t_dda_ctx *info, int i, t_vec2 *vec)
 {
 	int	offs;
 
-	vec->y = (double)(i / info->line_height) * game->frames.walltex_[info->side].height;
+	vec->y = (double)(i / info->line_height) * game->frames.walls[info->side].height;
 	if (vec->y < 0)
 		vec->y = 0;
-	else if (vec->y >= game->frames.walltex_[info->side].height)
-		vec->y = game->frames.walltex_[info->side].height - 1;
+	else if (vec->y >= game->frames.walls[info->side].height)
+		vec->y = game->frames.walls[info->side].height - 1;
 
-	offs = (int)vec->y * game->frames.walltex_[info->side].line_len + (int)vec->x * (game->frames.walltex_[info->side].bpp / 8);
-	return *(unsigned int *)(game->frames.walltex_[info->side].addr + offs);
+	offs = (int)vec->y * game->frames.walls[info->side].line_len + (int)vec->x * (game->frames.walls[info->side].bpp / 8);
+	return *(unsigned int *)(game->frames.walls[info->side].addr + offs);
 }
 
 /**
@@ -74,17 +74,17 @@ void	draw_texture_line(t_game *game, t_dda_ctx *info)
 	unsigned int	px;
 
 	i = -1;
-	vec.x = fmod(hit_points(game, info), 1.0) * game->frames.walltex_[info->side].width;
+	vec.x = fmod(hit_points(game, info), 1.0) * game->frames.walls[info->side].width;
 	if (vec.x < 0)
 		vec.x = 0;
-	else if (vec.x >= game->frames.walltex_[info->side].width)
-		vec.x = game->frames.walltex_[info->side].width;
+	else if (vec.x >= game->frames.walls[info->side].width)
+		vec.x = game->frames.walls[info->side].width;
 	while (++i < game->screen_height)
 	{
 		if (i < info->line_start.y)
-			px = COLOR_BLUE; // this supposed to be ceiling
+			px = game->ceiling;
 		else if (i > info->line_end.y)
-			px = COLOR_NYANZA; // this supposed to be floor
+			px = game->floor;
 		else
 			px = get_color_info(game, info, i - info->line_start.y, &vec);
 		image_put_pixel(&game->scene, info->line_start.x, i, px);
