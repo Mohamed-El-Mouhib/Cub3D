@@ -12,27 +12,24 @@
 
 #include "../includes/cub3d.h"
 
-// void	evaluate_file_content(t_dyn *map, t_world *world)
-// {
-// }
-
-t_world init_game_world(char *filename)
+bool init_game_world(char *filename, t_game* game)
 {
-	t_world world;
-	t_dyn map;
-
-	ft_bzero(&world, sizeof(world));
-	map = read_map_from_file(filename);
-	world.map = (char **)map.buff;
-	world.map_width = ft_strlen(world.map[0]); //must be changed
-	world.map_height = map.length; //must be changed
-	return (world);
+	ft_bzero(game, sizeof(t_game));
+	game->player.pos = vec2_new(-1, -1);
+	if (!parse_content(filename, game))
+		return (false);
+	if (game->player.pos.x == -1 && game->player.pos.y == -1)
+		return (init_error(NO_PLAYER, 0,0, NULL), false);
+	return (true);
 }
 
-void init_game(t_game *game)
+void init_game(t_game *game, char *filename)
 {
-	ft_bzero(game, sizeof(*game));
-	game->world = init_game_world("map.cub");
+	if (!init_game_world(filename, game))
+	{
+		error_indexing();
+		return;
+	}
 	game->mlx = mlx_init();
 	if (!game->mlx)
 		ft_exit_error("Faild to allocate mlx");

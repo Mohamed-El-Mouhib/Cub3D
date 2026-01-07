@@ -1,7 +1,5 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   types.h                                            :+:      :+:    :+:   */
+/*                                                                            */ /*                                                        :::      ::::::::   */ /*   types.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aljbari    <aljbari@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -40,6 +38,19 @@
 # define INIT_ROTATION_STEP_DEGREE 2
 # define INIT_ROTATION_STEP ((INIT_ROTATION_STEP_DEGREE * M_PI) / 180.0)
 
+#define	FILENAME_ERR "Error\nplease provide filename example: ./path/to/map.cub\n"
+#define	PATH_ERR "Error\n'%s' %d:%d - invalid .xpm asset path\n"
+#define	IN_FILENAME_ERR "Error\n'%s' must have a .cub extension.\n"
+#define	IN_SYNX_ERR "Error\n'%s' %d:%d - syntax error\n"
+#define	IN_CHAR_ERR "Error\n'%s' %d:%d - invalid character '%c'\n"
+#define	IN_COLOR_ERR "Error\n'%s' %d:%d - invalid color\n"
+#define	PLAYER_ERR "Error\n'%s' %d:%d invalid number of player instance\n"
+#define	UNFINISHED_ERR "Error\n'%s' is incomplete or missing required settings.\n"
+#define	COMMAS_ERR "Error\n'%s': invalid number of commas\n"
+#define	CLOSE_ERR "Error\n'%s' %d:%d unclosed wall found (%c)\n"
+#define	MAP_ERR "Error\n'%s': does not contain a valid map\n"
+#define	NO_PLAYER_ERR "Error\n'%s': does not specify a player start position\n"
+
 typedef int t_color;
 
 /**
@@ -54,14 +65,25 @@ typedef struct s_vec2
 	double	y;
 }			t_vec2;
 
-typedef enum e_error
+typedef enum e_error_type
 {
+	NO_ERR = 0,
 	NO_FILENAME,
-	EMPY_FILE,
+	EMPTY_FILE,
 	INVALID_FILENAME,
+	INVALID_SYNX,
+	INVALID_EXT,
 	INVALID_CHAR,
-	NO_ERR,
-}	t_error;
+	INVALID_PATH,
+	INVALID_COLOR,
+	DOUBLE_P_INSTANCE,
+	NO_P_INSTANCE,
+	UNFINISHED,
+	COMMAS,
+	UNCLOSED,
+	NO_MAP,
+	NO_PLAYER,
+}	t_error_type;
 
 typedef struct s_data
 {
@@ -112,8 +134,6 @@ typedef struct s_world {
 	size_t  map_width;
 	size_t  map_height;
 	char **map;
-	t_color	ceiling;
-	t_color	floor;
 }
 t_world;
 
@@ -123,8 +143,28 @@ t_world;
  */
 typedef struct s_frames
 {
-	t_data	walltex_[2];
+	t_data	walls[4];
 }	t_frames;
+
+typedef struct s_err
+{
+	int	    line;
+	int	    cpos;
+	void*     ptr;
+	char*     file;
+	t_error_type err;
+}	t_err;
+
+typedef struct s_ParseConfig
+{
+	char*    ptr[6];
+	char**	map;
+	size_t	map_width;
+	size_t	map_height;
+	t_color  f;
+	t_color  c;
+	t_err  error;
+}	t_config;
 
 typedef enum
 {
@@ -147,6 +187,17 @@ typedef struct s_char
 	t_stat	stat;
 }	t_ai;
 
+typedef enum e_token
+{
+	NO = 0,
+	SO,
+	WE,
+	EA,
+	F,
+	C,
+	NOT,
+}	t_token;
+
 typedef struct s_game
 {
 	t_world  world;
@@ -160,6 +211,8 @@ typedef struct s_game
 	t_frames	frames;
 	void	 *win;
 	void	 *mlx;
+	t_color	ceiling;
+	t_color	floor;
 	t_ai	enemy;
 	t_dyn *assets;
 	time_t tick;

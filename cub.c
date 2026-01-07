@@ -163,26 +163,29 @@ void	prepare_wall_images(t_game *game)
 	int	line_len;
 
 	tmp = mlx_xpm_file_to_image(game->mlx, "t1.xpm", &x, &y);
-	game->frames.walltex_[0].addr = mlx_get_data_addr(tmp,&bpp, &line_len, &endian);
-	game->frames.walltex_[0].height = y;
-	game->frames.walltex_[0].width = x;
-	game->frames.walltex_[0].bpp = bpp;
-	game->frames.walltex_[0].line_len = line_len;
-	game->frames.walltex_[0].endian = endian;
+	game->frames.walls[0].addr = mlx_get_data_addr(tmp,&bpp, &line_len, &endian);
+	game->frames.walls[0].height = y;
+	game->frames.walls[0].width = x;
+	game->frames.walls[0].bpp = bpp;
+	game->frames.walls[0].line_len = line_len;
+	game->frames.walls[0].endian = endian;
 	tmp = mlx_xpm_file_to_image(game->mlx,"t2.xpm", &x, &y);
-	game->frames.walltex_[1].addr = mlx_get_data_addr(tmp, &bpp, &line_len, &endian);
-	game->frames.walltex_[1].height = y;
-	game->frames.walltex_[1].width = x;
-	game->frames.walltex_[1].bpp = bpp;
-	game->frames.walltex_[1].line_len = line_len;
-	game->frames.walltex_[1].endian = endian;
+	game->frames.walls[1].addr = mlx_get_data_addr(tmp, &bpp, &line_len, &endian);
+	game->frames.walls[1].height = y;
+	game->frames.walls[1].width = x;
+	game->frames.walls[1].bpp = bpp;
+	game->frames.walls[1].line_len = line_len;
+	game->frames.walls[1].endian = endian;
+
 }
 
-int	main()
+int	main(int ac, char **av)
 {
 	t_game game;
 
-	init_game(&game);
+	if (ac != 2)
+		return 1;
+	init_game(&game, av[1]);
 	prepare_wall_images(&game);
 	mlx_loop_hook(game.mlx, game_loop, &game);
 	mlx_hook(game.win, 06, 1L<<6, handle_mouse_event, &game); // Our mouse friend
