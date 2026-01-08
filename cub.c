@@ -11,19 +11,6 @@
 /* ************************************************************************** */
 
 #include "includes/cub3d.h"
-#include "includes/graphics.h"
-#include "includes/types.h"
-
-
-void draw_enemy(t_game *game, t_enemy *enemy);
-
-
-
-
-void enemy_update_pos(t_game *game, t_enemy *enemy);
-void enemy_update_state(t_game *g, t_enemy *e);
-void player_update_state(t_game *game);
-void player_render_frame(t_game *game);
 
 void game_update_shaking(t_game *game)
 {
@@ -39,7 +26,6 @@ void game_update_time(t_game *game)
 	game->tick = curr_time_ms();
 }
 
-
 void game_update(t_game *game)
 {
 	// player
@@ -53,6 +39,7 @@ void game_update(t_game *game)
 	// enemy
 	enemy_update_pos(game, game->enemies->buff[0]);
 	enemy_update_state(game, game->enemies->buff[0]);
+	enemy_update_frame_all(game);
 
 	// game
 	game_update_time(game);
@@ -63,11 +50,10 @@ void game_rander(t_game *game)
 {
 	raycast_draw_walls(game);
 	draw_minimap(game);
-	draw_enemies(game);
+	enemy_draw_all(game);
 	player_render_frame(game);
 	mlx_put_image_to_window(game->mlx, game->win, game->scene.img, 0, 0);
 }
-
 
 bool is_frame_ready()
 {
@@ -83,8 +69,6 @@ bool is_frame_ready()
 	frames++;
 	return (true);
 }
-
-
 
 int game_loop(t_game *game)
 {

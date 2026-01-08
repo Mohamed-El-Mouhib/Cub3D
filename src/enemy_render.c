@@ -1,6 +1,9 @@
 #include "../includes/cub3d.h"
-#include <stddef.h>
 
+/**
+ * enemy_camera_pos - Calculate the position of the player in the coordinate
+ * system: (player->dir, player->plane)
+ */
 t_vec2 enemy_camera_pos(t_game *game, t_enemy *enemy)
 {
 	t_player *p = &game->player;
@@ -63,6 +66,9 @@ t_vec2 enemy_set_end(t_game *game, t_enemy *enemy)
 	return (bottom);
 }
 
+/**
+ * get_point_color - get the pixel color of the point (i, j)
+ */
 static unsigned int get_point_color(t_game *game, t_enemy *enemy, int i, int j)
 {
 	int tex_w;
@@ -83,7 +89,11 @@ static unsigned int get_point_color(t_game *game, t_enemy *enemy, int i, int j)
 	return (image_get_pixel(frame, x, y));
 }
 
-void draw_enemy_frame(t_game *game, t_enemy *enemy)
+/**
+ * enemy_draw_frame - draw the current frame of the enemy in the correct
+ * position
+ */
+void enemy_draw_frame(t_game *game, t_enemy *enemy)
 {
 	unsigned int color;
 	unsigned int ignore_color;
@@ -105,7 +115,10 @@ void draw_enemy_frame(t_game *game, t_enemy *enemy)
 	}
 }
 
-void draw_enemy_borders(t_game *game, t_enemy *enemy)
+/**
+ * enemy_draw_borders - draw enemy borders to show its boundaries
+ */
+void enemy_draw_borders(t_game *game, t_enemy *enemy)
 {
 	t_vec2 p1;
 	t_vec2 p2;
@@ -122,7 +135,11 @@ void draw_enemy_borders(t_game *game, t_enemy *enemy)
 	draw_line(&game->scene, p4, p3, COLOR_RED);
 }
 
-void draw_enemy(t_game *game, t_enemy *enemy)
+/**
+ * enemy_draw_one - Calculate the enemy posistion in the screen then draw its
+ * current frame
+ */
+void enemy_draw_one(t_game *game, t_enemy *enemy)
 {
 	int w = game->screen_width;
 	int h = game->screen_height;
@@ -135,11 +152,14 @@ void draw_enemy(t_game *game, t_enemy *enemy)
 		return ;
 	if (enemy->screen > w + enemy->size)
 		return ;
-	draw_enemy_frame(game, enemy);
-	draw_enemy_borders(game, enemy);
+	enemy_draw_frame(game, enemy);
+	enemy_draw_borders(game, enemy);
 }
 
-void draw_enemies(t_game *game)
+/**
+ * enemy_update_frame_all - Update the current frame of each enemy in the game
+ */
+void enemy_update_frame_all(t_game *game)
 {
 	t_enemy *enemy;
 
@@ -147,6 +167,17 @@ void draw_enemies(t_game *game)
 	{
 		enemy = dyn_at(game->enemies, i);
 		animation_cycle(game, enemy->animation[enemy->state]);
-		draw_enemy(game, dyn_at(game->enemies, i));
 	}
+}
+
+/**
+ * enemy_draw_all - draw the current frame of each enemy in the game
+ */
+void enemy_draw_all(t_game *game)
+{
+	size_t i;
+
+	i = 0;
+	while (i < game->enemies->length)
+		enemy_draw_one(game, dyn_at(game->enemies, i++));
 }

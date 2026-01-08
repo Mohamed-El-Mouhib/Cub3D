@@ -86,8 +86,10 @@ void player_update_sway(t_game *game);
 void player_update_pos(t_game *game);
 void player_update_velocity(t_game *game);
 void player_update_frame(t_game *game);
+void player_update_state(t_game *game);
 void player_rotate(t_player *player, t_rotate_dir rot_dir);
 void player_move(t_player *player, t_move_dir move_dir);
+void player_render_frame(t_game *game);
 
 
 // Animations
@@ -96,6 +98,10 @@ void animation_cycle(t_game *game, t_animation *anim);
 
 // enemy utils
 void init_enemies(t_game *game);
-void draw_enemies(t_game *game);
+void enemy_update_pos(t_game *g, t_enemy *e);
+void enemy_update_pos(t_game *g, t_enemy *e);
+void enemy_update_state(t_game *g, t_enemy *e);
+void enemy_draw_all(t_game *game);
+void enemy_update_frame_all(t_game *game);
 
 #endif

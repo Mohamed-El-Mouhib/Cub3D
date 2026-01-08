@@ -9,7 +9,7 @@ static char get_map_cell(t_game *game, int x, int y)
 
 
 /**
- * has_los - chack if point from las line of sight into point to
+ * has_los - chack if point @from has line of sight into point @to
  */
 int has_los(t_game *g, t_vec2 from, t_vec2 to)
 {
@@ -36,12 +36,9 @@ int has_los(t_game *g, t_vec2 from, t_vec2 to)
 }
 
 
-
-#define ENEMY_WALK_SPEED 40
-
-/*
-** Checks collision with a radius buffer to prevent clipping.
-*/
+/**
+ * Checks collision with a radius buffer to prevent clipping
+ */
 int can_move(t_game *g, float x, float y)
 {
 	int pad;
