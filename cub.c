@@ -44,6 +44,8 @@ void game_update(t_game *game)
 	enemy_update_pos(game, game->enemies->buff[0]);
 	enemy_update_state(game, game->enemies->buff[0]);
 	enemy_update_frame_all(game);
+	// t_enemy *enemy = game->enemies->buff[0];
+	// printf("FRAME Id: %zu\n", enemy->animation[enemy->state]->curr);
 }
 
 void game_rander(t_game *game)

@@ -27,6 +27,8 @@
 #define PLAYER_RUN_SPEED 80.0
 #define PLAYER_ACCEL_RATE 0.1   // How fast you reach max speed
 
+// Live
+#define PLAYER_MAX_LIVES 5
 
 // Equipments
 #define PLAYER_MAX_AMMO 15

@@ -84,35 +84,39 @@ void enemy_update_pos(t_game *g, t_enemy *e)
 }
 
 
-void enemy_attack_player(t_game *g, t_enemy *e)
+void enemy_attack_player(t_game *game, t_enemy *enemy)
 {
 	double   dist_sq;
 
 
-	dist_sq = vec2_len_squared(e->pos, g->player.pos);
-	if (dist_sq < TILE_SIZE * TILE_SIZE && g->shake > 15) 
+	dist_sq = vec2_len_squared(enemy->pos, game->player.pos);
+	if (dist_sq < TILE_SIZE * TILE_SIZE * 2) 
 	{
-		printf("Oops: You got hit\n");
+		game->player.lives--;
+		if (game->player.lives <= 0)
+			printf("R.I.P DARLING MOUSE\n");
+		else
+			printf("Oops! you still have %d lives\n", game->player.lives);
 	}
 }
 
-void enemy_update_state(t_game *g, t_enemy *e)
+void enemy_update_state(t_game *game, t_enemy *enemy)
 {
 	t_animation *anim;
 
-	enemy_attack_player(g, e);
-	if (e->state == ENEMY_WALKING)
+	if (enemy->state == ENEMY_WALKING)
 		return ;
-	anim = e->animation[ENEMY_ATTACKING];
-	if (e->state == ENEMY_ATTACKING && anim->curr != anim->end)
+	anim = enemy->animation[ENEMY_ATTACKING];
+	if (enemy->state == ENEMY_ATTACKING && !anim->finished)
 	{
 		if (anim->end - anim->curr == 3)
-			g->shake = 30;
+			game->shake = 30;
 		return ;
 	}
-	else
+	if (enemy->state == ENEMY_ATTACKING && anim->finished)
 	{
-		e->state = ENEMY_WALKING;
-		anim->curr = anim->start;
+		enemy_attack_player(game, enemy);
+		enemy->state = ENEMY_WALKING;
+		anim->finished = false;
 	}
 }

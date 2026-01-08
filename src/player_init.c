@@ -61,5 +61,6 @@ void player_init(t_game *game)
 	game->player.rot_angle = INIT_ROTATION_STEP;
 	game->player.max_speed = PLAYER_WALK_SPEED;
 	game->player.ammo = PLAYER_MAX_AMMO;
+	game->player.lives = PLAYER_MAX_LIVES;
 	player_init_animations(game);
 }
