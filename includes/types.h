@@ -36,7 +36,7 @@
 # include <limits.h>
 
 # define FRAME_RATE 24
-# define INIT_ROTATION_STEP_DEGREE 150.0
+# define INIT_ROTATION_STEP_DEGREE 40.0
 # define INIT_ROTATION_STEP ((INIT_ROTATION_STEP_DEGREE * M_PI) / 180.0)
 
 #define	FILENAME_ERR "Error\nplease provide filename example: ./path/to/map.cub\n"
@@ -200,6 +200,7 @@ typedef struct s_enemy
 	t_animation *animation[ENEMY_STATS_NBR];
 	time_t last_attack_time;
 	double screen; // intersaction with the screen projection
+	int health;
 }	t_enemy;
 
 
@@ -219,6 +220,7 @@ typedef struct s_game
 	t_world  world;
 	t_player player;
 	t_vec2	 mouse_pos;
+	t_vec2 last_mouse_pos;
 	// Rander fields
 	size_t  screen_width;
 	size_t  screen_height;

@@ -20,6 +20,7 @@ void player_reload_state(t_game *game)
 	}
 }
 
+void player_fire_bullet(t_game *game);
 void player_shooting_state(t_game *game)
 {
 	t_animation *anim;
@@ -34,7 +35,10 @@ void player_shooting_state(t_game *game)
 	if (anim->finished)
 	{
 		if (p->ammo > 0)
+		{
 			p->ammo--;
+			player_fire_bullet(game);
+		}
 		if (!game->keyboard_events[KEY_SPACE])
 			p->state = PLAYER_WALKING;
 		anim->finished = false;

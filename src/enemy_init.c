@@ -77,6 +77,7 @@ void init_enemies(t_game *game)
 		enemy->animation[ENEMY_WALKING] = animations[ENEMY_WALKING];
 		enemy->animation[ENEMY_ATTACKING] = animations[ENEMY_ATTACKING];
 		enemy->state = ENEMY_WALKING;
+		enemy->health = ENEMY_MAX_HEALTH;
 		dyn_add_back(game->enemies, enemy);
 	}
 }

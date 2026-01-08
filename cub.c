@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "includes/cub3d.h"
+#include "includes/graphics.h"
 
 void game_update_shaking(t_game *game)
 {
@@ -25,6 +26,8 @@ void game_update_time(t_game *game)
 	game->dt = (ct - game->tick) / 1000.0;
 	game->tick = curr_time_ms();
 }
+
+void player_fire_bullet(t_game *game);
 
 void game_update(t_game *game)
 {
@@ -54,6 +57,7 @@ void game_rander(t_game *game)
 	draw_minimap(game);
 	enemy_draw_all(game);
 	player_render_frame(game);
+	draw_filled_circle(&game->scene, vec2_new(game->screen_width / 2.0, game->screen_height / 2.0), 8, COLOR_RED);
 	mlx_put_image_to_window(game->mlx, game->win, game->scene.img, 0, 0);
 }
 

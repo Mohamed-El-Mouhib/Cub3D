@@ -40,3 +40,54 @@ void player_rotate(t_game *game, t_rotate_dir rot_dir)
 	player->dir = dir;
 	player->plane = plane;
 }
+
+static char get_map_cell(t_game *game, int x, int y)
+{
+	if (x > (int)game->world.map_width || y > (int)game->world.map_height)
+		return ('1');
+	return (game->world.map[y][x]);
+}
+
+
+bool enemy_foreach(t_game *game, t_vec2 bullet)
+{
+	t_enemy *enemy;
+	double d;
+	double max_d;
+
+	d = (15*15);
+	max_d = TILE_SIZE * TILE_SIZE * 8;
+
+	for (size_t i = 0; i < game->enemies->length; i++)
+	{
+		enemy = dyn_at(game->enemies, i);
+		if (enemy->health > 0 && vec2_len_squared(bullet, enemy->pos) < d)
+		{
+			enemy->health -= 7;
+			printf("ENEMY HEALTH: %d\n", enemy->health);
+			if (enemy->health <= 0)
+			{
+				enemy->health = 0;
+				printf("You killed an enemy\n");
+			}
+			return (true);
+		}
+	}
+	return (false);
+}
+
+
+void player_fire_bullet(t_game *game)
+{
+	t_vec2 bullet;
+
+	bullet = game->player.pos;
+	while (1)
+	{
+		bullet = vec2_add(bullet, game->player.dir);
+		if (get_map_cell(game, (int)bullet.x / TILE_SIZE, (int)bullet.y / TILE_SIZE) == '1')
+			return ;
+		if (enemy_foreach(game, bullet))
+			return ;
+	}
+}

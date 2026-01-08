@@ -34,7 +34,8 @@
 #define PLAYER_MAX_AMMO 15
 
 // enemy stuff
-#define ENEMY_WALK_SPEED 40
+#define ENEMY_WALK_SPEED 40.0
+#define ENEMY_MAX_HEALTH 100
 
 
 # define TILE_SIZE 80.0
