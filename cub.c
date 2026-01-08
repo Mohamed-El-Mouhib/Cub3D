@@ -102,21 +102,20 @@ void	prepare_wall_images(t_game *game)
 	int	endian;
 	int	line_len;
 
-	tmp = mlx_xpm_file_to_image(game->mlx, "t1.xpm", &x, &y);
+	tmp = mlx_xpm_file_to_image(game->mlx, "./textures/Wall/First.xpm", &x, &y);
 	game->frames.walls[0].addr = mlx_get_data_addr(tmp,&bpp, &line_len, &endian);
 	game->frames.walls[0].height = y;
 	game->frames.walls[0].width = x;
 	game->frames.walls[0].bpp = bpp;
 	game->frames.walls[0].line_len = line_len;
 	game->frames.walls[0].endian = endian;
-	tmp = mlx_xpm_file_to_image(game->mlx,"t2.xpm", &x, &y);
+	tmp = mlx_xpm_file_to_image(game->mlx,"./textures/Wall/Third.xpm", &x, &y);
 	game->frames.walls[1].addr = mlx_get_data_addr(tmp, &bpp, &line_len, &endian);
 	game->frames.walls[1].height = y;
 	game->frames.walls[1].width = x;
 	game->frames.walls[1].bpp = bpp;
 	game->frames.walls[1].line_len = line_len;
 	game->frames.walls[1].endian = endian;
-
 }
 
 int	main(int ac, char **av)

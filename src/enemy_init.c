@@ -4,8 +4,14 @@ static t_animation *enemy_animation_walking(t_game *game)
 {
 	size_t size;
 	static	char *paths[] = {
-		"./textures/enemy_walk/xpm/enemy_frame004.xpm",
-		"./textures/enemy_walk/xpm/enemy_frame005.xpm",
+		"./textures/enemy/W1.xpm",
+		"./textures/enemy/W2.xpm",
+		"./textures/enemy/W3.xpm",
+		"./textures/enemy/W4.xpm",
+		"./textures/enemy/W5.xpm",
+		"./textures/enemy/W6.xpm",
+		"./textures/enemy/W7.xpm",
+		"./textures/enemy/W8.xpm",
 	};
 
 	size = sizeof(paths)/sizeof(paths[0]);
@@ -40,16 +46,11 @@ static t_animation *enemy_animation_attacking(t_game *game)
 {
 	size_t size;
 	static	char *paths[] = {
-		"./textures/enemy_walk/xpm/attack1.xpm",
-		"./textures/enemy_walk/xpm/attack1.xpm",
-		"./textures/enemy_walk/xpm/attack2.xpm",
-		"./textures/enemy_walk/xpm/attack2.xpm",
-		"./textures/enemy_walk/xpm/attack3.xpm",
-		"./textures/enemy_walk/xpm/attack3.xpm",
-		"./textures/enemy_walk/xpm/attack4.xpm",
-		"./textures/enemy_walk/xpm/attack4.xpm",
-		"./textures/enemy_walk/xpm/attack5.xpm",
-		"./textures/enemy_walk/xpm/attack5.xpm",
+		"./textures/enemy/A0.xpm",
+		"./textures/enemy/A1.xpm",
+		"./textures/enemy/A2.xpm",
+		"./textures/enemy/A3.xpm",
+		"./textures/enemy/A4.xpm",
 	};
 
 	size = sizeof(paths)/sizeof(paths[0]);

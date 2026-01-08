@@ -2,7 +2,7 @@
 
 static char get_map_cell(t_game *game, int x, int y)
 {
-	if (x > (int)game->world.map_width || y > (int)game->world.map_height)
+	if (x >= (int)game->world.map_width || y >= (int)game->world.map_height || x < 0 || y < 0)
 		return ('1');
 	return (game->world.map[y][x]);
 }
@@ -104,7 +104,7 @@ void enemy_update_state(t_game *game, t_enemy *enemy)
 {
 	t_animation *anim;
 
-	if (enemy->state == ENEMY_WALKING)
+	if (enemy->state == ENEMY_WALKING || enemy->health <= 0)
 		return ;
 	anim = enemy->animation[ENEMY_ATTACKING];
 	if (enemy->state == ENEMY_ATTACKING && !anim->finished)

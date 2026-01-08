@@ -43,7 +43,7 @@ void player_rotate(t_game *game, t_rotate_dir rot_dir)
 
 static char get_map_cell(t_game *game, int x, int y)
 {
-	if (x > (int)game->world.map_width || y > (int)game->world.map_height)
+	if (x >= (int)game->world.map_width || y >= (int)game->world.map_height || x < 0 || y < 0)
 		return ('1');
 	return (game->world.map[y][x]);
 }

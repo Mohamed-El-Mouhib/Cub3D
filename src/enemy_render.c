@@ -143,6 +143,8 @@ void enemy_draw_one(t_game *game, t_enemy *enemy)
 {
 	int w = game->screen_width;
 	int h = game->screen_height;
+	if (enemy->health <= 0)
+		return ;
 	enemy->camera = enemy_camera_pos(game, enemy);
 	enemy->screen = (int)(((double)w / 2) * (1 + enemy->camera.x / enemy->camera.y));
 	enemy->size = abs((int)(h / (enemy->camera.y)));
@@ -179,5 +181,7 @@ void enemy_draw_all(t_game *game)
 
 	i = 0;
 	while (i < game->enemies->length)
+	{
 		enemy_draw_one(game, dyn_at(game->enemies, i++));
+	}
 }

@@ -55,6 +55,6 @@ t_animation *load_animation_frames(t_game *game, char **paths, size_t size)
 		end = assets_load_xpm(game, paths[i]);
 		i++;
 	}
-	anim = init_animation(start, end, 190);
+	anim = init_animation(start, end, 115);
 	return (anim);
 }
