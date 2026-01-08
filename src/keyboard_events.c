@@ -77,9 +77,9 @@ void game_handle_keyboard_events(t_game *game)
 
 	player = &game->player;
 	if (game->keyboard_events[KEY_RIGHT])
-		player_rotate(player, ROTATE_RIGHT);
+		player_rotate(game, ROTATE_RIGHT);
 	if (game->keyboard_events[KEY_LEFT])
-		player_rotate(player, ROTATE_LEFT);
+		player_rotate(game, ROTATE_LEFT);
 	if (game->keyboard_events[KEY_R] && game->player.state == PLAYER_WALKING)
 		game->player.state = PLAYER_RELOAD;
 	if (game->keyboard_events[KEY_SPACE] && game->player.state == PLAYER_WALKING)

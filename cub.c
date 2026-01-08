@@ -28,6 +28,10 @@ void game_update_time(t_game *game)
 
 void game_update(t_game *game)
 {
+	// game
+	game_update_time(game);
+	game_update_shaking(game);
+
 	// player
 	player_update_bobbing(game);
 	player_update_sway(game);
@@ -40,10 +44,6 @@ void game_update(t_game *game)
 	enemy_update_pos(game, game->enemies->buff[0]);
 	enemy_update_state(game, game->enemies->buff[0]);
 	enemy_update_frame_all(game);
-
-	// game
-	game_update_time(game);
-	game_update_shaking(game);
 }
 
 void game_rander(t_game *game)

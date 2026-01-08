@@ -87,7 +87,7 @@ void player_update_pos(t_game *game);
 void player_update_velocity(t_game *game);
 void player_update_frame(t_game *game);
 void player_update_state(t_game *game);
-void player_rotate(t_player *player, t_rotate_dir rot_dir);
+void player_rotate(t_game *game, t_rotate_dir rot_dir);
 void player_move(t_player *player, t_move_dir move_dir);
 void player_render_frame(t_game *game);
 
