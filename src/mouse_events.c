@@ -11,7 +11,8 @@
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
-#include <mlx.h>
+
+#define MOUSE_SENSITIVITY 0.002
 
 void player_rotate_mouse(t_game *game, double angle)
 {
@@ -32,23 +33,36 @@ void player_rotate_mouse(t_game *game, double angle)
 	player->plane = plane;
 }
 
-#define MOUSE_SENSITIVITY 0.003
 
-int handle_mouse_event(int x,int y, t_game *game)
+int handle_mouse_press(int keycode, int x, int y, t_game *game)
+{
+	(void) x;
+	(void) y;
+
+	if (keycode == XK_LEFT_CLICK)
+		game->inputs[KEY_LCLICK] = true;
+	return (0);
+}
+
+int handle_mouse_release(int keycode, int x, int y, t_game *game)
+{
+	(void) x;
+	(void) y;
+
+	if (keycode == XK_LEFT_CLICK)
+		game->inputs[KEY_LCLICK] = false;
+	return (0);
+}
+
+int handle_mouse_move(int x, int y, t_game *game)
 {
 	int delta_x;
-	// game->mouse_pos.x = x;
-	// game->mouse_pos.y = y;
+
 	delta_x = x - game->last_mouse_pos.x;
 	if (abs(delta_x) > 200) 
 		delta_x = 0;
-	// printf("%f\n", delta_x * MOUSE_SENSITIVITY);
-	// printf("Delta %d\n", delta_x);
 	if (delta_x != 0)
-	{
 		player_rotate_mouse(game, delta_x * MOUSE_SENSITIVITY);
-	}
-	// mlx_mouse_move(game->mlx, game->win,game->screen_width / 2.0, game->screen_height / 2.0);
 	if (x > ((int)game->screen_width - 50))
 		mlx_mouse_move(game->mlx, game->win, 60, y);
 	if (x < 50)

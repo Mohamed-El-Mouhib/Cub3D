@@ -69,9 +69,9 @@ void player_update_sway(t_game *game)
 
 	target_sway = 0;
 	player = &game->player;
-	if (game->keyboard_events[KEY_LEFT])
+	if (game->inputs[KEY_LEFT])
 		target_sway = PLAYER_MAX_SWAY;
-	else if (game->keyboard_events[KEY_RIGHT])
+	else if (game->inputs[KEY_RIGHT])
 		target_sway = -PLAYER_MAX_SWAY;
 	if (fabs(player->sway) < 0.1) 
 		player->sway = 0;

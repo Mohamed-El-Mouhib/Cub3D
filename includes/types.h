@@ -224,7 +224,7 @@ typedef struct s_game
 	// Rander fields
 	size_t  screen_width;
 	size_t  screen_height;
-	bool keyboard_events[256];
+	bool inputs[256];
 	t_data	 scene;
 	t_frames	frames;
 	void	 *win;
@@ -257,6 +257,7 @@ typedef enum e_wall_side
 
 typedef enum e_keycode{
 	KEY_ESCAPE = 0,
+	KEY_LCLICK,
 	KEY_SHIFT_L,
 	KEY_SPACE,
 	KEY_RIGHT,

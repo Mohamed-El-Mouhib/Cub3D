@@ -14,6 +14,8 @@
 # define CUB3D_H
 # include "graphics.h"
 
+#define XK_LEFT_CLICK 1
+
 // Animation Configuration
 // Sway
 #define PLAYER_MAX_SWAY 90
@@ -50,10 +52,12 @@ void raycast_draw_walls(t_game *game);
 // Keyboard events
 int	key_press(int key_code, t_game *game);
 int	key_release(int key_code, t_game *game);
-void    game_handle_keyboard_events(t_game *game);
+void    game_handle_inputs(t_game *game);
 
 // Mouse events
-int handle_mouse_event(int x,int y, t_game *game);
+int handle_mouse_move(int x,int y, t_game *game);
+int handle_mouse_press(int keycode, int x, int y, t_game *game);
+int handle_mouse_release(int keycode, int x, int y, t_game *game);
 
 // Utils
 void ft_exit_error(char *msg);

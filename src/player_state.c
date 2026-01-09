@@ -39,7 +39,7 @@ void player_shooting_state(t_game *game)
 			p->ammo--;
 			player_fire_bullet(game);
 		}
-		if (!game->keyboard_events[KEY_SPACE])
+		if (!game->inputs[KEY_SPACE])
 			p->state = PLAYER_WALKING;
 		anim->finished = false;
 	}

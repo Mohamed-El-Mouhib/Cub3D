@@ -80,7 +80,7 @@ int game_loop(t_game *game)
 {
 	if (!is_frame_ready())
 		return (0);
-	game_handle_keyboard_events(game);
+	game_handle_inputs(game);
 	game_update(game);
 	game_rander(game);
 	return (0);
@@ -127,9 +127,11 @@ int	main(int ac, char **av)
 	init_game(&game, av[1]);
 	prepare_wall_images(&game);
 	mlx_loop_hook(game.mlx, game_loop, &game);
-	mlx_hook(game.win, 06, 1L<<6, handle_mouse_event, &game); // Our mouse friend
+	mlx_hook(game.win, 6, 1L << 6, handle_mouse_move, &game); // Our mouse friend
 	mlx_hook(game.win, 2, 1L << 0, key_press, &game);         // if key pressed
 	mlx_hook(game.win, 3, 1L << 1, key_release, &game);       // if key released
+	mlx_hook(game.win, 4, 1L << 2, handle_mouse_press, &game);
+	mlx_hook(game.win, 5, 1L << 3, handle_mouse_release, &game);
 	mlx_loop(game.mlx);
 	return (0);
 }

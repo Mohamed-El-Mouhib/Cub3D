@@ -41,7 +41,7 @@ void init_game(t_game *game, char *filename)
 	game->scene = image_new(game, game->screen_width, game->screen_height);
 	game->mouse_pos = vec2_new(0, 0);
 	game->assets = dyn_init_ptr();
-	ft_bzero(game->keyboard_events, sizeof(game->keyboard_events));
+	ft_bzero(game->inputs, sizeof(game->inputs));
 	player_init(game);
 	game->stripes = malloc(sizeof(double) * game->screen_width);
 	game->tick = curr_time_ms();
