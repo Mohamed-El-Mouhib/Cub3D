@@ -46,7 +46,7 @@ void init_game(t_game *game, char *filename)
 	game->stripes = malloc(sizeof(double) * game->screen_width);
 	game->tick = curr_time_ms();
 	game->shake = 0;
-	int idx = assets_load_xpm(game, "./textures/ui/numbers_.xpm");
+	int idx = assets_load_xpm(game, "./textures/digits.xpm");
 	game->numbers = dyn_at(game->assets, idx);
 	
 	// assignment an instance to imaginary enemy

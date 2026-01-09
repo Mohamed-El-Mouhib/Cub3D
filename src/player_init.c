@@ -56,7 +56,7 @@ void player_init_animations(t_game *game)
 
 void player_init(t_game *game)
 {
-	game->player.pos = vec2_new(TILE_SIZE * 4, TILE_SIZE * 4);
+	game->player.pos = vec2_new(TILE_SIZE * 2 + TILE_SIZE / 2, TILE_SIZE * 2 + TILE_SIZE / 2);
 	game->player.dir = vec2_new(1, 0);
 	game->player.plane = vec2_new(0, 0.66);
 	game->player.bob = vec2_new(0, 0);
