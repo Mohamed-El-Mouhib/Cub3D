@@ -12,9 +12,13 @@
 
 # ifndef CUB3D_H
 # define CUB3D_H
+
 # include "graphics.h"
 
 #define XK_LEFT_CLICK 1
+
+// Mouse
+#define MOUSE_SENSITIVITY 0.002
 
 // Animation Configuration
 // Sway
@@ -39,10 +43,8 @@
 #define ENEMY_WALK_SPEED 40.0
 #define ENEMY_MAX_HEALTH 100
 
-
 # define TILE_SIZE 80.0
-// # define WIN_H (TILE_SIZE * 20 + 1)
-// # define WIN_W (TILE_SIZE * 40 + 1)
+
 
 // minimap
 void draw_minimap(t_game *game);

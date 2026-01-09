@@ -48,6 +48,8 @@ void player_update_bobbing(t_game *game)
 	double bob_amount_x;
 	double bob_amount_y;
 
+	if (game->dt > 0.1)
+		return ;
 	bob_amount_x = 2 + game->player.speed * PLAYER_BOB_AMOUNT;
 	bob_amount_y = 4 + game->player.speed * PLAYER_BOB_AMOUNT;
 	freq = game->tick / (166.0);
@@ -67,6 +69,8 @@ void player_update_sway(t_game *game)
 	double target_sway;
 	t_player *player;
 
+	if (game->dt > 0.1)
+		return ;
 	target_sway = 0;
 	player = &game->player;
 	if (game->inputs[KEY_LEFT])

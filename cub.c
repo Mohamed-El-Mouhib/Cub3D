@@ -51,6 +51,14 @@ void game_update(t_game *game)
 	// printf("FRAME Id: %zu\n", enemy->animation[enemy->state]->curr);
 }
 
+typedef struct s_color {
+	unsigned char r:8;
+	unsigned char g:8;
+	unsigned char b:8;
+	unsigned char a:8;
+} t_color_;
+
+
 void game_rander(t_game *game)
 {
 	raycast_draw_walls(game);

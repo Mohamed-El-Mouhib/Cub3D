@@ -58,6 +58,13 @@ unsigned int get_color_info(t_game *game, t_dda_ctx *info, int i, t_vec2 *vec)
 	return *(unsigned int *)(game->frames.walls[info->side].addr + offs);
 }
 
+typedef struct s_color {
+	unsigned char r;
+	unsigned char g;
+	unsigned char b;
+	unsigned char a;
+} t_color_;
+
 /**
  * draw_texture_line - Draws a vertical line with ceiling, wall, and floor colors.
  * @i: Current pixel position in the column.
@@ -67,11 +74,28 @@ unsigned int get_color_info(t_game *game, t_dda_ctx *info, int i, t_vec2 *vec)
  * @px: Color value to be set for the current pixel.
  *
  */
+// Adjustable constant: Higher value = Fog starts closer
+#define FOG_INTENSITY 25.0 
+
+static unsigned int apply_fog(unsigned int color_val, double factor)
+{
+	t_color_ *c;
+
+	if (factor == 0)
+		return color_val;
+	c = (t_color_*)&color_val;
+	c->r /= factor;
+	c->g /= factor;
+	c->b /= factor;
+	return (*(unsigned int *)c);
+}
+
 void	draw_texture_line(t_game *game, t_dda_ctx *info)
 {
-	size_t		i;
+	int		i;
 	t_vec2		vec;
 	unsigned int	px;
+	double factor;
 
 	i = -1;
 	vec.x = fmod(hit_points(game, info), 1.0) * game->frames.walls[info->side].width;
@@ -79,14 +103,27 @@ void	draw_texture_line(t_game *game, t_dda_ctx *info)
 		vec.x = 0;
 	else if (vec.x >= game->frames.walls[info->side].width)
 		vec.x = game->frames.walls[info->side].width;
-	while (++i < game->screen_height)
+	while (++i < (int)game->screen_height)
 	{
 		if (i < info->line_start.y)
-			px = game->ceiling;
+		{
+			factor  = lerp(1, 6, i / (double)game->screen_height);
+			px = game->ceiling; // this supposed to be ceiling
+		}
 		else if (i > info->line_end.y)
-			px = game->floor;
+		{
+			factor  = lerp(6, 1, i / (double)game->screen_height);
+			px = game->floor; // this supposed to be ceiling
+		}
 		else
+		{
+			if (info->hit_dist > 95)
+				factor = info->hit_dist / 95;
+			else
+				factor = 1;
 			px = get_color_info(game, info, i - info->line_start.y, &vec);
+		}
+		px = apply_fog(px, factor);
 		image_put_pixel(&game->scene, info->line_start.x, i, px);
 	}
 }
