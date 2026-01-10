@@ -32,7 +32,7 @@ double sign(double x)
 
 double lerp(double start, double end, double t)
 {
-    return (start + (end - start) * t);
+	return (start + (end - start) * t * (t < 1));
 }
 
 t_vec2 vec2_lerp(t_vec2 start, t_vec2 end, double factor)

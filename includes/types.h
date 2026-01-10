@@ -33,9 +33,10 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
+# include <limits.h>
 
 # define FRAME_RATE 24
-# define INIT_ROTATION_STEP_DEGREE 2
+# define INIT_ROTATION_STEP_DEGREE 80.0
 # define INIT_ROTATION_STEP ((INIT_ROTATION_STEP_DEGREE * M_PI) / 180.0)
 
 #define	FILENAME_ERR "Error\nplease provide filename example: ./path/to/map.cub\n"
@@ -100,18 +101,24 @@ typedef struct s_animation {
 	size_t start;
 	size_t end;
 	size_t curr;
-	int    dir;
 	size_t duration;
-	size_t is_running;
+	size_t finished;
 	time_t last_changed;
 } t_animation;
 
 enum t_player_stats {
 	PLAYER_SHOOTING = 0,
+	PLAYER_RELOAD,
 	PLAYER_WALKING,
-	PLAYER_BORED,
-	PLAYER_IDLE,
 	PLAYER_STATS_NBR
+};
+
+enum t_enemy_stats {
+	ENEMY_WALKING = 0,
+	ENEMY_ATTACKING,
+	ENEMY_HARMED,
+	ENEMY_DEAD,
+	ENEMY_STATS_NBR
 };
 
 typedef struct s_player
@@ -128,6 +135,8 @@ typedef struct s_player
 	t_animation *animations[PLAYER_STATS_NBR];
 	size_t state;
 	double rot_angle; // the rotation step angle
+	int lives;
+	int ammo;
 }			t_player;
 
 typedef struct s_world {
@@ -179,13 +188,21 @@ typedef enum
  * @t_stat:		enum holding the status of the enemy
  * @speed:		movement speed of the enemy
  */
-typedef struct s_char
+typedef struct s_enemy
 {
-	t_data	instance;
+	t_vec2 s; // draw start
+	t_vec2 e; // draw end
 	t_vec2	pos;
-	float		speed;
-	t_stat	stat;
-}	t_ai;
+	t_vec2 dir;
+	int size;
+	enum t_enemy_stats state;
+	t_vec2 camera;
+	t_animation *animation[ENEMY_STATS_NBR];
+	time_t last_attack_time;
+	double screen; // intersaction with the screen projection
+	int health;
+}	t_enemy;
+
 
 typedef enum e_token
 {
@@ -203,20 +220,24 @@ typedef struct s_game
 	t_world  world;
 	t_player player;
 	t_vec2	 mouse_pos;
+	t_vec2 last_mouse_pos;
 	// Rander fields
 	size_t  screen_width;
 	size_t  screen_height;
-	bool keyboard_events[256];
+	bool inputs[256];
 	t_data	 scene;
 	t_frames	frames;
 	void	 *win;
 	void	 *mlx;
 	t_color	ceiling;
 	t_color	floor;
-	t_ai	enemy;
+	double *stripes;
+	t_dyn	*enemies;
 	t_dyn *assets;
 	time_t tick;
+	double shake;
 	double dt; // delta time
+	t_data *numbers;
 }			t_game;
 
 /**
@@ -236,7 +257,9 @@ typedef enum e_wall_side
 
 typedef enum e_keycode{
 	KEY_ESCAPE = 0,
+	KEY_LCLICK,
 	KEY_SHIFT_L,
+	KEY_SPACE,
 	KEY_RIGHT,
 	KEY_LEFT,
 	KEY_DOWN,

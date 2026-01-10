@@ -41,10 +41,15 @@ void init_game(t_game *game, char *filename)
 	game->scene = image_new(game, game->screen_width, game->screen_height);
 	game->mouse_pos = vec2_new(0, 0);
 	game->assets = dyn_init_ptr();
-	ft_bzero(game->keyboard_events, sizeof(game->keyboard_events));
-	init_player(game);
+	ft_bzero(game->inputs, sizeof(game->inputs));
+	player_init(game);
+	game->stripes = malloc(sizeof(double) * game->screen_width);
+	game->tick = curr_time_ms();
+	game->shake = 0;
+	int idx = assets_load_xpm(game, "./textures/digits.xpm");
+	game->numbers = dyn_at(game->assets, idx);
 	
 	// assignment an instance to imaginary enemy
-	game->enemy.pos = vec2_new(TILE_SIZE * 2, TILE_SIZE * 2);
+	init_enemies(game);
 }
 

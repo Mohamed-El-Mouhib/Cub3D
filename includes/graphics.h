@@ -34,8 +34,10 @@ t_vec2	vec2_sub(t_vec2 p1, t_vec2 p2);
 t_vec2  vec2_add(t_vec2 v1, t_vec2 v2);
 t_vec2  vec2_scale(t_vec2 v1, double factor);
 t_vec2  vec2_div(t_vec2 v1, double factor);
+double vec2_len(t_vec2 p1, t_vec2 p2);
 double	vec2_len_squared(t_vec2 p1, t_vec2 p2);
 void    vec2_print(t_vec2 v, char *prefix);
+t_vec2 vec2_unit(t_vec2 p1, t_vec2 p2);
 
 /* Common shapes grachics utilities */
 void	draw_line(t_data *buff, t_vec2 p1, t_vec2 p2, int color);
@@ -51,5 +53,7 @@ void	image_clear(t_data *img);
 t_data	image_new(t_game *game, int width, int height);
 void	image_put_pixel(t_data *buff, int x, int y, unsigned int color);
 bool image_load_xpm(t_game *game, t_data *buff, char *path);
+unsigned int image_get_pixel(t_data *img, int x, int y);
+void image_draw_transparent(t_game *game, t_data *image, double x_off, double y_off);
 
 #endif /* GRAPHICS_H */

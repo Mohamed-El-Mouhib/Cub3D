@@ -1,6 +1,12 @@
 #include "../includes/cub3d.h"
 #include <stddef.h>
 
+
+t_data *assets_get(t_game *game, int id)
+{
+	return (dyn_at(game->assets, id));
+}
+
 /**
  * assets_load_xpm - Loading an exp
  */
@@ -28,10 +34,9 @@ t_animation *init_animation(size_t start, size_t end, int duration)
 	anim->start = start;
 	anim->end = end;
 	anim->curr = start;
-	anim->dir = 1;
 	anim->duration = duration;
-	anim->is_running = true;
 	anim->last_changed = curr_time_ms();
+	anim->finished = false;
 	return (anim);
 }
 
@@ -50,6 +55,6 @@ t_animation *load_animation_frames(t_game *game, char **paths, size_t size)
 		end = assets_load_xpm(game, paths[i]);
 		i++;
 	}
-	anim = init_animation(start, end, 190);
+	anim = init_animation(start, end, 115);
 	return (anim);
 }

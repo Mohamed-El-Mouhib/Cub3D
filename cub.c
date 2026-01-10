@@ -11,113 +11,111 @@
 /* ************************************************************************** */
 
 #include "includes/cub3d.h"
+#include "includes/graphics.h"
 
-void draw_frame(t_game *game, t_data *data, double noise_x, double noise_y)
+void game_update_shaking(t_game *game)
 {
-	unsigned int color;
-	unsigned int offset;
-	unsigned int ignore_color;
-	int x_off;
-	int y_off;
-
-	x_off = game->scene.width - data->width + noise_x;
-	y_off = game->scene.height - data->height + noise_y + 40; // 30 is for image to go down a bit
-	offset = (0 * data->line_len + 0 * (data->bpp / 8));
-	color = *((unsigned int *)(data->addr + offset));
-	ignore_color = color;
-
-	for (int y = 0; y < data->height; y++)
-	{
-		for (int x = 0; x < data->width; x++)
-		{
-			offset = (y * data->line_len + x * (data->bpp / 8));
-			color = *((unsigned int *)(data->addr + offset));
-			if (color == ignore_color)
-				continue;
-			image_put_pixel(&game->scene, x + x_off, y + y_off, color);
-		}
-	}
+	game->shake = lerp(game->shake, 0, 0.2);
 }
 
-void player_render_frame(t_game *game)
+void draw_digit(t_game *game, t_data *image, int x_off, int y_off, int number)
 {
-	t_animation *anim;
+	unsigned int ignore_color; 
+	unsigned int color; 
+	int x;
+	int y;
+	int start;
 
-	anim = game->player.animations[game->player.state];
-	if (!anim->is_running || (size_t)(game->tick - anim->last_changed) < anim->duration)
-	{
-		draw_frame(game, dyn_at(game->assets, anim->start + anim->curr), game->player.bob.x + game->player.sway, game->player.bob.y);
+	if (!image)
 		return ;
-	}
-	anim->last_changed = game->tick;
-	anim->curr += anim->dir;
-	if (anim->curr > anim->end)
+	ignore_color = image_get_pixel(image, 0, 0);
+	y = 0;
+	while (y < image->height)
 	{
-		anim->dir = -1;
-		anim->curr = anim->end;
+		x = start = 45 * number;
+		while (x < image->width && x < start + 45)
+		{
+			color = image_get_pixel(image, x, y);
+			if (color != ignore_color)
+				image_put_pixel(&game->scene, x + x_off - start, y + y_off, color);
+			x++;
+		}
+		y++;
 	}
-	if (anim->curr < anim->start)
+}
+
+void put_number(t_game *game, t_vec2 pos, int number)
+{
+	int digits[15];
+	int i = 0;
+	int j = 0;
+
+	digits[i] = 0;
+	while (number > 0)
 	{
-		anim->dir = +1;
-		anim->curr = anim->start;
+		digits[i++] = number % 10;
+		number /= 10;
 	}
-	draw_frame(game, dyn_at(game->assets, anim->start + anim->curr), game->player.bob.x + game->player.sway, game->player.bob.y);
+	if (i > 0)
+		i--;
+	while (i >= 0)
+	{
+		draw_digit(game, game->numbers, pos.x + j * 45, pos.y, digits[i]);
+		j++;
+		i--;
+	}
 }
 
-void player_update_pos(t_game *game)
+void game_update_time(t_game *game)
 {
-	game->player.pos = vec2_add(game->player.pos, game->player.velocity);
+	time_t ct;
+
+	ct = curr_time_ms();
+	game->dt = (ct - game->tick) / 1000.0;
+	game->tick = curr_time_ms();
 }
 
-// void player_update_speed(t_game *game)
-// {
-// 	double target_speed;
-//
-// 	if (!game->player.input_dir.x && !game->player.input_dir.y)
-// 		target_speed = 0;
-// 	else
-// 		target_speed = game->player.max_speed;
-//
-// 	if (fabs(game->player.speed) < 0.1) 
-// 		game->player.speed = 0;
-// 	game->player.speed = lerp(game->player.speed, target_speed, 0.05);
-// }
 
-
-void player_update_velocity(t_game *game)
+void game_update(t_game *game)
 {
-	t_vec2 forward;
-	t_vec2 right;
-	t_player *p;
-	t_vec2 target_vel;
+	// game
+	game_update_time(game);
+	game_update_shaking(game);
 
-	p = &game->player;
-	right = vec2_new(-p->dir.y, p->dir.x);
-	forward = p->dir;
-	right =  vec2_scale(right, p->input_dir.x);
-	forward = vec2_scale(forward, p->input_dir.y);
-	target_vel = vec2_scale(vec2_add(forward, right), p->max_speed * game->dt);
-	p->velocity = vec2_lerp(p->velocity, target_vel, PLAYER_ACCEL_RATE);
-	if (fabs(p->velocity.x) < 0.001)
-		p->velocity.x = 0;
-	if (fabs(p->velocity.y) < 0.001)
-		p->velocity.y = 0;
-	p->speed = hypot(p->velocity.x, p->velocity.y) * 100;
+	// player
+	player_update_bobbing(game);
+	player_update_sway(game);
+	player_update_velocity(game);
+	player_update_pos(game);
+	player_update_state(game);
+	player_update_frame(game);
+
+	// enemy
+	enemy_update_pos(game, game->enemies->buff[0]);
+	enemy_update_state(game, game->enemies->buff[0]);
+	enemy_update_frame_all(game);
+	// t_enemy *enemy = game->enemies->buff[0];
+	// printf("FRAME Id: %zu\n", enemy->animation[enemy->state]->curr);
 }
+
+typedef struct s_color {
+	unsigned char r:8;
+	unsigned char g:8;
+	unsigned char b:8;
+	unsigned char a:8;
+} t_color_;
+
 
 void game_rander(t_game *game)
 {
 	raycast_draw_walls(game);
 	draw_minimap(game);
-	player_update_bobing(game);
-	printf("SPEED: %f\n", game->player.speed);
-	player_update_sway(game);
-	player_update_velocity(game);
-	player_update_pos(game);
+	enemy_draw_all(game);
 	player_render_frame(game);
+	draw_filled_circle(&game->scene, vec2_new(game->screen_width / 2.0, game->screen_height / 2.0), 8, COLOR_RED);
+	put_number(game,vec2_new(10, game->screen_height - 80), game->player.ammo);
 	mlx_put_image_to_window(game->mlx, game->win, game->scene.img, 0, 0);
 }
-
 
 bool is_frame_ready()
 {
@@ -138,10 +136,8 @@ int game_loop(t_game *game)
 {
 	if (!is_frame_ready())
 		return (0);
-	time_t ct = curr_time_ms();
-	game->dt = (ct - game->tick) / 1000.0;
-	game->tick = curr_time_ms();
-	game_handle_keyboard_events(game);
+	game_handle_inputs(game);
+	game_update(game);
 	game_rander(game);
 	return (0);
 }
@@ -162,21 +158,20 @@ void	prepare_wall_images(t_game *game)
 	int	endian;
 	int	line_len;
 
-	tmp = mlx_xpm_file_to_image(game->mlx, "t1.xpm", &x, &y);
+	tmp = mlx_xpm_file_to_image(game->mlx, "./textures/Wall/First.xpm", &x, &y);
 	game->frames.walls[0].addr = mlx_get_data_addr(tmp,&bpp, &line_len, &endian);
 	game->frames.walls[0].height = y;
 	game->frames.walls[0].width = x;
 	game->frames.walls[0].bpp = bpp;
 	game->frames.walls[0].line_len = line_len;
 	game->frames.walls[0].endian = endian;
-	tmp = mlx_xpm_file_to_image(game->mlx,"t2.xpm", &x, &y);
+	tmp = mlx_xpm_file_to_image(game->mlx,"./textures/Wall/Third.xpm", &x, &y);
 	game->frames.walls[1].addr = mlx_get_data_addr(tmp, &bpp, &line_len, &endian);
 	game->frames.walls[1].height = y;
 	game->frames.walls[1].width = x;
 	game->frames.walls[1].bpp = bpp;
 	game->frames.walls[1].line_len = line_len;
 	game->frames.walls[1].endian = endian;
-
 }
 
 int	main(int ac, char **av)
@@ -188,9 +183,11 @@ int	main(int ac, char **av)
 	init_game(&game, av[1]);
 	prepare_wall_images(&game);
 	mlx_loop_hook(game.mlx, game_loop, &game);
-	mlx_hook(game.win, 06, 1L<<6, handle_mouse_event, &game); // Our mouse friend
+	mlx_hook(game.win, 6, 1L << 6, handle_mouse_move, &game); // Our mouse friend
 	mlx_hook(game.win, 2, 1L << 0, key_press, &game);         // if key pressed
 	mlx_hook(game.win, 3, 1L << 1, key_release, &game);       // if key released
+	mlx_hook(game.win, 4, 1L << 2, handle_mouse_press, &game);
+	mlx_hook(game.win, 5, 1L << 3, handle_mouse_release, &game);
 	mlx_loop(game.mlx);
 	return (0);
 }

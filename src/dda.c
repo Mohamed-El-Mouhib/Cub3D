@@ -145,11 +145,15 @@ void calculate_wall_boundaries(t_game *game, t_dda_ctx *dda, int x)
 {
 	double line_height;
 	double h;
+	double shake;
 
+	shake = 0;
 	line_height = game->screen_height / dda->hit_dist * TILE_SIZE;
 	h = game->screen_height;
-	dda->line_start.y = (h - line_height) / 2;
-	dda->line_end.y = (line_height + h) / 2;
+	if (game->shake > 0)
+		shake = cos(game->tick / 20.0) * game->shake;
+	dda->line_start.y = (h - line_height) / 2 + shake;
+	dda->line_end.y = (line_height + h) / 2 + shake;
 	dda->line_start.x = x;
 	dda->line_end.x = x;
 	dda->line_height = line_height;
@@ -184,6 +188,7 @@ void raycast_draw_walls(t_game *game)
 	for (int x = 0; x < (int)game->screen_width; x++)
 	{
 		perform_dda(game, &dda, x);
+		game->stripes[x] = dda.hit_dist;
 		if ((int)dda.hit_dist != 0)
 		{
 			calculate_wall_boundaries(game, &dda, x);
