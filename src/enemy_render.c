@@ -100,6 +100,8 @@ void enemy_draw_frame(t_game *game, t_enemy *enemy)
 	ignore_color = *(unsigned int *)frame->addr;
 	for (int x = enemy->s.x; x < enemy->e.x; x++)
 	{
+		if (x < 0 || enemy->camera.y > game->stripes[x] / TILE_SIZE)
+			continue;
 		for (int y = enemy->s.y; y < enemy->e.y; y++)
 		{
 			if (y < 0)
