@@ -34,11 +34,11 @@ t_vec2 enemy_get_drawing_start(t_game *game, t_enemy *enemy)
 	t_vec2 start;
 
 	start.x = enemy->screen - (int)(enemy->size / 2);
-	if (start.x < 0)
-		start.x = 0;
+	// if (start.x < 0)
+	// 	start.x = 0;
 	start.y = (int)((game->screen_height - enemy->size) / 2);
-	if (start.y < 0)
-		start.y = 0;
+	// if (start.y < 0)
+	// 	start.y = 0;
 	return (start);
 }
 
@@ -80,12 +80,9 @@ static unsigned int get_point_color(t_game *game, t_enemy *enemy, int i, int j)
 	frame = animation_get_frame(game, enemy->animation[enemy->state]);
 	tex_w = frame->width;
 	tex_h = frame->height;
-	if (enemy->s.x)
-		x = (i - enemy->s.x) / enemy->size * tex_w;
-	else
-		x = (i - enemy->s.x + enemy->size - enemy->e.x) / enemy->size * tex_w;
-
+	x = (i - enemy->s.x) / enemy->size * tex_w;
 	y = (j - enemy->s.y) / enemy->size * (tex_h - 280) + 100;
+
 	return (image_get_pixel(frame, x, y));
 }
 
@@ -95,35 +92,22 @@ static unsigned int get_point_color(t_game *game, t_enemy *enemy, int i, int j)
  */
 void enemy_draw_frame(t_game *game, t_enemy *enemy)
 {
-	unsigned int color;
-	unsigned int ignore_color;
+	t_color color;
+	t_color ignore_color;
 	t_data *frame;
 
 	frame = animation_get_frame(game, enemy->animation[enemy->state]);
 	ignore_color = *(unsigned int *)frame->addr;
 	for (int x = enemy->s.x; x < enemy->e.x; x++)
 	{
-		if (enemy->camera.y > game->stripes[x] / TILE_SIZE)
-			continue;
-		if (enemy->s.y != 0)
+		for (int y = enemy->s.y; y < enemy->e.y; y++)
 		{
-			for (int y = enemy->s.y; y < enemy->e.y; y++)
-			{
-				color = get_point_color(game, enemy, x, y);
-				if (ignore_color == color)
-					continue;
-				image_put_pixel(&game->scene, x, y, color);
-			}
-		}
-		else
-		{
-			for (int y = enemy->s.y; y < enemy->e.y; y++)
-			{
-				color = get_point_color(game, enemy, x, y + enemy->size - enemy->e.y);
-				if (ignore_color == color)
-					continue;
-				image_put_pixel(&game->scene, x, y, color);
-			}
+			if (y < 0)
+				continue;
+			color = get_point_color(game, enemy, x, y);
+			if (ignore_color == color)
+				continue;
+			image_put_pixel(&game->scene, x, y, color);
 		}
 	}
 }
