@@ -29,7 +29,7 @@ t_vec2 enemy_camera_pos(t_game *game, t_enemy *enemy)
  *
  * Returns the postistion of the point referred to in the figure
  */
-t_vec2 enemy_set_start(t_game *game, t_enemy *enemy)
+t_vec2 enemy_get_drawing_start(t_game *game, t_enemy *enemy)
 {
 	t_vec2 start;
 
@@ -53,7 +53,7 @@ t_vec2 enemy_set_start(t_game *game, t_enemy *enemy)
  *
  * Return: The postistion of the point referred to in the figure
  */
-t_vec2 enemy_set_end(t_game *game, t_enemy *enemy)
+t_vec2 enemy_get_drawing_end(t_game *game, t_enemy *enemy)
 {
 	t_vec2 bottom;
 
@@ -85,7 +85,7 @@ static unsigned int get_point_color(t_game *game, t_enemy *enemy, int i, int j)
 	else
 		x = (i - enemy->s.x + enemy->size - enemy->e.x) / enemy->size * tex_w;
 
-	y = (j - enemy->s.y) / enemy->size * tex_h;
+	y = (j - enemy->s.y) / enemy->size * (tex_h - 280) + 100;
 	return (image_get_pixel(frame, x, y));
 }
 
@@ -101,16 +101,29 @@ void enemy_draw_frame(t_game *game, t_enemy *enemy)
 
 	frame = animation_get_frame(game, enemy->animation[enemy->state]);
 	ignore_color = *(unsigned int *)frame->addr;
-	for (int i = enemy->s.x; i < enemy->e.x; i++)
+	for (int x = enemy->s.x; x < enemy->e.x; x++)
 	{
-		if (enemy->camera.y > game->stripes[i] / TILE_SIZE)
+		if (enemy->camera.y > game->stripes[x] / TILE_SIZE)
 			continue;
-		for (int j = enemy->s.y; j < enemy->e.y; j++)
+		if (enemy->s.y != 0)
 		{
-			color = get_point_color(game, enemy, i, j);
-			if (ignore_color == color)
-				continue;
-			image_put_pixel(&game->scene, i, j, color);
+			for (int y = enemy->s.y; y < enemy->e.y; y++)
+			{
+				color = get_point_color(game, enemy, x, y);
+				if (ignore_color == color)
+					continue;
+				image_put_pixel(&game->scene, x, y, color);
+			}
+		}
+		else
+		{
+			for (int y = enemy->s.y; y < enemy->e.y; y++)
+			{
+				color = get_point_color(game, enemy, x, y + enemy->size - enemy->e.y);
+				if (ignore_color == color)
+					continue;
+				image_put_pixel(&game->scene, x, y, color);
+			}
 		}
 	}
 }
@@ -143,13 +156,11 @@ void enemy_draw_one(t_game *game, t_enemy *enemy)
 {
 	int w = game->screen_width;
 	int h = game->screen_height;
-	if (enemy->health <= 0)
-		return ;
 	enemy->camera = enemy_camera_pos(game, enemy);
 	enemy->screen = (int)(((double)w / 2) * (1 + enemy->camera.x / enemy->camera.y));
 	enemy->size = abs((int)(h / (enemy->camera.y)));
-	enemy->s = enemy_set_start(game, enemy);
-	enemy->e = enemy_set_end(game, enemy);
+	enemy->s = enemy_get_drawing_start(game, enemy);
+	enemy->e = enemy_get_drawing_end(game, enemy);
 	if (enemy->camera.y < 0 ||  enemy->size > 1500)
 		return ;
 	if (enemy->screen > w + enemy->size)

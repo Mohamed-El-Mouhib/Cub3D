@@ -39,7 +39,7 @@ int has_los(t_game *g, t_vec2 from, t_vec2 to)
 /**
  * Checks collision with a radius buffer to prevent clipping
  */
-int can_move(t_game *g, float x, float y)
+int can_move(t_game *g, double x, double y)
 {
 	int pad;
 
@@ -55,32 +55,34 @@ int can_move(t_game *g, float x, float y)
 	return (1);
 }
 
-void enemy_update_pos(t_game *g, t_enemy *e)
+void enemy_update_pos(t_game *game, t_enemy *enemy)
 {
 	t_vec2  dir;
 	t_vec2  next;
 	float   dist_sq;
 
-	dist_sq = vec2_len_squared(e->pos, g->player.pos);
+	if (enemy->state == ENEMY_DEAD)
+		return ;
+	dist_sq = vec2_len_squared(enemy->pos, game->player.pos);
 	if (dist_sq < TILE_SIZE * TILE_SIZE) 
 	{
-		if (g->tick - e->last_attack_time > 4000)
+		if (game->tick - enemy->last_attack_time > 4000)
 		{
-			e->state = ENEMY_ATTACKING;
-			e->last_attack_time = g->tick;
+			enemy->state = ENEMY_ATTACKING;
+			enemy->last_attack_time = game->tick;
 		}
 		return;
 	}
-	if (!has_los(g, e->pos, g->player.pos))
+	if (!has_los(game, enemy->pos, game->player.pos))
 		return;
-	dir = vec2_unit(e->pos, g->player.pos);
-	dir  = vec2_scale(dir, ENEMY_WALK_SPEED * g->dt);
-	next.x = e->pos.x + dir.x;
-	if (can_move(g, next.x, e->pos.y))
-		e->pos.x = next.x;
-	next.y = e->pos.y + dir.y;
-	if (can_move(g, e->pos.x, next.y))
-		e->pos.y = next.y;
+	dir = vec2_unit(enemy->pos, game->player.pos);
+	dir  = vec2_scale(dir, ENEMY_WALK_SPEED * game->dt);
+	next.x = enemy->pos.x + dir.x;
+	if (can_move(game, next.x, enemy->pos.y))
+		enemy->pos.x = next.x;
+	next.y = enemy->pos.y + dir.y;
+	if (can_move(game, enemy->pos.x, next.y))
+		enemy->pos.y = next.y;
 }
 
 
@@ -104,7 +106,7 @@ void enemy_update_state(t_game *game, t_enemy *enemy)
 {
 	t_animation *anim;
 
-	if (enemy->state == ENEMY_WALKING || enemy->health <= 0)
+	if (enemy->state == ENEMY_WALKING || enemy->state == ENEMY_DEAD)
 		return ;
 	anim = enemy->animation[ENEMY_ATTACKING];
 	if (enemy->state == ENEMY_ATTACKING && !anim->finished)

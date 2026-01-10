@@ -53,22 +53,18 @@ bool enemy_foreach(t_game *game, t_vec2 bullet)
 {
 	t_enemy *enemy;
 	double d;
-	double max_d;
 
 	d = (15*15);
-	max_d = TILE_SIZE * TILE_SIZE * 8;
-
 	for (size_t i = 0; i < game->enemies->length; i++)
 	{
 		enemy = dyn_at(game->enemies, i);
 		if (enemy->health > 0 && vec2_len_squared(bullet, enemy->pos) < d)
 		{
 			enemy->health -= 7;
-			printf("ENEMY HEALTH: %d\n", enemy->health);
 			if (enemy->health <= 0)
 			{
 				enemy->health = 0;
-				printf("You killed an enemy\n");
+				enemy->state = ENEMY_DEAD;
 			}
 			return (true);
 		}

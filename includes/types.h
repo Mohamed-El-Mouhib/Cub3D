@@ -121,13 +121,13 @@ enum t_player_stats {
 	PLAYER_STATS_NBR
 };
 
-enum t_enemy_stats {
+typedef enum e_enemy_stats {
 	ENEMY_WALKING = 0,
 	ENEMY_ATTACKING,
 	ENEMY_HARMED,
 	ENEMY_DEAD,
 	ENEMY_STATS_NBR
-};
+} t_enemy_stats;
 
 typedef struct s_player
 {
@@ -200,7 +200,7 @@ typedef struct s_enemy
 	t_vec2	pos;
 	t_vec2 dir;
 	int size;
-	enum t_enemy_stats state;
+	t_enemy_stats state;
 	t_vec2 camera;
 	t_animation *animation[ENEMY_STATS_NBR];
 	time_t last_attack_time;
