@@ -88,7 +88,7 @@ void	error_indexing(void);
 // assets factory
 int assets_load_xpm(t_game *game, char *path);
 t_animation *init_animation(size_t start, size_t end, int duration);
-t_animation *load_animation_frames(t_game *game, char **paths, size_t size);
+t_animation *load_animation_frames(t_game *game, char **paths, size_t size, int duration);
 t_data *assets_get(t_game *game, int id);
 
 // Player
@@ -114,5 +114,6 @@ void enemy_update_pos(t_game *g, t_enemy *e);
 void enemy_update_state(t_game *g, t_enemy *e);
 void enemy_draw_all(t_game *game);
 void enemy_update_frame_all(t_game *game);
+int can_move(t_game *g, double x, double y);
 
 #endif

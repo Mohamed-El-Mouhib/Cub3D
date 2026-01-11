@@ -123,9 +123,7 @@ enum t_player_stats {
 
 typedef enum e_enemy_stats {
 	ENEMY_WALKING = 0,
-	ENEMY_IDLE,
 	ENEMY_ATTACKING,
-	ENEMY_HARMED,
 	ENEMY_DEAD,
 	ENEMY_STATS_NBR
 } t_enemy_stats;

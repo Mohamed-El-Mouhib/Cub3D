@@ -72,6 +72,7 @@ bool enemy_is_too_close(t_game *game, t_enemy *enemy)
 	return (false);
 }
 
+
 void enemy_update_pos(t_game *game, t_enemy *enemy)
 {
 	t_vec2  dir;
@@ -118,7 +119,6 @@ char *get_enemy_state_string(t_enemy *enemy)
 	{
 		case ENEMY_WALKING: return ("ENEMY_WALKING");
 		case ENEMY_ATTACKING: return ("ENEMY_ATTACKING");
-		case ENEMY_HARMED: return ("ENEMY_HARMED");
 		case ENEMY_DEAD: return ("ENEMY_DEAD");
 		default: return ("Unknown state");
 	}
@@ -128,15 +128,8 @@ void enemy_update_state(t_game *game, t_enemy *enemy)
 {
 	t_animation *anim;
 
-	if (enemy->state == ENEMY_DEAD)
+	if (enemy->state == ENEMY_DEAD || enemy->state == ENEMY_WALKING)
 		return ;
-	if (enemy->state == ENEMY_WALKING || enemy->state == ENEMY_IDLE)
-	{
-		if (enemy->moving)
-			enemy->state = ENEMY_WALKING;
-		else
-			enemy->state = ENEMY_IDLE;
-	}
 	anim = enemy->animation[enemy->state];
 	if (enemy->state == ENEMY_ATTACKING && !anim->finished)
 	{
@@ -146,11 +139,6 @@ void enemy_update_state(t_game *game, t_enemy *enemy)
 	else if (enemy->state == ENEMY_ATTACKING && anim->finished)
 	{
 		enemy_attack_player(game, enemy);
-		enemy->state = ENEMY_WALKING;
-		anim->finished = false;
-	}
-	else if (enemy->state == ENEMY_HARMED && anim->finished)
-	{
 		enemy->state = ENEMY_WALKING;
 		anim->finished = false;
 	}
