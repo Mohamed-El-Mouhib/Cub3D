@@ -8,7 +8,7 @@ static t_animation *animation_walking(t_game *game)
 	};
 
 	size = sizeof(paths)/sizeof(paths[0]);
-	return (load_animation_frames(game, paths, size));
+	return (load_animation_frames(game, paths, size, 1000));
 }
 
 static t_animation *animation_shooting(t_game *game)
@@ -21,7 +21,7 @@ static t_animation *animation_shooting(t_game *game)
 	};
 
 	size = sizeof(paths)/sizeof(paths[0]);
-	return load_animation_frames(game, paths, size);
+	return load_animation_frames(game, paths, size, 50);
 }
 
 static t_animation *animation_reload(t_game *game)
@@ -43,7 +43,7 @@ static t_animation *animation_reload(t_game *game)
 	};
 
 	size = sizeof(paths)/sizeof(paths[0]);
-	return load_animation_frames(game, paths, size);
+	return load_animation_frames(game, paths, size, 90);
 }
 
 void player_init_animations(t_game *game)

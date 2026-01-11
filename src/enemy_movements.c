@@ -39,7 +39,7 @@ int has_los(t_game *g, t_vec2 from, t_vec2 to)
 /**
  * Checks collision with a radius buffer to prevent clipping
  */
-int can_move(t_game *g, float x, float y)
+int can_move(t_game *g, double x, double y)
 {
 	int pad;
 
@@ -55,32 +55,45 @@ int can_move(t_game *g, float x, float y)
 	return (1);
 }
 
-void enemy_update_pos(t_game *g, t_enemy *e)
+bool enemy_is_too_close(t_game *game, t_enemy *enemy)
+{
+	double   dist_sq;
+
+	dist_sq = vec2_len_squared(enemy->pos, game->player.pos);
+	if (dist_sq < TILE_SIZE * TILE_SIZE) 
+	{
+		if (game->tick - enemy->last_attack_time > 4000)
+		{
+			enemy->state = ENEMY_ATTACKING;
+			enemy->last_attack_time = game->tick;
+		}
+		return (true);
+	}
+	return (false);
+}
+
+
+void enemy_update_pos(t_game *game, t_enemy *enemy)
 {
 	t_vec2  dir;
 	t_vec2  next;
-	float   dist_sq;
 
-	dist_sq = vec2_len_squared(e->pos, g->player.pos);
-	if (dist_sq < TILE_SIZE * TILE_SIZE) 
-	{
-		if (g->tick - e->last_attack_time > 4000)
-		{
-			e->state = ENEMY_ATTACKING;
-			e->last_attack_time = g->tick;
-		}
+	if (enemy->state == ENEMY_DEAD)
+		return ;
+	enemy->moving = false;
+	if (enemy_is_too_close(game, enemy)) 
 		return;
-	}
-	if (!has_los(g, e->pos, g->player.pos))
+	if (!has_los(game, enemy->pos, game->player.pos))
 		return;
-	dir = vec2_unit(e->pos, g->player.pos);
-	dir  = vec2_scale(dir, ENEMY_WALK_SPEED * g->dt);
-	next.x = e->pos.x + dir.x;
-	if (can_move(g, next.x, e->pos.y))
-		e->pos.x = next.x;
-	next.y = e->pos.y + dir.y;
-	if (can_move(g, e->pos.x, next.y))
-		e->pos.y = next.y;
+	enemy->moving = true;
+	dir = vec2_unit(enemy->pos, game->player.pos);
+	dir  = vec2_scale(dir, ENEMY_WALK_SPEED * game->dt);
+	next.x = enemy->pos.x + dir.x;
+	if (can_move(game, next.x, enemy->pos.y))
+		enemy->pos.x = next.x;
+	next.y = enemy->pos.y + dir.y;
+	if (can_move(game, enemy->pos.x, next.y))
+		enemy->pos.y = next.y;
 }
 
 
@@ -100,20 +113,30 @@ void enemy_attack_player(t_game *game, t_enemy *enemy)
 	}
 }
 
+char *get_enemy_state_string(t_enemy *enemy)
+{
+	switch (enemy->state)
+	{
+		case ENEMY_WALKING: return ("ENEMY_WALKING");
+		case ENEMY_ATTACKING: return ("ENEMY_ATTACKING");
+		case ENEMY_DEAD: return ("ENEMY_DEAD");
+		default: return ("Unknown state");
+	}
+}
+
 void enemy_update_state(t_game *game, t_enemy *enemy)
 {
 	t_animation *anim;
 
-	if (enemy->state == ENEMY_WALKING || enemy->health <= 0)
+	if (enemy->state == ENEMY_DEAD || enemy->state == ENEMY_WALKING)
 		return ;
-	anim = enemy->animation[ENEMY_ATTACKING];
+	anim = enemy->animation[enemy->state];
 	if (enemy->state == ENEMY_ATTACKING && !anim->finished)
 	{
 		if (anim->end - anim->curr == 3)
 			game->shake = 30;
-		return ;
 	}
-	if (enemy->state == ENEMY_ATTACKING && anim->finished)
+	else if (enemy->state == ENEMY_ATTACKING && anim->finished)
 	{
 		enemy_attack_player(game, enemy);
 		enemy->state = ENEMY_WALKING;

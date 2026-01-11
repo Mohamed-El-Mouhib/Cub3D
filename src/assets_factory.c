@@ -39,7 +39,11 @@ t_animation *init_animation(size_t start, size_t end, int duration)
 	return (anim);
 }
 
-t_animation *load_animation_frames(t_game *game, char **paths, size_t size)
+/**
+ * Load @size of frames using @paths, the duration is the time between
+ * each frame when cycling through animation frames
+ */
+t_animation *load_animation_frames(t_game *game, char **paths, size_t size, int duration)
 {
 	t_animation *	anim;
 	size_t		i;
@@ -54,6 +58,6 @@ t_animation *load_animation_frames(t_game *game, char **paths, size_t size)
 		end = assets_load_xpm(game, paths[i]);
 		i++;
 	}
-	anim = init_animation(start, end, 115);
+	anim = init_animation(start, end, duration);
 	return (anim);
 }

@@ -48,27 +48,38 @@ static char get_map_cell(t_game *game, int x, int y)
 	return (game->world.map[y][x]);
 }
 
+void enemy_took_bullet(t_game *game, t_enemy *enemy)
+{
+	t_vec2  dir;
+	t_vec2  next;
+
+	dir = vec2_unit(game->player.pos, enemy->pos);
+	dir  = vec2_scale(dir, 600 * game->dt);
+	next.x = enemy->pos.x + dir.x;
+	if (can_move(game, next.x, enemy->pos.y))
+		enemy->pos.x = next.x;
+	next.y = enemy->pos.y + dir.y;
+	if (can_move(game, enemy->pos.x, next.y))
+		enemy->pos.y = next.y;
+}
 
 bool enemy_foreach(t_game *game, t_vec2 bullet)
 {
 	t_enemy *enemy;
 	double d;
-	double max_d;
 
-	d = (15*15);
-	max_d = TILE_SIZE * TILE_SIZE * 8;
-
+	d = 15*15;
 	for (size_t i = 0; i < game->enemies->length; i++)
 	{
 		enemy = dyn_at(game->enemies, i);
 		if (enemy->health > 0 && vec2_len_squared(bullet, enemy->pos) < d)
 		{
-			enemy->health -= 7;
-			printf("ENEMY HEALTH: %d\n", enemy->health);
+			enemy->health -= 5; // 20 bullet to kill
+			enemy_took_bullet(game, enemy);
 			if (enemy->health <= 0)
 			{
 				enemy->health = 0;
-				printf("You killed an enemy\n");
+				enemy->state = ENEMY_DEAD;
 			}
 			return (true);
 		}
