@@ -62,7 +62,6 @@ void	image_put_pixel(t_data *buff, int x, int y, unsigned int color)
 	*((unsigned int *)(buff->addr + offset)) = color;
 }
 
-
 /**
  * image_put_pixel - gives the color at using pixel position
  *

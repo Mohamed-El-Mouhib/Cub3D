@@ -52,6 +52,14 @@
 #define	MAP_ERR "Error\n'%s': does not contain a valid map\n"
 #define	NO_PLAYER_ERR "Error\n'%s': does not specify a player start position\n"
 
+#define MINIMAP_SCALE 4.0
+#define MINIMAP_LEN 200
+#define MINIMAP_ZOOM 4
+#define X_OFFSET 10
+#define Y_OFFSET 10
+#define HALF_MINIMAP (int)(MINIMAP_LEN/2)
+#define SQR_REDIOUS HALF_MINIMAP * HALF_MINIMAP
+
 typedef int t_color;
 
 /**
@@ -140,8 +148,8 @@ typedef struct s_player
 }			t_player;
 
 typedef struct s_world {
-	size_t  map_width;
-	size_t  map_height;
+	int  map_width;
+	int  map_height;
 	char **map;
 }
 t_world;
@@ -150,10 +158,7 @@ t_world;
  * @t_framse:	struct holding wall textures and their boundaries
  * @image:	array of t_data, each storing image info (bpp, address, line length, endian)
  */
-typedef struct s_frames
-{
-	t_data	walls[4];
-}	t_frames;
+
 
 typedef struct s_err
 {
@@ -226,11 +231,11 @@ typedef struct s_game
 	size_t  screen_height;
 	bool inputs[256];
 	t_data	 scene;
-	t_frames	frames;
 	void	 *win;
 	void	 *mlx;
 	t_color	ceiling;
 	t_color	floor;
+	t_data	wall[5];
 	double *stripes;
 	t_dyn	*enemies;
 	t_dyn *assets;
@@ -257,8 +262,8 @@ typedef enum e_wall_side
 
 typedef enum e_keycode{
 	KEY_ESCAPE = 0,
-	KEY_LCLICK,
 	KEY_SHIFT_L,
+	KEY_LCLICK,
 	KEY_SPACE,
 	KEY_RIGHT,
 	KEY_LEFT,

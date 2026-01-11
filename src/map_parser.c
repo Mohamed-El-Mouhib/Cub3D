@@ -12,7 +12,7 @@
 
 #include "../includes/cub3d.h"
 
-#define MAP_VALID_CHARACHTERS "01NSEW "
+#define MAP_VALID_CHARACTERS "01NSEWOC "
 
 t_config*	info(void)
 {
@@ -60,7 +60,7 @@ void	error_indexing(void)
 
 bool is_valid_char(char c)
 {
-	return (ft_strchr(MAP_VALID_CHARACHTERS, c));
+	return (ft_strchr(MAP_VALID_CHARACTERS, c));
 }
 
 bool	is_empty_line(char* line)
@@ -193,8 +193,8 @@ bool	validate_map(t_game* game, t_dyn* dyn, size_t i)
 			{
 				if (game->player.pos.x != -1 || game->player.pos.y != -1)
 					return init_error(DOUBLE_P_INSTANCE, i, j, NULL), false;
-				game->player.pos.y = i * TILE_SIZE;
-				game->player.pos.x = j * TILE_SIZE;
+				game->player.pos.y = i * TILE_SIZE + TILE_SIZE/2;
+				game->player.pos.x = j * TILE_SIZE + TILE_SIZE/2;
 			}
 		}
 		i++;
@@ -304,7 +304,7 @@ bool	check_map_line(char** line, size_t len, size_t j)
 	i = 0;
 	while (line[j][i])
 	{
-		if (ft_strchr("0WESN", line[j][i]))
+		if (ft_strchr("0WESNCO", line[j][i]))
 		{
 			if (!i || line[j][i - 1] == ' ' || !line[j][i + 1]
 				|| line[j][i + 1] == ' ' || ft_strlen(line[j - 1]) <= i
@@ -399,7 +399,7 @@ bool	check_file_name(char *filename)
 	return false;
 }
 
-void	load_content_from_map(int fd, t_dyn* dyn)
+void	load_content_from_file(int fd, t_dyn* dyn)
 {
 	char* line;
 
@@ -424,7 +424,7 @@ bool parse_content(char *filename, t_game* game)
 	if (!check_file_name(filename))
 		return false;
 	fd = open_file(filename);
-	load_content_from_map(fd, &lines);
+	load_content_from_file(fd, &lines);
 	if (!extract_elements(&lines))
 		return (false);
 	if (!parse_map(game, &lines, info()->map_height))
