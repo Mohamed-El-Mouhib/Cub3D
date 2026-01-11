@@ -23,9 +23,6 @@ static t_animation *enemy_animation_dead(t_game *game)
 	size_t size;
 	static	char *paths[] = {
 		"./textures/enemy/d.xpm",
-		"./textures/enemy/d.xpm",
-		"./textures/enemy/d.xpm",
-		"./textures/enemy/d.xpm",
 	};
 
 	size = sizeof(paths)/sizeof(paths[0]);
@@ -47,6 +44,30 @@ static t_animation *enemy_animation_attacking(t_game *game)
 	return (load_animation_frames(game, paths, size));
 }
 
+static t_animation *enemy_animation_idle(t_game *game)
+{
+	size_t size;
+	static	char *paths[] = {
+		"./textures/enemy/W7.xpm",
+		"./textures/enemy/W8.xpm",
+	};
+
+	size = sizeof(paths)/sizeof(paths[0]);
+	return (load_animation_frames(game, paths, size));
+}
+
+static t_animation *enemy_animation_harmed(t_game *game)
+{
+	size_t size;
+	static	char *paths[] = {
+		"./textures/enemy/d.xpm",
+		"./textures/enemy/d.xpm",
+	};
+
+	size = sizeof(paths)/sizeof(paths[0]);
+	return (load_animation_frames(game, paths, size));
+}
+
 void init_enemies(t_game *game)
 {
 	t_enemy *enemy;
@@ -57,12 +78,12 @@ void init_enemies(t_game *game)
 		enemy = malloc(sizeof(t_enemy));
 		if (!enemy)
 			printf("Warn: Faild to allocate memory %s\n", __func__);
-
 		enemy->pos = vec2_new(TILE_SIZE * i, TILE_SIZE * 2);
-		enemy->dir = vec2_new(0, 0);
 		enemy->animation[ENEMY_WALKING] = enemy_animation_walking(game);
                 enemy->animation[ENEMY_ATTACKING] = enemy_animation_attacking(game);
                 enemy->animation[ENEMY_DEAD] = enemy_animation_dead(game);
+                enemy->animation[ENEMY_HARMED] = enemy_animation_harmed(game);
+                enemy->animation[ENEMY_IDLE] = enemy_animation_idle(game);
                 enemy->state = ENEMY_WALKING;
 		enemy->health = ENEMY_MAX_HEALTH;
 		enemy->last_attack_time = 0;

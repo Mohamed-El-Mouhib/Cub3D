@@ -55,14 +55,10 @@ int can_move(t_game *g, double x, double y)
 	return (1);
 }
 
-void enemy_update_pos(t_game *game, t_enemy *enemy)
+bool enemy_is_too_close(t_game *game, t_enemy *enemy)
 {
-	t_vec2  dir;
-	t_vec2  next;
-	float   dist_sq;
+	double   dist_sq;
 
-	if (enemy->state == ENEMY_DEAD)
-		return ;
 	dist_sq = vec2_len_squared(enemy->pos, game->player.pos);
 	if (dist_sq < TILE_SIZE * TILE_SIZE) 
 	{
@@ -71,10 +67,24 @@ void enemy_update_pos(t_game *game, t_enemy *enemy)
 			enemy->state = ENEMY_ATTACKING;
 			enemy->last_attack_time = game->tick;
 		}
-		return;
+		return (true);
 	}
+	return (false);
+}
+
+void enemy_update_pos(t_game *game, t_enemy *enemy)
+{
+	t_vec2  dir;
+	t_vec2  next;
+
+	if (enemy->state == ENEMY_DEAD)
+		return ;
+	enemy->moving = false;
+	if (enemy_is_too_close(game, enemy)) 
+		return;
 	if (!has_los(game, enemy->pos, game->player.pos))
 		return;
+	enemy->moving = true;
 	dir = vec2_unit(enemy->pos, game->player.pos);
 	dir  = vec2_scale(dir, ENEMY_WALK_SPEED * game->dt);
 	next.x = enemy->pos.x + dir.x;
@@ -102,22 +112,45 @@ void enemy_attack_player(t_game *game, t_enemy *enemy)
 	}
 }
 
+char *get_enemy_state_string(t_enemy *enemy)
+{
+	switch (enemy->state)
+	{
+		case ENEMY_WALKING: return ("ENEMY_WALKING");
+		case ENEMY_ATTACKING: return ("ENEMY_ATTACKING");
+		case ENEMY_HARMED: return ("ENEMY_HARMED");
+		case ENEMY_DEAD: return ("ENEMY_DEAD");
+		default: return ("Unknown state");
+	}
+}
+
 void enemy_update_state(t_game *game, t_enemy *enemy)
 {
 	t_animation *anim;
 
-	if (enemy->state == ENEMY_WALKING || enemy->state == ENEMY_DEAD)
+	if (enemy->state == ENEMY_DEAD)
 		return ;
-	anim = enemy->animation[ENEMY_ATTACKING];
+	if (enemy->state == ENEMY_WALKING || enemy->state == ENEMY_IDLE)
+	{
+		if (enemy->moving)
+			enemy->state = ENEMY_WALKING;
+		else
+			enemy->state = ENEMY_IDLE;
+	}
+	anim = enemy->animation[enemy->state];
 	if (enemy->state == ENEMY_ATTACKING && !anim->finished)
 	{
 		if (anim->end - anim->curr == 3)
 			game->shake = 30;
-		return ;
 	}
-	if (enemy->state == ENEMY_ATTACKING && anim->finished)
+	else if (enemy->state == ENEMY_ATTACKING && anim->finished)
 	{
 		enemy_attack_player(game, enemy);
+		enemy->state = ENEMY_WALKING;
+		anim->finished = false;
+	}
+	else if (enemy->state == ENEMY_HARMED && anim->finished)
+	{
 		enemy->state = ENEMY_WALKING;
 		anim->finished = false;
 	}

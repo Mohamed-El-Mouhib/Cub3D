@@ -61,6 +61,7 @@ bool enemy_foreach(t_game *game, t_vec2 bullet)
 		if (enemy->health > 0 && vec2_len_squared(bullet, enemy->pos) < d)
 		{
 			enemy->health -= 7;
+			enemy->state = ENEMY_HARMED;
 			if (enemy->health <= 0)
 			{
 				enemy->health = 0;

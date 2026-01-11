@@ -110,7 +110,7 @@ typedef struct s_animation {
 	size_t end;
 	size_t curr;
 	size_t duration;
-	size_t finished;
+	bool finished;
 	time_t last_changed;
 } t_animation;
 
@@ -123,6 +123,7 @@ enum t_player_stats {
 
 typedef enum e_enemy_stats {
 	ENEMY_WALKING = 0,
+	ENEMY_IDLE,
 	ENEMY_ATTACKING,
 	ENEMY_HARMED,
 	ENEMY_DEAD,
@@ -198,7 +199,6 @@ typedef struct s_enemy
 	t_vec2 s; // draw start
 	t_vec2 e; // draw end
 	t_vec2	pos;
-	t_vec2 dir;
 	int size;
 	t_enemy_stats state;
 	t_vec2 camera;
@@ -206,6 +206,7 @@ typedef struct s_enemy
 	time_t last_attack_time;
 	double screen; // intersaction with the screen projection
 	int health;
+	bool moving;
 }	t_enemy;
 
 
