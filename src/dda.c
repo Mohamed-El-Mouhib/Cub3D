@@ -57,7 +57,7 @@ void find_first_hitting_wall(t_game *game, t_dda_ctx *dda)
 		}
 		if (dda->map_pos.x < 0 || dda->map_pos.x >= game->world.map_width || dda->map_pos.y < 0 || dda->map_pos.y >= game->world.map_height)
 			break ;
-		if ((game->world.map)[(int)dda->map_pos.y][(int)dda->map_pos.x] == '1')
+		if ((game->world.map)[(int)dda->map_pos.y][(int)dda->map_pos.x] == '1' || (game->world.map)[(int)dda->map_pos.y][(int)dda->map_pos.x] == 'C')
 			break ;
 	}
 }
@@ -192,7 +192,7 @@ void raycast_draw_walls(t_game *game)
 		if ((int)dda.hit_dist != 0)
 		{
 			calculate_wall_boundaries(game, &dda, x);
-			draw_fov_in_minimap(game, &dda);
+			// draw_fov_in_minimap(game, &dda);
 			draw_texture_line(game, &dda);
 		}
 	}

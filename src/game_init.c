@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
+#include <stdlib.h>
 
 bool init_game_world(char *filename, t_game* game)
 {

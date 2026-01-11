@@ -117,6 +117,7 @@ void game_rander(t_game *game)
 	mlx_put_image_to_window(game->mlx, game->win, game->scene.img, 0, 0);
 }
 
+
 bool is_frame_ready()
 {
 	static time_t last_frame_time;
@@ -142,36 +143,30 @@ int game_loop(t_game *game)
 	return (0);
 }
 
-/*
- * prepare_wall_images: loads wall textures from files and stores them in the frames struct.
- * @tmp:   temporary variable that stores the result of the texture loading function (mlx_xpm_file_to_image).
- * @x:     variable that holds the width of the texture.
- * @y:     variable that holds the height of the texture.
- * return: this function does not return a value.
- */
-void	prepare_wall_images(t_game *game)
+void	release_resources(t_game* game, int i)
 {
-	void	*tmp;
-	int	x;
-	int	y;
-	int	bpp;
-	int	endian;
-	int	line_len;
+	while (i >= 0)
+	{
+		mlx_destroy_image(game->mlx, &game->wall[i]);
+		--i;
+	}
+}
 
-	tmp = mlx_xpm_file_to_image(game->mlx, "./textures/Wall/First.xpm", &x, &y);
-	game->frames.walls[0].addr = mlx_get_data_addr(tmp,&bpp, &line_len, &endian);
-	game->frames.walls[0].height = y;
-	game->frames.walls[0].width = x;
-	game->frames.walls[0].bpp = bpp;
-	game->frames.walls[0].line_len = line_len;
-	game->frames.walls[0].endian = endian;
-	tmp = mlx_xpm_file_to_image(game->mlx,"./textures/Wall/Third.xpm", &x, &y);
-	game->frames.walls[1].addr = mlx_get_data_addr(tmp, &bpp, &line_len, &endian);
-	game->frames.walls[1].height = y;
-	game->frames.walls[1].width = x;
-	game->frames.walls[1].bpp = bpp;
-	game->frames.walls[1].line_len = line_len;
-	game->frames.walls[1].endian = endian;
+void	init_texture_assets(t_game *game)
+{
+	int	i;
+	char	*path;
+
+	i = -1;
+	while (++i < 2)
+	{
+		path = info()->ptr[i];
+		if (!image_load_xpm(game, &game->wall[i], path))
+		{
+			release_resources(game, i);
+			exit(1);
+		}
+	}
 }
 
 int	main(int ac, char **av)
@@ -181,7 +176,7 @@ int	main(int ac, char **av)
 	if (ac != 2)
 		return 1;
 	init_game(&game, av[1]);
-	prepare_wall_images(&game);
+	init_texture_assets(&game);
 	mlx_loop_hook(game.mlx, game_loop, &game);
 	mlx_hook(game.win, 6, 1L << 6, handle_mouse_move, &game); // Our mouse friend
 	mlx_hook(game.win, 2, 1L << 0, key_press, &game);         // if key pressed

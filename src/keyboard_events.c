@@ -36,6 +36,32 @@ int	key_release(int key_code, t_game *game)
 	return (0);
 }
 
+
+void	toggle_door(t_game* game)
+{
+	t_vec2 p;
+	int p_x = (int)(game->player.pos.x / TILE_SIZE);
+	int p_y = (int)(game->player.pos.y / TILE_SIZE);
+	int t_x = (int)(p.x / TILE_SIZE);
+	int t_y = (int)(p.y / TILE_SIZE);
+
+	p = vec2_add(game->player.pos, vec2_scale(game->player.dir, TILE_SIZE));
+	p_x = game->player.pos.x / TILE_SIZE;
+	p_y = game->player.pos.y / TILE_SIZE;
+	t_x = p.x / TILE_SIZE;
+	t_y = p.y / TILE_SIZE;
+	if (t_x == p_x && t_y == p_y)
+		return;
+	if (game->world.map[t_y][t_x] == 'C')
+	{
+		game->world.map[t_y][t_x] = 'O';
+	}
+	else if (game->world.map[t_y][t_x] == 'O')
+	{
+		game->world.map[t_y][t_x] = 'C';
+	}
+}
+
 int	key_press(int key_code, t_game *game)
 {
 	if (key_code == XK_Escape)

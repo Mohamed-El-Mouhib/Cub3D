@@ -1,5 +1,4 @@
 #include "../includes/cub3d.h"
-#include <stddef.h>
 
 
 t_data *assets_get(t_game *game, int id)

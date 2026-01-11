@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 #include "../includes/cub3d.h"
 
-#define MINIMAP_SCALE 4.0
 void minimap_draw_player(t_game *game)
 {
 	double scale = TILE_SIZE / MINIMAP_SCALE;
@@ -19,19 +18,11 @@ void minimap_draw_player(t_game *game)
 	t_vec2 mini_player_pos;
 
 
-	mini_player_pos = vec2_div(game->player.pos, MINIMAP_SCALE);
+	// mini_player_pos = vec2_div(game->player.pos, MINIMAP_SCALE);
+	mini_player_pos = vec2_new(HALF_MINIMAP + X_OFFSET, HALF_MINIMAP + Y_OFFSET);
 	head = vec2_add(vec2_scale(game->player.dir, scale), mini_player_pos);
-	draw_line(&game->scene, mini_player_pos, head, COLOR_MINDARO);
-	draw_filled_circle(&game->scene, mini_player_pos, 2, COLOR_WHITE);
-}
-
-void minimap_draw_enemy(t_game *game)
-{
-	// double scale = TILE_SIZE / MINIMAP_SCALE;
-	t_vec2 mini_enemy_pos;
-
-	draw_filled_circle(&game->scene, mini_enemy_pos, 5, COLOR_PURPLE);
-	draw_circle(&game->scene, mini_enemy_pos, 16, COLOR_PURPLE);
+	draw_line(&game->scene, mini_player_pos, head, COLOR_WHITE);
+	draw_filled_circle(&game->scene, mini_player_pos, 5, COLOR_WHITE);
 }
 
 void draw_fov_in_minimap(t_game *game, t_dda_ctx *dda)
@@ -39,7 +30,8 @@ void draw_fov_in_minimap(t_game *game, t_dda_ctx *dda)
 	t_vec2 mini_player_pos; // the player position in the minimap
 	t_vec2 mini_hit_point;  // where the ray hits in minimap?
 
-	mini_player_pos = vec2_div(game->player.pos, MINIMAP_SCALE);
+	mini_player_pos = vec2_new(120, 120);
+	// mini_player_pos = vec2_div(game->player.pos, MINIMAP_SCALE);
 	mini_hit_point = vec2_add(mini_player_pos, 
 			   vec2_scale(dda->ray, dda->hit_dist / MINIMAP_SCALE)
 			   );
@@ -51,8 +43,8 @@ void draw_fov_in_minimap(t_game *game, t_dda_ctx *dda)
 
 void minimap_draw_walls(t_game *game)
 {
-	size_t i = 0;
-	size_t j;
+	int i = 0;
+	int j;
 	int grid_sz;
 
 	grid_sz = TILE_SIZE / MINIMAP_SCALE;
@@ -63,6 +55,8 @@ void minimap_draw_walls(t_game *game)
 		{
 			if (game->world.map[i][j] == '1')
 				draw_filled_square(&game->scene, vec2_new(j * grid_sz, i * grid_sz), grid_sz, COLOR_GREEN);
+			else if (game->world.map[i][j] == 'C')
+				draw_filled_square(&game->scene, vec2_new(j * grid_sz, i * grid_sz), grid_sz, COLOR_RED);
 			j++;
 		}
 		i++;
@@ -73,7 +67,7 @@ void minimap_daw_grid(t_game *game)
 {
 	t_data *buff;
 	t_vec2 start;
-	size_t i;
+	int i;
 	int grid_sz;
 
 	grid_sz = TILE_SIZE / MINIMAP_SCALE;
@@ -97,9 +91,65 @@ void minimap_daw_grid(t_game *game)
 	}
 }
 
+void	calc_minimap_tiles(t_game* game, int i, int j)
+{
+	int	p_x;
+	int	p_y;
+	int	t_y;
+	int	t_x;
+	char	tile;
+
+	p_x = game->player.pos.x - HALF_MINIMAP * MINIMAP_ZOOM + i * MINIMAP_ZOOM ;
+	p_y = game->player.pos.y - HALF_MINIMAP * MINIMAP_ZOOM + j * MINIMAP_ZOOM ;
+	t_x = p_x / TILE_SIZE;
+	t_y = p_y / TILE_SIZE;
+	if (p_x < 0 || p_y < 0 || t_x < 0 || t_y < 0
+		|| game->world.map_height <= t_y || game->world.map_width <= t_x)
+	{
+		image_put_pixel(&game->scene, i + X_OFFSET, j + Y_OFFSET, 0x6e6e6e);
+		return;
+	}
+	tile = game->world.map[t_y][t_x];
+	if (tile == '1')
+		image_put_pixel(&game->scene, i + X_OFFSET, j + Y_OFFSET, 0x8a8a8a);
+	else if (tile == ' ')
+		image_put_pixel(&game->scene, i + X_OFFSET, j + Y_OFFSET, 0xd1d1d1);
+	else if (tile == 'C')
+		image_put_pixel(&game->scene, i + X_OFFSET, j + Y_OFFSET, 0xB1B1B1);
+	else
+		image_put_pixel(&game->scene, i + X_OFFSET, j + Y_OFFSET, 0xafafaf);
+}
+
+int	calc_distance(int x, int y)
+{
+	return (x * x + y * y);
+}
+
+void	draw_circle_map(t_game* game)
+{
+	int	i;
+	int	j;
+	int	range;
+
+	i = 0;
+	while (i < MINIMAP_LEN)
+	{
+		j = 0;
+		while (j < MINIMAP_LEN)
+		{
+			range = calc_distance(i - HALF_MINIMAP, j - HALF_MINIMAP);
+			if (range <= SQR_REDIOUS - 1000)
+				calc_minimap_tiles(game, i, j);
+			else if (range < SQR_REDIOUS)
+				image_put_pixel(&game->scene, i+ X_OFFSET, j + Y_OFFSET, 0x545454);
+			j++;
+		}
+		i++;
+	}
+}
+
 void draw_minimap(t_game *game)
 {
-	minimap_draw_walls(game);
-	minimap_daw_grid(game);
+	draw_circle_map(game);
 	minimap_draw_player(game);
 }
