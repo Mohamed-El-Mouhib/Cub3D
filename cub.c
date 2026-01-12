@@ -160,7 +160,6 @@ void	init_texture_assets(t_game *game)
 	i = -1;
 	while (++i < 2)
 	{
-		path = info()->ptr[i];
 		if (!image_load_xpm(game, &game->wall[i], path))
 		{
 			release_resources(game, i);

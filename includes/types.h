@@ -192,17 +192,6 @@ typedef struct e_foo
 	t_err  error;
 }	t_foo;
 
-typedef struct s_ParseConfig
-{
-	char*    ptr[6];
-	char**	map;
-	size_t	map_width;
-	size_t	map_height;
-	t_color  f;
-	t_color  c;
-	t_err  error;
-}	t_config;
-
 /*
  * @instance:	the instance of the enemy
  * @pos:			vectore holding enemy position in map

@@ -74,8 +74,6 @@ void player_init(t_game *game);
 
 // Parser
 bool parse_content(char *filename, t_game* game);
-void	init_error(t_error_type type, int line, int index, void* p);
-t_config*	info(void);
 
 // textures
 void	draw_texture_line(t_game *game, t_dda_ctx *info);

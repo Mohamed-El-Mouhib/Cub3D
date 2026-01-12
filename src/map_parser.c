@@ -17,6 +17,26 @@
 
 #define MAP_VALID_CHARACTERS "01NSEWOC "
 
+typedef struct s_lex
+{
+	char*	file;
+	char*	text;// string text
+	size_t  len; // lenght
+	size_t	pos; // index
+	size_t	map_start; // index
+}	t_lex;
+
+enum ErrType{
+	ERR_DUP_ELEM,
+	ERR_UNKNOWN_ELEM,
+	ERR_INVALID_VALUE,
+	ERR_INVALID_PATH,
+	ERR_INVALID_KEY,
+	ERR_INVALID_COLOR,
+	ERR_OCT_BIG,
+	ERR_INVALID_OCT,
+} type;
+
 bool is_valid_char(char c)
 {
 	return (ft_strchr(MAP_VALID_CHARACTERS, c));
@@ -51,26 +71,6 @@ int open_file(char *filename)
 	return (fd);
 }
 
-void	reform_map_lines(size_t bigest, t_dyn* dyn)
-{
-	size_t	(i), (len);
-	char*   tmp;
-
-	i = 0;
-	while (i < info()->map_height)
-	{
-		len = ft_strlen(info()->map[i]);
-		tmp = malloc(bigest + 1);
-		if (!tmp)
-			return ((void)perror(""));
-		ft_memcpy(tmp, info()->map[i], len);
-		ft_memset(tmp + len, ' ', bigest - len);
-		tmp[bigest] = '\0';
-		info()->map[i] = tmp;
-		i++;
-	}
-}
-
 bool	check_is_closed(char* line)
 {
 	int	i;
@@ -83,14 +83,6 @@ bool	check_is_closed(char* line)
 	}
 	return true;
 }
-
-typedef struct s_lex
-{
-	char*	file;
-	char*	text;// string text
-	size_t  len; // lenght
-	size_t	pos; // index
-}	t_lex;
 
 bool lex_try_read_str(t_lex *lex, char *str)
 {
@@ -125,7 +117,6 @@ t_tok	try_read_type(t_lex *lex)
 		return TOKEN_C;
 	return TOKEN_INVALID;
 }
-
 
 void	lex_init(t_lex* lex, char* str, size_t len, char* file)
 {
@@ -162,17 +153,6 @@ int	try_get_value(t_lex* lex)
 	}
 	return (i);
 }
-
-enum ErrType{
-	ERR_DUP_ELEM,
-	ERR_UNKNOWN_ELEM,
-	ERR_INVALID_VALUE,
-	ERR_INVALID_PATH,
-	ERR_INVALID_KEY,
-	ERR_INVALID_COLOR,
-	ERR_OCT_BIG,
-	ERR_INVALID_OCT,
-} type;
 
 bool	err_print(int type)
 {
@@ -262,7 +242,7 @@ bool read_config(t_lex* lex, t_dyn* dyn, t_foo* config, char* file)
 	while (i < dyn->length)
 	{
 		if (is_config_done(config))
-			return true;;
+			break;
 		if (!is_empty_line(lines[i]))
 		{
 			lex_init(lex, lines[i], ft_strlen(lines[i]), file);
@@ -271,7 +251,7 @@ bool read_config(t_lex* lex, t_dyn* dyn, t_foo* config, char* file)
 		}
 		i++;
 	}
-	lex->pos = i;
+	lex->map_start = i;
 	return true;
 }
 
@@ -288,21 +268,21 @@ void delete_last_newline(char *line)
 	}
 }
 
-bool	check_file_name(char *filename)
-{
-	if (!filename)
-		info()->error.err = NO_FILENAME;
-	else if (!*filename)
-		info()->error.err = EMPTY_FILE;
-	else if (!ft_strncmp(ft_strrchr(filename, '.'), ".cub", 5) && ft_strlen(filename) > 4)
-	{
-		info()->error.err = NO_ERR;
-		return true;
-	}
-	else
-		info()->error.err = INVALID_FILENAME;
-	return false;
-}
+// bool	check_file_name(char *filename)
+// {
+// 	if (!filename)
+// 		info()->error.err = NO_FILENAME;
+// 	else if (!*filename)
+// 		info()->error.err = EMPTY_FILE;
+// 	else if (!ft_strncmp(ft_strrchr(filename, '.'), ".cub", 5) && ft_strlen(filename) > 4)
+// 	{
+// 		info()->error.err = NO_ERR;
+// 		return true;
+// 	}
+// 	else
+// 		info()->error.err = INVALID_FILENAME;
+// 	return false;
+// }
 
 void	load_content_from_file(int fd, t_dyn* dyn)
 {
@@ -425,18 +405,8 @@ void	get_map_size(t_foo* config, size_t end)
 		i++;
 	}
 	config->map_height = i;
+	printf("i %d ------- %d lafan dialo\n", i , end);
 	config->map_width  = width;
-}
-
-bool	evaluate_map(char** lines, size_t end)
-{
-	size_t	i;
-
-	i = 0;
-	while (i < end)
-	{
-		i++;
-	}
 }
 
 bool is_(char *curr, char *next, char *prev, int i)
@@ -454,8 +424,8 @@ bool is_(char *curr, char *next, char *prev, int i)
 
 bool	log_error(char *error)
 {
-	printf("Error\n %s\n", error);
-	return (false)
+	printf("Error\n%s\n", error);
+	return (false);
 }
 
 bool	check_map_line(char** lines, size_t j)
@@ -467,7 +437,7 @@ bool	check_map_line(char** lines, size_t j)
 	{
 		if (ft_strchr("0WESNCO", lines[j][i]))
 		{
-			if (is_(lines[j], lines[j + 1], lines[j - 1], i))
+			if (!is_(lines[j], lines[j + 1], lines[j - 1], i))
 				return (log_error("Invalid character position"));
 		}
 		else if (!is_valid_char(lines[j][i]))
@@ -481,8 +451,10 @@ bool	read_map(t_foo* config)
 {
 	size_t i;
 
-	if (!check_is_closed(config->map[0]) || !check_is_closed(lines[config->map_height - 1]))
-		return (log_error("Map is not closed"));
+	if (!check_is_closed(config->map[0]))
+		return (log_error("Surrounded by Invalid character"));
+	if (!check_is_closed(config->map[config->map_height - 1]))
+		return (log_error("Surrounded by Invalid character"));
 	i = 0;
 	while (i < config->map_height)
 	{
@@ -493,28 +465,57 @@ bool	read_map(t_foo* config)
 	return (true);
 }
 
+
+bool validate_config(t_foo *config)
+{
+	size_t i;
+
+	if (!is_config_done(config))
+		return (false);
+	i = 0;
+	while (i < 4)
+	{
+		if (!validate_paths(config->value[i]))
+			return (false);
+		i++;
+	}
+	if (!parse_color(config->value[C], &config->c))
+		return (false);
+	if (!parse_color(config->value[F], &config->f))
+		return (false);
+	return true;
+}
+
+
+
 bool	read_file(t_dyn* dyn, t_foo* config, char* file)
 {
 	t_lex	lex;
+	char**	lines;
 	size_t	i;
 
 	ft_bzero(&lex, sizeof(lex));
-	if (!read_config(&lex, lines, config, file))
-		exit(1);
+	if (!read_config(&lex, dyn, config, file))
+		return (false);
+	if (!validate_config(config))
+		return (false);
 	i = lex.map_start;
 	lines = (char**)dyn->buff;
-	while (i < dyn->length && !is_empty_line(lines[i]))
+	while (i < dyn->length && is_empty_line(lines[i]))
 		++i;
 	if (i == dyn->length)
 		return (log_error("Missing map"));
 	config->map = lines + i;
 	get_map_size(config, dyn->length - i);
+	printf("MAP_SIZE %zux%zu\n", config->map_width,config->map_height);
 	if (!read_map(config))
 		return (false);
+	i += config->map_height;
 	while (i < dyn->length && !is_empty_line(lines[i]))
 		++i;
 	if (i != dyn->length)
 		return (log_error("Map is not the last element"));
+	return true;
 }
 
 bool parse_content(char *filename, t_game* game)
@@ -524,28 +525,13 @@ bool parse_content(char *filename, t_game* game)
 	int	fd;
 	int	i;
 
-	info()->error.file = filename;
-	ft_bzero(&config, sizeof(t_config));
-	if (!check_file_name(filename))
-		return false;
+	// info()->error.file = filename;
+	ft_bzero(&config, sizeof(config));
+	// if (!check_file_name(filename))
+	// 	return false;
 	fd = open_file(filename);
 	load_content_from_file(fd, &lines);
 	if (!read_file(&lines, &config, filename))
 		exit(1);
-	// if (!read_config(&lines, &config, filename))
-	// 	exit(1);
-	if (!is_config_done(&config))
-		exit(1);
-	i = 0;
-	while (i < 4)
-	{
-		if (!validate_paths(config.value[i++]))
-			exit(1);
-	}
-	if (!parse_color(config.value[C], &config.c))
-		exit(1);
-	if (!parse_color(config.value[F], &config.f))
-		exit(1);
-	exit(1);
 	return (true);
 }

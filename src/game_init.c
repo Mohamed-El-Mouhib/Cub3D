@@ -20,7 +20,7 @@ bool init_game_world(char *filename, t_game* game)
 	if (!parse_content(filename, game))
 		return (false);
 	if (game->player.pos.x == -1 && game->player.pos.y == -1)
-		return (init_error(NO_PLAYER, 0,0, NULL), false);
+		return (false);
 	return (true);
 }
 
@@ -28,7 +28,7 @@ void init_game(t_game *game, char *filename)
 {
 	if (!init_game_world(filename, game))
 	{
-		error_indexing();
+		// error_indexing();
 		return;
 	}
 	game->mlx = mlx_init();
