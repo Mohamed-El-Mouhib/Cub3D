@@ -17,50 +17,6 @@
 
 #define MAP_VALID_CHARACTERS "01NSEWOC "
 
-t_config*	info(void)
-{
-	static t_config box;
-
-	return (&box);
-}
-
-void	init_error(t_error_type type, int line, int index, void* p)
-{
-	info()->error.err = type;
-	info()->error.cpos = index;
-	info()->error.line = line;
-	info()->error.ptr = p;
-}
-
-
-void	error_indexing(void)
-{
-	if (info()->error.err == NO_FILENAME)
-		printf(FILENAME_ERR);
-	else if (info()->error.err== INVALID_PATH)
-		printf(PATH_ERR, info()->error.file, info()->error.line, info()->error.cpos);
-	else if (info()->error.err== INVALID_COLOR)
-		printf(IN_COLOR_ERR, info()->error.file, info()->error.line, info()->error.cpos);
-	else if (info()->error.err== INVALID_SYNX)
-		printf(IN_SYNX_ERR, info()->error.file, info()->error.line, info()->error.cpos);
-	else if (info()->error.err== DOUBLE_P_INSTANCE)
-		printf(PLAYER_ERR, info()->error.file, info()->error.line, info()->error.cpos);
-	else if (info()->error.err== UNFINISHED)
-		printf(UNFINISHED_ERR, info()->error.file);
-	else if (info()->error.err== COMMAS)
-		printf(COMMAS_ERR, info()->error.file);
-	else if (info()->error.err== INVALID_FILENAME)
-		printf(IN_FILENAME_ERR, info()->error.file);
-	else if (info()->error.err== INVALID_CHAR)
-		printf(IN_CHAR_ERR, info()->error.file, info()->error.line, info()->error.cpos, *(char*)info()->error.ptr);
-	else if (info()->error.err== UNCLOSED)
-		printf(CLOSE_ERR, info()->error.file, info()->error.line, info()->error.cpos, *(char*)info()->error.ptr);
-	else if (info()->error.err== NO_MAP)
-		printf(MAP_ERR, info()->error.file);
-	else if (info()->error.err == NO_PLAYER)
-		printf(NO_PLAYER_ERR, info()->error.file);
-}
-
 bool is_valid_char(char c)
 {
 	return (ft_strchr(MAP_VALID_CHARACTERS, c));
@@ -95,50 +51,6 @@ int open_file(char *filename)
 	return (fd);
 }
 
-bool	validate_paths(char* path)
-{
-	int  i;
-
-	i = -1;
-	while(path[++i])
-	{
-		if (path[i + 1] == ' ' || !path[i + 1])
-		{
-			if (i > 4 && !ft_strncmp(path + i - 3,".xpm", 4) && is_empty_line(path + i + 1))
-			{
-				path[i + 1] = '\0';
-				return true;
-			}
-			break;
-		}
-	}
-	init_error(INVALID_PATH, 0, i, path);
-	return false;
-}
-
-bool	parse_color(char* line, t_color* clr, int* i)
-{
-	bool has_digit;
-	int  value;
-
-	value = 0;
-	has_digit = false;
-	while (line[*i] == ' ')
-		(*i)++;
-	while (ft_isdigit(line[*i]))
-	{
-		has_digit = true;
-		value = value * 10 + (line[*i] - '0');
-		if (value > 255)
-			return (init_error(INVALID_COLOR, 0, info()->error.cpos + *i, NULL)), false;
-		(*i)++;
-	}
-	if (!has_digit)
-		return (init_error(INVALID_CHAR, 0, info()->error.cpos + *i, &line[*i])), false;
-	*clr = (*clr << 8) | value;
-	return (true);
-}
-
 void	reform_map_lines(size_t bigest, t_dyn* dyn)
 {
 	size_t	(i), (len);
@@ -148,92 +60,26 @@ void	reform_map_lines(size_t bigest, t_dyn* dyn)
 	while (i < info()->map_height)
 	{
 		len = ft_strlen(info()->map[i]);
-		if (len < bigest)
-		{
-			tmp = malloc(bigest + 1);
-			if (!tmp)
-				return ((void)perror(""));
-			ft_memcpy(tmp, info()->map[i], len);
-			ft_memset(tmp + len, ' ', bigest - len);
-			tmp[bigest] = '\0';
-			info()->map[i] = tmp;
-			dyn_add_back(dyn, tmp);
-		}
+		tmp = malloc(bigest + 1);
+		if (!tmp)
+			return ((void)perror(""));
+		ft_memcpy(tmp, info()->map[i], len);
+		ft_memset(tmp + len, ' ', bigest - len);
+		tmp[bigest] = '\0';
+		info()->map[i] = tmp;
 		i++;
 	}
 }
 
-bool	validate_map(t_game* game, t_dyn* dyn, size_t i)
+bool	check_is_closed(char* line)
 {
-	int	(bigst), (j), (len);
-	bigst = 0;
-	while (i < info()->map_height)
+	int	i;
+
+	i = -1;
+	while (line[++i])
 	{
-		j = -1;
-		len = ft_strlen(info()->map[i]);
-		if (len > bigst)
-			bigst = len;
-		while (info()->map[i][++j])
-		{
-			if (ft_strchr("NSEW", info()->map[i][j]))
-			{
-				if (game->player.pos.x != -1 || game->player.pos.y != -1)
-					return init_error(DOUBLE_P_INSTANCE, i, j, NULL), false;
-				game->player.pos.y = i * TILE_SIZE + TILE_SIZE/2;
-				game->player.pos.x = j * TILE_SIZE + TILE_SIZE/2;
-			}
-		}
-		i++;
-	}
-	game->world.map_width = bigst;
-	return (reform_map_lines(bigst, dyn), true);
-}
-
-bool	validate_colors(char *line, t_color* clr)
-{
-	int  (i), (comma_count);
-
-	i = 0;
-	comma_count = 0;
-	while (line[i])
-	{
-		if (!parse_color(line, clr, &i))
-			return (false);
-		while (line[i] == ' ')
-			i++;
-		if (line[i] == ',')
-		{
-			comma_count++;
-			if (comma_count > 2)
-				return init_error(COMMAS, 0, info()->error.cpos + i, NULL), false;
-			i++;
-		}
-		else if (line[i])
-			return init_error(INVALID_CHAR, 0, info()->error.cpos + i, &line[i]), false;
-	}
-	if (comma_count != 2)
-		return init_error(COMMAS, 0, info()->error.cpos + i, NULL), false;
-	return true;
-}
-
-bool	check_map_line(char** line, size_t len, size_t j)
-{
-	size_t   i;
-
-	i = 0;
-	while (line[j][i])
-	{
-		if (ft_strchr("0WESNCO", line[j][i]))
-		{
-			if (!i || line[j][i - 1] == ' ' || !line[j][i + 1]
-				|| line[j][i + 1] == ' ' || ft_strlen(line[j - 1]) <= i
-				|| line[j - 1][i] == ' ' || j == len - 1
-				|| ft_strlen(line[j + 1]) <= i || line[j + 1][i] == ' ')
-				return (init_error(UNCLOSED, j, i, &line[j][i]), false);
-		}
-		else if (!is_valid_char(line[j][i]))
-			return (init_error(INVALID_CHAR, j, i, &line[j][i]), false);
-		++i;
+		if (line[i] != '1' && line[i] != ' ')
+			 return false;
 	}
 	return true;
 }
@@ -319,10 +165,13 @@ int	try_get_value(t_lex* lex)
 
 enum ErrType{
 	ERR_DUP_ELEM,
-	ERR_MISS_ELEM,
 	ERR_UNKNOWN_ELEM,
 	ERR_INVALID_VALUE,
+	ERR_INVALID_PATH,
 	ERR_INVALID_KEY,
+	ERR_INVALID_COLOR,
+	ERR_OCT_BIG,
+	ERR_INVALID_OCT,
 } type;
 
 bool	err_print(int type)
@@ -330,14 +179,20 @@ bool	err_print(int type)
 	printf("Error\n");
 	if (type == ERR_DUP_ELEM)
 		printf("Duplicated element found\n");
-	else if (type == ERR_MISS_ELEM)
-		printf("Missing element\n");
 	else if (type == ERR_UNKNOWN_ELEM)
 		printf("Unknown element found\n");
 	else if (type == ERR_INVALID_VALUE)
-		printf("Invalid value element found\n");
+		printf("invalid value element found\n");
 	else if (type == ERR_INVALID_KEY)
-		printf("Invalid key element found\n");
+		printf("Invalid or missing key element\n");
+	else if (type == ERR_INVALID_OCT)
+		printf("Invalid octet\n");
+	else if (type == ERR_OCT_BIG)
+		printf("Invalid octet size\n");
+	else if (type == ERR_INVALID_COLOR)
+		printf("Invalid color foramt\n");
+	else if (type == ERR_INVALID_PATH)
+		printf("Invalid path\n");
 	return (false);
 }
 char *get_token_type_str(t_tok type)
@@ -371,9 +226,8 @@ bool	config_readline(char* line, t_foo* config, t_lex* lex)
 	config->value[type] = &lex->text[lex->pos];
 	val_size = try_get_value(lex);
 	lex_skip_spaces(lex);
-	if (!val_size || lex->pos != lex->len)
+	if (!val_size)
 		return (err_print(ERR_INVALID_VALUE));
-	config->value[type][val_size] = '\0';
 	return true;
 }
 
@@ -398,10 +252,9 @@ bool	is_config_done(t_foo* config)
 	return true;
 }
 
-bool read_config(t_dyn* dyn, t_foo* config, char* file)
+bool read_config(t_lex* lex, t_dyn* dyn, t_foo* config, char* file)
 {
 	size_t   i;
-	t_lex	lex;
 	char**   lines;
 
 	i = 0;
@@ -412,13 +265,13 @@ bool read_config(t_dyn* dyn, t_foo* config, char* file)
 			return true;;
 		if (!is_empty_line(lines[i]))
 		{
-
-			lex_init(&lex, lines[i], ft_strlen(lines[i]), file);
-			if (!config_readline(lines[i], config, &lex))
+			lex_init(lex, lines[i], ft_strlen(lines[i]), file);
+			if (!config_readline(lines[i], config, lex))
 				return false;
 		}
 		i++;
 	}
+	lex->pos = i;
 	return true;
 }
 
@@ -467,11 +320,209 @@ void	load_content_from_file(int fd, t_dyn* dyn)
 	close(fd);
 }
 
+int	lex_color_octet(t_lex* lex)
+{
+	bool has_digit;
+	int  value;
+
+	value = 0;
+	has_digit = false;
+	while (ft_isdigit(lex->text[lex->pos]))
+	{
+		has_digit = true;
+		value = value * 10 + (lex->text[lex->pos] - '0');
+		if (value > 255)
+			return (-1);
+		lex->pos++;
+	}
+	if (!has_digit)
+		return (-1);
+	// *clr = (*clr << 8) | value;
+	return (value);
+}
+
+// enum ErrType{
+// 	ERR_DUP_ELEM,
+// 	ERR_UNKNOWN_ELEM,
+// 	ERR_INVALID_VALUE,
+// 	ERR_INVALID_KEY,
+// 	ERR_INVALID_COLOR,
+// 	ERR_OCT_BIG,
+// 	ERR_INVALID_OCT,
+// } type;
+//
+bool	parse_last_octet(t_lex* lex, char * color, t_color* c)
+{
+	int octet;
+
+	octet = lex_color_octet(lex);
+	if (octet == -1)
+		return (err_print(ERR_INVALID_OCT));
+	*c = (*c << 8) | octet;
+	lex_skip_spaces(lex);
+	if (lex->pos != lex->len)
+		return (err_print(ERR_INVALID_OCT));
+	return (true);
+}
+
+bool	parse_color(char * color, t_color* c)
+{
+	int	i;
+	int octet;
+	t_lex lex;
+
+	i = 0;
+	lex_init(&lex, color, ft_strlen(color), "unused");
+	color = 0;
+	while (i < 2)
+	{
+		octet = lex_color_octet(&lex);
+		if (octet == -1)
+			return (err_print(ERR_INVALID_OCT));
+		lex_skip_spaces(&lex);
+		if (!lex_try_read_str(&lex, ","))
+			return (err_print(ERR_INVALID_COLOR));
+		lex_skip_spaces(&lex);
+		*c = (*c << 8) | octet;
+		++i;
+	}
+	return (parse_last_octet(&lex, color, c));
+}
+
+bool	validate_paths(char* path)
+{
+	int  i;
+
+	i = -1;
+	while(path[++i])
+	{
+		if (path[i + 1] != ' ' && path[i + 1])
+			continue;
+		if (i >= 4 && !ft_strncmp(path + i - 3,".xpm", 4)
+			&& is_empty_line(path + i + 1))
+		{
+			path[i + 1] = '\0';
+			return true;
+		}
+		break;
+	}
+	return err_print(ERR_INVALID_PATH);
+}
+
+void	get_map_size(t_foo* config, size_t end)
+{
+	size_t	i;
+	size_t	width;
+	size_t	len;
+
+	i = 0;
+	width = 0;
+	while (i < end && !is_empty_line(config->map[i]))
+	{
+		len = ft_strlen(config->map[i]);
+		if (len > width)
+			width = len;
+		i++;
+	}
+	config->map_height = i;
+	config->map_width  = width;
+}
+
+bool	evaluate_map(char** lines, size_t end)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < end)
+	{
+		i++;
+	}
+}
+
+bool is_(char *curr, char *next, char *prev, int i)
+{
+	if (i == 0)
+		return (false);
+	if (curr[i - 1] == ' ' || !curr[i + 1] || curr[i + 1] == ' ')
+		return (false);
+	if (ft_strlen(prev) <= i || prev[i] == ' ')
+	     return (false);
+	if (ft_strlen(next) <= i || next[i] == ' ')
+		return (false);
+	return (true);
+}
+
+bool	log_error(char *error)
+{
+	printf("Error\n %s\n", error);
+	return (false)
+}
+
+bool	check_map_line(char** lines, size_t j)
+{
+	size_t   i;
+
+	i = 0;
+	while (lines[j][i])
+	{
+		if (ft_strchr("0WESNCO", lines[j][i]))
+		{
+			if (is_(lines[j], lines[j + 1], lines[j - 1], i))
+				return (log_error("Invalid character position"));
+		}
+		else if (!is_valid_char(lines[j][i]))
+			return (log_error("Unknown character"));
+		++i;
+	}
+	return true;
+}
+
+bool	read_map(t_foo* config)
+{
+	size_t i;
+
+	if (!check_is_closed(config->map[0]) || !check_is_closed(lines[config->map_height - 1]))
+		return (log_error("Map is not closed"));
+	i = 0;
+	while (i < config->map_height)
+	{
+		if (!check_map_line(config->map, i))
+			return (false);
+		i++;
+	}
+	return (true);
+}
+
+bool	read_file(t_dyn* dyn, t_foo* config, char* file)
+{
+	t_lex	lex;
+	size_t	i;
+
+	ft_bzero(&lex, sizeof(lex));
+	if (!read_config(&lex, lines, config, file))
+		exit(1);
+	i = lex.map_start;
+	lines = (char**)dyn->buff;
+	while (i < dyn->length && !is_empty_line(lines[i]))
+		++i;
+	if (i == dyn->length)
+		return (log_error("Missing map"));
+	config->map = lines + i;
+	get_map_size(config, dyn->length - i);
+	if (!read_map(config))
+		return (false);
+	while (i < dyn->length && !is_empty_line(lines[i]))
+		++i;
+	if (i != dyn->length)
+		return (log_error("Map is not the last element"));
+}
+
 bool parse_content(char *filename, t_game* game)
 {
 	t_dyn	lines;
 	t_foo	config;
 	int	fd;
+	int	i;
 
 	info()->error.file = filename;
 	ft_bzero(&config, sizeof(t_config));
@@ -479,13 +530,22 @@ bool parse_content(char *filename, t_game* game)
 		return false;
 	fd = open_file(filename);
 	load_content_from_file(fd, &lines);
-	read_config(&lines, &config, filename);
+	if (!read_file(&lines, &config, filename))
+		exit(1);
+	// if (!read_config(&lines, &config, filename))
+	// 	exit(1);
 	if (!is_config_done(&config))
-		err_print(ERR_MISS_ELEM);
+		exit(1);
+	i = 0;
+	while (i < 4)
+	{
+		if (!validate_paths(config.value[i++]))
+			exit(1);
+	}
+	if (!parse_color(config.value[C], &config.c))
+		exit(1);
+	if (!parse_color(config.value[F], &config.f))
+		exit(1);
 	exit(1);
-	// game->world.map = info()->map; //after validating the map, storing it on true map container game.world
-	// game->world.map_height = info()->map_height; // setting the true lenght of the map
-	// game->floor = info()->f;
-	// game->ceiling = info()->c;
 	return (true);
 }
