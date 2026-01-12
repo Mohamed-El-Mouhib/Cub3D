@@ -16,8 +16,8 @@ static t_animation *animation_shooting(t_game *game)
 	size_t size;
 	static	char *paths[] = {
 		"./textures/shot/1.xpm",
-		"./textures/shot/2.xpm",
-		"./textures/shot/3.xpm",
+		// "./textures/shot/2.xpm",
+		// "./textures/shot/3.xpm",
 	};
 
 	size = sizeof(paths)/sizeof(paths[0]);
@@ -29,17 +29,17 @@ static t_animation *animation_reload(t_game *game)
 	size_t size;
 	static	char *paths[] = {
 		"./textures/reload/1.xpm",
-		"./textures/reload/2.xpm",
-		"./textures/reload/3.xpm",
-		"./textures/reload/4.xpm",
-		"./textures/reload/5.xpm",
-		"./textures/reload/6.xpm",
-		"./textures/reload/7.xpm",
-		"./textures/reload/8.xpm",
-		"./textures/reload/9.xpm",
-		"./textures/reload/10.xpm",
-		"./textures/reload/11.xpm",
-		"./textures/reload/12.xpm",
+		// "./textures/reload/2.xpm",
+		// "./textures/reload/3.xpm",
+		// "./textures/reload/4.xpm",
+		// "./textures/reload/5.xpm",
+		// "./textures/reload/6.xpm",
+		// "./textures/reload/7.xpm",
+		// "./textures/reload/8.xpm",
+		// "./textures/reload/9.xpm",
+		// "./textures/reload/10.xpm",
+		// "./textures/reload/11.xpm",
+		// "./textures/reload/12.xpm",
 	};
 
 	size = sizeof(paths)/sizeof(paths[0]);

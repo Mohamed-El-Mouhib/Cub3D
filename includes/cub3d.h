@@ -116,4 +116,7 @@ void enemy_draw_all(t_game *game);
 void enemy_update_frame_all(t_game *game);
 int can_move(t_game *g, double x, double y);
 
+// release
+void release_and_exit(t_game *game);
+
 #endif

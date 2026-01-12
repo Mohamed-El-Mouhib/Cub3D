@@ -112,7 +112,7 @@ void game_rander(t_game *game)
 	draw_minimap(game);
 	enemy_draw_all(game);
 	player_render_frame(game);
-	draw_filled_circle(&game->scene, vec2_new(game->screen_width / 2.0, game->screen_height / 2.0), 8, COLOR_RED);
+	draw_filled_circle(&game->scene, vec2_new(game->screen_width / 2.0, game->screen_height / 2.0 + 50), 8, COLOR_RED);
 	put_number(game,vec2_new(10, game->screen_height - 80), game->player.ammo);
 	mlx_put_image_to_window(game->mlx, game->win, game->scene.img, 0, 0);
 }

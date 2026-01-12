@@ -65,7 +65,7 @@ void	toggle_door(t_game* game)
 int	key_press(int key_code, t_game *game)
 {
 	if (key_code == XK_Escape)
-		exit(0);
+		game->inputs[KEY_ESCAPE] = true;
 	else if (key_code == XK_Right)
 		game->inputs[KEY_RIGHT] = true;
 	else if (key_code == XK_Left)
@@ -99,6 +99,8 @@ void set_input_dir(t_game *game)
 
 void game_handle_inputs(t_game *game)
 {
+	if (game->inputs[KEY_ESCAPE])
+		release_and_exit(game);
 	if (game->inputs[KEY_RIGHT])
 		player_rotate(game, ROTATE_RIGHT);
 	if (game->inputs[KEY_LEFT])

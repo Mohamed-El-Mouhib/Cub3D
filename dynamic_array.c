@@ -12,7 +12,7 @@
 
 # include "includes/dynamic_array.h"
 
-static int	dynamic_ensure_capacity(t_dyn *arr)
+static bool	dynamic_ensure_capacity(t_dyn *arr)
 {
 	size_t	req_cap;
 	size_t	new_cap;
@@ -20,32 +20,38 @@ static int	dynamic_ensure_capacity(t_dyn *arr)
 
 	req_cap = arr->length + 1;
 	if (arr->capacity >= req_cap)
-		return (0);
+		return (true);
 	new_cap = arr->capacity * 2;
 	printf("DEBUG: DYN REALLOC %zu => %zu\n", arr->length, new_cap);
 	new_buff = malloc(new_cap * sizeof(void *));
 	if (!new_buff)
-	{
-		perror("dyn_malloc");
-		exit(1);
-	}
+		return (false);
 	ft_memcpy(new_buff, arr->buff, arr->length * sizeof(void *));
 	free(arr->buff);
 	arr->buff = new_buff;
 	arr->capacity = new_cap;
-	return (0);
+	return (true);
 }
 
-void	dyn_add_back(t_dyn *arr, void *elem)
+/**
+ * dyn_add_back - Add new element to dynamic array
+ *
+ * Return: true if success and false if fail
+ */
+bool	dyn_add_back(t_dyn *arr, void *elem)
 {
 	if (arr->capacity == 0)
 	{
 		write(2, ADD_NEW_ELEMENT_FAIL, ft_strlen(ADD_NEW_ELEMENT_FAIL));
-		return ;
+		return (false);
 	}
-	dynamic_ensure_capacity(arr);
+	if (!arr->buff)
+		return (false);
+	if (!dynamic_ensure_capacity(arr))
+		return (false);
 	arr->buff[arr->length] = elem;
 	arr->length++;
+	return (true);
 }
 
 void dyn_foreach(t_dyn *arr, void f(void *))

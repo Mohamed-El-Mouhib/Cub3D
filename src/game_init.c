@@ -26,6 +26,9 @@ bool init_game_world(char *filename, t_game* game)
 
 void init_game(t_game *game, char *filename)
 {
+	ft_bzero(game, sizeof(t_game));
+	ft_bzero(&game->player, sizeof(t_player));
+	ft_bzero(&game->world, sizeof(t_world));
 	if (!init_game_world(filename, game))
 	{
 		error_indexing();
