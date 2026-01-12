@@ -11,6 +11,9 @@
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdlib.h>
 
 #define MAP_VALID_CHARACTERS "01NSEWOC "
 
@@ -90,23 +93,6 @@ int open_file(char *filename)
 		exit(1);
 	}
 	return (fd);
-}
-
-t_token	TokenType(char* str)
-{
-	if (!ft_strncmp(str, "NO ", 3))
-		return NO;
-	else if (!ft_strncmp(str, "SO ", 3))
-		return SO;
-	else if (!ft_strncmp(str, "WE ", 3))
-		return WE;
-	else if (!ft_strncmp(str, "EA ", 3))
-		return EA;
-	else if (!ft_strncmp(str, "F ", 2))
-		return F;
-	else if (!ft_strncmp(str, "C ", 2))
-		return C;
-	return NOT;
 }
 
 bool	validate_paths(char* path)
@@ -229,73 +215,6 @@ bool	validate_colors(char *line, t_color* clr)
 		return init_error(COMMAS, 0, info()->error.cpos + i, NULL), false;
 	return true;
 }
-bool	validate_configs(t_token type)
-{
-	if (type <= EA && !validate_paths(info()->ptr[type]))
-		return false;
-	else if (type == F && !validate_colors(info()->ptr[type], &info()->f))
-		return false;
-	else if (type == C && !validate_colors(info()->ptr[type], &info()->c))
-		return false;
-	return true;
-}
-
-int	TypeStoring(char* str, int* i, t_token type, int *check)
-{
-	static t_token FirstToken;
-
-	type = TokenType(str + *i);
-	if (*check && type <= C)
-	{
-		FirstToken = type;
-		*check = false;
-		(*i)++;
-		return (-1);
-	}
-	else if (*check || info()->ptr[FirstToken])
-		return (-2);
-	info()->ptr[FirstToken] = str + *i;
-	return (FirstToken);
-}
-
-bool	ParseLine(char* line, size_t* finished)
-{
-	int	(i), (check), (stat);
-	t_token	type;
-
-	check = true;
-	i = -1;
-	while (line[++i])
-	{
-		if (line[i] != ' ')
-		{
-			type = TokenType(line + i);
-			stat = TypeStoring(line, &i, type, &check);
-			if (stat == -1)
-				continue;
-			else if (stat == -2)
-				break;
-			(*finished)++;
-			info()->error.cpos = i;
-			return (validate_configs(stat));
-		}
-	}
-	init_error(INVALID_SYNX, 0, i, &line[i]);
-	return (false);
-}
-
-bool	check_is_closed(char* line, int y)
-{
-	int	i;
-
-	i = -1;
-	while (line[++i])
-	{
-		if (line[i] != '1' && line[i] != ' ')
-			 return init_error(UNCLOSED, y, i, &line[i]), false;
-	}
-	return true;
-}
 
 bool	check_map_line(char** line, size_t len, size_t j)
 {
@@ -319,54 +238,203 @@ bool	check_map_line(char** line, size_t len, size_t j)
 	return true;
 }
 
-bool	parse_map(t_game* game, t_dyn* dyn, size_t i)
+typedef struct s_lex
 {
-	char**	lines;
+	char*	file;
+	char*	text;// string text
+	size_t  len; // lenght
+	size_t	pos; // index
+	bool	err;
+}	t_lex;
 
-	lines = (char**)dyn->buff;
-	while (i < dyn->length && is_empty_line(lines[i]))
-		i++;
-	if (i == dyn->length)
-		return (init_error(NO_MAP, i, 0, NULL), false);
-	if (!check_is_closed(lines[i], i))
+bool lex_try_read_str(t_lex *lex, char *str)
+{
+	size_t	len;
+
+	len = ft_strlen(str);
+	if (lex->pos + len > lex->len)
 		return (false);
-	info()->map_height = i;
-	info()->map = lines + i;
-	while (i < dyn->length)
+	if (!ft_strncmp(&lex->text[lex->pos], str, len))
 	{
-		if ((i == dyn->length - 1 || is_empty_line(lines[i + 1]))
-			&& !check_is_closed(lines[i], i))
-			return false;
-		else if (!check_map_line(lines, dyn->length, i))
-			return false;
-		i++;
+		lex->pos += len;
+		return (true);
 	}
-	info()->map_height = i - info()->map_height;
-	return (validate_map(game, dyn, 0));
+	else
+		return (false);
 }
 
-bool extract_elements(t_dyn* dyn)
+
+t_tok	try_read_type(t_lex *lex)
 {
-	size_t   (i), (finished);
-	char**   lines;
+	if (lex_try_read_str(lex, "NO "))
+		return TOKEN_NO;
+	else if (lex_try_read_str(lex, "SO "))
+		return TOKEN_SO;
+	else if (lex_try_read_str(lex, "WE "))
+		return TOKEN_WE;
+	else if (lex_try_read_str(lex, "EA "))
+		return TOKEN_EA;
+	else if (lex_try_read_str(lex, "F "))
+		return TOKEN_F;
+	else if (lex_try_read_str(lex, "C "))
+		return TOKEN_C;
+	return TOKEN_INVALID;
+}
+
+
+t_lex	lex_init(char* str, size_t len)
+{
+	t_lex	tmp;
+
+	tmp.text = str;
+	tmp.len = len;
+	tmp.pos = 0;
+	tmp.err = false;
+	return tmp;
+}
+
+void	lex_skip_spaces(t_lex* lex)
+{
+	while (lex->pos < lex->len)
+	{
+		if (lex->text[lex->pos] == ' ')
+			lex->pos++;
+		else
+			return;
+	}
+}
+
+int	try_get_value(t_lex* lex)
+{
+	int	i;
+	char *strr;
+
 
 	i = 0;
-	finished = 0;
-	lines = (char**)dyn->buff;
-	while (i < dyn->length && finished < 6)
+	while (lex->pos < lex->len)
 	{
-		if (!*lines[i] || ParseLine(lines[i], &finished))
-			i++;
-		else
-		{
-			info()->error.line += i;
-			return false;
-		}
+		if (lex->text[lex->pos] == ' ')
+			return (i);
+		i++;
+		lex->pos++;
 	}
-	info()->map = lines + i;
-	info()->map_height = i;
-	if (finished < 6)
-		return (init_error(UNFINISHED, 0, 0, NULL), false);
+	return (i);
+}
+
+// typedef struct s_er
+// {
+// 	enum ErrType{
+// 		ERR_DUP_ELEM,
+// 		ERR_MISS_ELEM,
+// 		ERR_UNKNOWN_ELEM,
+// 		ERR_INVALID_ELEM,
+// 	} type;
+// 	size_t	pos;
+// 	char*	file;
+// 	size_t	line;
+// 	union {
+// 		t_tok element_type;
+// 		char *file;
+// 	};
+// }	t_er;
+
+// t_er init_eror_element_type(t_tok element_type, int error_type, t_lex* lex)
+// {
+// 	t_er	tmp;
+//
+// 	tmp.pos = lex->pos;
+// 	tmp.type = error_type;
+// 	// tmp.line = lex->line;
+// 	tmp.element_type = element_type;
+// 	return tmp;
+// }
+
+enum ErrType{
+	ERR_DUP_ELEM,
+	ERR_MISS_ELEM,
+	ERR_UNKNOWN_ELEM,
+	ERR_INVALID_ELEM,
+} type;
+
+void	err_print(int type, t_lex* lex)
+{
+	printf("Error\n");
+	if (type == ERR_DUP_ELEM)
+		printf("Duplicated element found\n");
+	else if (type == ERR_MISS_ELEM)
+		printf("Missing element\n");
+	else if (type == ERR_UNKNOWN_ELEM)
+		printf("Unknown element found\n");
+	else if (type == ERR_INVALID_ELEM)
+		printf("Invalid value element found\n");
+	lex->err = true;
+}
+
+bool	config_readline(char* line, t_foo* config)
+{
+	t_lex	lex;
+	t_tok	type;
+	int	val_size;
+
+	lex = lex_init(line, ft_strlen(line));
+	lex_skip_spaces(&lex);
+	type = try_read_type(&lex);
+	if (type == TOKEN_INVALID)
+		return (false);
+	lex_skip_spaces(&lex);
+	if (config->value[type])
+		return (false);
+	config->value[type] = &lex.text[lex.pos];
+	val_size = try_get_value(&lex);
+	lex_skip_spaces(&lex);
+	if (!val_size || lex.pos != lex.len)
+		return (false);
+	config->value[type][val_size] = '\0';
+	return true;
+}
+
+char *get_token_type_str(t_tok type)
+{
+	switch (type)
+	{
+		case TOKEN_NO: return "TOKEN_NO";
+		case TOKEN_SO: return "TOKEN_SO";
+		case TOKEN_WE: return "TOKEN_WE";
+		case TOKEN_EA: return "TOKEN_EA";
+		case TOKEN_F: return "TOKEN_F";
+		case TOKEN_C: return "TOKEN_C";
+		case TOKEN_INVALID: return "TOKEN_INVALID";
+		default:return  "TOKEN_INVALID";
+	}
+}
+
+void print_config(t_foo config)
+{
+	for (int i = 0; i < TOKEN_NBR; i++)
+	{
+		printf("%8s = '%s'\n", get_token_type_str(i), config.value[i]);
+	}
+}
+
+
+
+
+bool read_config(t_dyn* dyn)
+{
+	size_t   i;
+	char**   lines;
+	t_foo	 config;
+
+	i = 0;
+	lines = (char**)dyn->buff;
+	ft_bzero(&config, sizeof(t_config));
+	while (i < dyn->length)
+	{
+		if (!is_empty_line(lines[i]))
+			config_readline(lines[i], &config);
+		i++;
+	}
+	print_config(config);
 	return true;
 }
 
@@ -425,13 +493,11 @@ bool parse_content(char *filename, t_game* game)
 		return false;
 	fd = open_file(filename);
 	load_content_from_file(fd, &lines);
-	if (!extract_elements(&lines))
-		return (false);
-	if (!parse_map(game, &lines, info()->map_height))
-		return (false);
-	game->world.map = info()->map; //after validating the map, storing it on true map container game.world
-	game->world.map_height = info()->map_height; // setting the true lenght of the map
-	game->floor = info()->f;
-	game->ceiling = info()->c;
+	read_config(&lines);
+	exit(1);
+	// game->world.map = info()->map; //after validating the map, storing it on true map container game.world
+	// game->world.map_height = info()->map_height; // setting the true lenght of the map
+	// game->floor = info()->f;
+	// game->ceiling = info()->c;
 	return (true);
 }

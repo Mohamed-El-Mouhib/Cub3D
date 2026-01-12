@@ -1,7 +1,18 @@
-WE /asdasdasdasdasd.xpm
+
+                             
+
+
+
+
+
+
+
+
+
+              WE /asdasdasdasdasd.xpm
 EA ./asdasdasdasdasd.xpm
 SO ./textures/Wall/Second.xpm               
-NO ./textures/Wall/First.xpm               
+NO ./textures/Wall/First.xpm              d 
 C 0,0,255
 F 255,0,0
 

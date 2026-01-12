@@ -168,6 +168,30 @@ typedef struct s_err
 	t_error_type err;
 }	t_err;
 
+
+typedef enum e_tok
+{
+	TOKEN_NO = 0,
+	TOKEN_SO,
+	TOKEN_WE,
+	TOKEN_EA,
+	TOKEN_F,
+	TOKEN_C,
+	TOKEN_NBR,
+	TOKEN_INVALID
+}	t_tok;
+
+typedef struct e_foo
+{
+	char*    value[TOKEN_NBR];
+	char**	map;
+	size_t	map_width;
+	size_t	map_height;
+	t_color  f;
+	t_color  c;
+	t_err  error;
+}	t_foo;
+
 typedef struct s_ParseConfig
 {
 	char*    ptr[6];
@@ -178,12 +202,6 @@ typedef struct s_ParseConfig
 	t_color  c;
 	t_err  error;
 }	t_config;
-
-typedef enum
-{
-	CHASE,
-	IDLE,
-}	t_stat;
 
 /*
  * @instance:	the instance of the enemy
@@ -206,7 +224,6 @@ typedef struct s_enemy
 	int health;
 	bool moving;
 }	t_enemy;
-
 
 typedef enum e_token
 {
