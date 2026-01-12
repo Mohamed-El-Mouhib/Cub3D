@@ -244,7 +244,6 @@ typedef struct s_lex
 	char*	text;// string text
 	size_t  len; // lenght
 	size_t	pos; // index
-	bool	err;
 }	t_lex;
 
 bool lex_try_read_str(t_lex *lex, char *str)
@@ -282,15 +281,12 @@ t_tok	try_read_type(t_lex *lex)
 }
 
 
-t_lex	lex_init(char* str, size_t len)
+void	lex_init(t_lex* lex, char* str, size_t len, char* file)
 {
-	t_lex	tmp;
-
-	tmp.text = str;
-	tmp.len = len;
-	tmp.pos = 0;
-	tmp.err = false;
-	return tmp;
+	lex->text = str;
+	lex->len = len;
+	lex->pos = 0;
+	lex->file = file;
 }
 
 void	lex_skip_spaces(t_lex* lex)
@@ -321,42 +317,15 @@ int	try_get_value(t_lex* lex)
 	return (i);
 }
 
-// typedef struct s_er
-// {
-// 	enum ErrType{
-// 		ERR_DUP_ELEM,
-// 		ERR_MISS_ELEM,
-// 		ERR_UNKNOWN_ELEM,
-// 		ERR_INVALID_ELEM,
-// 	} type;
-// 	size_t	pos;
-// 	char*	file;
-// 	size_t	line;
-// 	union {
-// 		t_tok element_type;
-// 		char *file;
-// 	};
-// }	t_er;
-
-// t_er init_eror_element_type(t_tok element_type, int error_type, t_lex* lex)
-// {
-// 	t_er	tmp;
-//
-// 	tmp.pos = lex->pos;
-// 	tmp.type = error_type;
-// 	// tmp.line = lex->line;
-// 	tmp.element_type = element_type;
-// 	return tmp;
-// }
-
 enum ErrType{
 	ERR_DUP_ELEM,
 	ERR_MISS_ELEM,
 	ERR_UNKNOWN_ELEM,
-	ERR_INVALID_ELEM,
+	ERR_INVALID_VALUE,
+	ERR_INVALID_KEY,
 } type;
 
-void	err_print(int type, t_lex* lex)
+bool	err_print(int type)
 {
 	printf("Error\n");
 	if (type == ERR_DUP_ELEM)
@@ -365,34 +334,12 @@ void	err_print(int type, t_lex* lex)
 		printf("Missing element\n");
 	else if (type == ERR_UNKNOWN_ELEM)
 		printf("Unknown element found\n");
-	else if (type == ERR_INVALID_ELEM)
+	else if (type == ERR_INVALID_VALUE)
 		printf("Invalid value element found\n");
-	lex->err = true;
+	else if (type == ERR_INVALID_KEY)
+		printf("Invalid key element found\n");
+	return (false);
 }
-
-bool	config_readline(char* line, t_foo* config)
-{
-	t_lex	lex;
-	t_tok	type;
-	int	val_size;
-
-	lex = lex_init(line, ft_strlen(line));
-	lex_skip_spaces(&lex);
-	type = try_read_type(&lex);
-	if (type == TOKEN_INVALID)
-		return (false);
-	lex_skip_spaces(&lex);
-	if (config->value[type])
-		return (false);
-	config->value[type] = &lex.text[lex.pos];
-	val_size = try_get_value(&lex);
-	lex_skip_spaces(&lex);
-	if (!val_size || lex.pos != lex.len)
-		return (false);
-	config->value[type][val_size] = '\0';
-	return true;
-}
-
 char *get_token_type_str(t_tok type)
 {
 	switch (type)
@@ -408,6 +355,28 @@ char *get_token_type_str(t_tok type)
 	}
 }
 
+
+bool	config_readline(char* line, t_foo* config, t_lex* lex)
+{
+	t_tok	type;
+	int	val_size;
+
+	lex_skip_spaces(lex);
+	type = try_read_type(lex);
+	if (type == TOKEN_INVALID)
+		return (err_print(ERR_INVALID_KEY));
+	lex_skip_spaces(lex);
+	if (config->value[type])
+		return (err_print(ERR_DUP_ELEM));
+	config->value[type] = &lex->text[lex->pos];
+	val_size = try_get_value(lex);
+	lex_skip_spaces(lex);
+	if (!val_size || lex->pos != lex->len)
+		return (err_print(ERR_INVALID_VALUE));
+	config->value[type][val_size] = '\0';
+	return true;
+}
+
 void print_config(t_foo config)
 {
 	for (int i = 0; i < TOKEN_NBR; i++)
@@ -416,25 +385,40 @@ void print_config(t_foo config)
 	}
 }
 
+bool	is_config_done(t_foo* config)
+{
+	int	i;
 
+	i = -1;
+	while (++i < TOKEN_NBR)
+	{
+		if (!config->value[i])
+			return false;
+	}
+	return true;
+}
 
-
-bool read_config(t_dyn* dyn)
+bool read_config(t_dyn* dyn, t_foo* config, char* file)
 {
 	size_t   i;
+	t_lex	lex;
 	char**   lines;
-	t_foo	 config;
 
 	i = 0;
 	lines = (char**)dyn->buff;
-	ft_bzero(&config, sizeof(t_config));
 	while (i < dyn->length)
 	{
+		if (is_config_done(config))
+			return true;;
 		if (!is_empty_line(lines[i]))
-			config_readline(lines[i], &config);
+		{
+
+			lex_init(&lex, lines[i], ft_strlen(lines[i]), file);
+			if (!config_readline(lines[i], config, &lex))
+				return false;
+		}
 		i++;
 	}
-	print_config(config);
 	return true;
 }
 
@@ -486,14 +470,18 @@ void	load_content_from_file(int fd, t_dyn* dyn)
 bool parse_content(char *filename, t_game* game)
 {
 	t_dyn	lines;
+	t_foo	config;
 	int	fd;
 
 	info()->error.file = filename;
+	ft_bzero(&config, sizeof(t_config));
 	if (!check_file_name(filename))
 		return false;
 	fd = open_file(filename);
 	load_content_from_file(fd, &lines);
-	read_config(&lines);
+	read_config(&lines, &config, filename);
+	if (!is_config_done(&config))
+		err_print(ERR_MISS_ELEM);
 	exit(1);
 	// game->world.map = info()->map; //after validating the map, storing it on true map container game.world
 	// game->world.map_height = info()->map_height; // setting the true lenght of the map
