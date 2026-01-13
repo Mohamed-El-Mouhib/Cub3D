@@ -83,9 +83,9 @@ unsigned int image_get_pixel(t_data *img, int x, int y)
 }
 
 /**
- * image_load_xpm - load xpm file from the @path into the @buff
+ * image_load_xpm_or_exit - load xpm file from the @path into the @buff
  */
-bool image_load_xpm(t_game *game, t_data *buff, char *path)
+bool image_load_xpm_or_exit(t_game *game, t_data *buff, char *path)
 {
 	t_data img;
 

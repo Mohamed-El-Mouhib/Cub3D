@@ -22,7 +22,7 @@ int assets_load_xpm(t_game *game, char *path)
 	t_data *data;
 
 	data = malloc(sizeof(t_data));
-	if (!image_load_xpm(game, data, path))
+	if (!image_load_xpm_or_exit(game, data, path))
 		return (-1);
 	dyn_add_back(game->assets, data); 
 	return (game->assets->length - 1);
