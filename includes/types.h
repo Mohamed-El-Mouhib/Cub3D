@@ -171,7 +171,6 @@ typedef struct s_enemy
 	time_t last_attack_time;
 	double screen; // intersaction with the screen projection
 	int health;
-	bool moving;
 }	t_enemy;
 
 typedef enum e_token

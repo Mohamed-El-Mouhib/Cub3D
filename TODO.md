@@ -1,4 +1,4 @@
-[ ] Enemy is looking very stupid when it freezes delete that shit
+[X] Enemy is looking very stupid when it freezes delete that shit
 [ ] Player should face west when looking east
 [ ] Render plyear hearts (lives)
 [ ] End the game if player dies

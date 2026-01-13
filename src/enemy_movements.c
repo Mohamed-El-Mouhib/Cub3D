@@ -80,12 +80,10 @@ void enemy_update_pos(t_game *game, t_enemy *enemy)
 
 	if (enemy->state == ENEMY_DEAD)
 		return ;
-	enemy->moving = false;
 	if (enemy_is_too_close(game, enemy)) 
 		return;
 	if (!has_los(game, enemy->pos, game->player.pos))
 		return;
-	enemy->moving = true;
 	dir = vec2_unit(enemy->pos, game->player.pos);
 	dir  = vec2_scale(dir, ENEMY_WALK_SPEED * game->dt);
 	next.x = enemy->pos.x + dir.x;

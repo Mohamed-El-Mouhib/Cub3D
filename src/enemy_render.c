@@ -165,8 +165,6 @@ void enemy_update_frame_all(t_game *game)
 	for (size_t i = 0; i < game->enemies->length; i++)
 	{
 		enemy = dyn_at(game->enemies, i);
-		if (enemy->state == ENEMY_WALKING && !enemy->moving)
-			continue;
 		animation_cycle(game, enemy->animation[enemy->state]);
 	}
 }
