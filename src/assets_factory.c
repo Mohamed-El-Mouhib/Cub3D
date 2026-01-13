@@ -1,26 +1,40 @@
 #include "../includes/cub3d.h"
 
-
+/**
+ * assets_get - Get image data from assets engine using its id
+ */
 t_data *assets_get(t_game *game, int id)
 {
 	return (dyn_at(game->assets, id));
 }
 
 /**
- * assets_load_xpm - Loading an exp
+ * assets_get_data_from_path - open xpm file and retrieve its data
+ *
+ * NOTE: program will abort if failed
+ */
+t_data *assets_get_data_from_path(t_game *game, char *path)
+{
+	int id;
+
+	id = assets_load_xpm(game, path);
+	return (assets_get(game, id));
+}
+
+/**
+ * assets_load_xpm - Load an xpm file and get its id. You can get the data using
+ * `assets_get` function
+ *
+ * NOTE: program will abort if failed
  */
 int assets_load_xpm(t_game *game, char *path)
 {
 	t_data *data;
 
 	data = malloc(sizeof(t_data));
-	if (!image_load_xpm(game, data, path))
-	{
-		printf("Error: %s: Frame loading failed: Exiting...\n", __func__);
-		printf("* Delete this message when you handle releasing resources *\n");
+	if (!data)
 		exit(1);
-		return (-1);
-	}
+	image_load_xpm_or_exit(game, data, path);
 	dyn_add_back(game->assets, data); 
 	return (game->assets->length - 1);
 }

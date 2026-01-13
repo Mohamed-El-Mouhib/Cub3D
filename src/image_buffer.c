@@ -83,23 +83,23 @@ unsigned int image_get_pixel(t_data *img, int x, int y)
 }
 
 /**
- * image_load_xpm - load xpm file from the @path into the @buff
+ * image_load_xpm_or_exit - load xpm file from the @path into the @buff
  */
-bool image_load_xpm(t_game *game, t_data *buff, char *path)
+bool image_load_xpm_or_exit(t_game *game, t_data *buff, char *path)
 {
 	t_data img;
 
-	printf("Info: Loading the XPM file: '%s'\n", path);
-	img.img = mlx_xpm_file_to_image(game->mlx, path, &img.width, &img.height);
+	printf("Info: loading the XPM file: '%s'\n", path);
 	if (!buff)
 	{
-		printf("Error: %s: Null buffer pointer provided when opening '%s'\n", __func__, path);
-		return (false);
+		printf("Error: null buffer when opening: '%s'\n", path);
+		exit(1);
 	}
+	img.img = mlx_xpm_file_to_image(game->mlx, path, &img.width, &img.height);
 	if (!img.img)
 	{
-		printf("Error: '%s': Failed to load XPM file\n", path);
-		return (false);
+		printf("Error: failed to load XPM file: '%s'\n", path);
+		exit(1);
 	}
 	img.addr = mlx_get_data_addr(img.img, &img.bpp, &img.line_len, &img.endian);
 	*buff = img;
@@ -109,7 +109,7 @@ bool image_load_xpm(t_game *game, t_data *buff, char *path)
 /**
  * image_draw_transparent - draw the @image at (x_off, y_off) position of the
  * screen, the color at 0,0 of the @image will be ignored, this is a dirty trick
- * to work around the library's lack of ability to rander PNG files
+ * to work around the library's lack of ability to render PNG files
  */
 void image_draw_transparent(t_game *game, t_data *image, double x_off, double y_off)
 {

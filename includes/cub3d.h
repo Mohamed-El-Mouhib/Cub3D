@@ -74,10 +74,12 @@ void player_init(t_game *game);
 
 // Parser
 bool parse_content(char *filename, t_game* game);
-void	init_error(t_error_type type, int line, int index, void* p);
-t_config*	info(void);
+
+//mohamed's garbage
+void	free_map(t_game* game);
 
 // textures
+void	init_texture_assets(t_game *game);
 void	draw_texture_line(t_game *game, t_dda_ctx *info);
 
 bool is_valid_char(char c);
@@ -86,6 +88,7 @@ bool is_valid_char(char c);
 void	error_indexing(void);
 
 // assets factory
+t_data *assets_get_data_from_path(t_game *game, char *path);
 int assets_load_xpm(t_game *game, char *path);
 t_animation *init_animation(size_t start, size_t end, int duration);
 t_animation *load_animation_frames(t_game *game, char **paths, size_t size, int duration);

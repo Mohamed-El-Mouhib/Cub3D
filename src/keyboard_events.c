@@ -40,10 +40,10 @@ int	key_release(int key_code, t_game *game)
 void	toggle_door(t_game* game)
 {
 	t_vec2 p;
-	int p_x = (int)(game->player.pos.x / TILE_SIZE);
-	int p_y = (int)(game->player.pos.y / TILE_SIZE);
-	int t_x = (int)(p.x / TILE_SIZE);
-	int t_y = (int)(p.y / TILE_SIZE);
+	int p_x;
+	int p_y;
+	int t_x;
+	int t_y;
 
 	p = vec2_add(game->player.pos, vec2_scale(game->player.dir, TILE_SIZE));
 	p_x = game->player.pos.x / TILE_SIZE;

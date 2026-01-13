@@ -6,7 +6,9 @@ OBJDIR        = builds
 NAME          = cub3d
 LIB_DIR       = libs
 CC            = cc
+ASSET_DIR     = textures
 UNAME         = $(shell uname)
+ASSETS_LINK   = https://github.com/Mohamed-El-Mouhib/Cub3D/releases/download/CubAssets/textures.zip
 
 ifeq ($(UNAME), Linux)
 	LINKERS = -lmlx -lXext -lX11 -lm -Llibs -lft
@@ -14,7 +16,17 @@ else
 	LINKERS = -L../mlx -lmlx -lm -Llibs -lft -framework OpenGL -framework AppKit
 endif
 
+
 all: libft_rule $(NAME)
+	@echo -e '\nNOTE: run "make assets" to download the textures used in the game'
+
+assets: $(ASSET_DIR)
+	@echo Unzipping the assets Archive...
+	@unzip -oq ./textures.zip
+
+$(ASSET_DIR):
+	@echo Downloading the assets...
+	@curl -sOL $(ASSETS_LINK)
 
 $(NAME): $(OBJ) $(LIBFT_ARCHIVE)
 	$(CC) $(CFLAGS) $(OBJ) $(LINKERS) -o $(NAME)
@@ -38,4 +50,4 @@ fclean: clean
 re: fclean all
 
 .SECONDARY: $(OBJ)
-.PHONY: all clean fclean re libft_rule
+.PHONY: all clean fclean re libft_rule assets

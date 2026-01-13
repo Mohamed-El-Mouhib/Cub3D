@@ -98,15 +98,7 @@ void game_update(t_game *game)
 	// printf("FRAME Id: %zu\n", enemy->animation[enemy->state]->curr);
 }
 
-typedef struct s_color {
-	unsigned char r:8;
-	unsigned char g:8;
-	unsigned char b:8;
-	unsigned char a:8;
-} t_color_;
-
-
-void game_rander(t_game *game)
+void game_render(t_game *game)
 {
 	raycast_draw_walls(game);
 	draw_minimap(game);
@@ -116,7 +108,6 @@ void game_rander(t_game *game)
 	put_number(game,vec2_new(10, game->screen_height - 80), game->player.ammo);
 	mlx_put_image_to_window(game->mlx, game->win, game->scene.img, 0, 0);
 }
-
 
 bool is_frame_ready()
 {
@@ -139,34 +130,21 @@ int game_loop(t_game *game)
 		return (0);
 	game_handle_inputs(game);
 	game_update(game);
-	game_rander(game);
+	game_render(game);
 	return (0);
 }
 
-void	release_resources(t_game* game, int i)
-{
-	while (i >= 0)
-	{
-		mlx_destroy_image(game->mlx, &game->wall[i]);
-		--i;
-	}
-}
-
-void	init_texture_assets(t_game *game)
+void	free_map(t_game* game)
 {
 	int	i;
-	char	*path;
 
-	i = -1;
-	while (++i < 2)
+	i = 0;
+	while (i < game->world.map_height)
 	{
-		path = info()->ptr[i];
-		if (!image_load_xpm(game, &game->wall[i], path))
-		{
-			release_resources(game, i);
-			exit(1);
-		}
+		free(game->world.map[i]);
+		i++;
 	}
+	free(game->world.map);
 }
 
 int	main(int ac, char **av)
@@ -174,9 +152,8 @@ int	main(int ac, char **av)
 	t_game game;
 
 	if (ac != 2)
-		return 1;
+		return (printf("No map provided\n"), 1);
 	init_game(&game, av[1]);
-	init_texture_assets(&game);
 	mlx_loop_hook(game.mlx, game_loop, &game);
 	mlx_hook(game.win, 6, 1L << 6, handle_mouse_move, &game); // Our mouse friend
 	mlx_hook(game.win, 2, 1L << 0, key_press, &game);         // if key pressed
