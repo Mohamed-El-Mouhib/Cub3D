@@ -7,6 +7,7 @@ NAME          = cub3d
 LIB_DIR       = libs
 CC            = cc
 UNAME         = $(shell uname)
+TEXTURES_LINK = "https://github.com/Mohamed-El-Mouhib/Cub3D/releases/download/CubAssets/texturees.tar.gz"
 
 ifeq ($(UNAME), Linux)
 	LINKERS = -lmlx -lXext -lX11 -lm -Llibs -lft
@@ -14,7 +15,13 @@ else
 	LINKERS = -L../mlx -lmlx -lm -Llibs -lft -framework OpenGL -framework AppKit
 endif
 
+
+
 all: libft_rule $(NAME)
+
+textures: TEXTURES_LINK
+	curl $(TEXTURES_LINK)
+	tar xzf $(TEXTURES_LINK)
 
 $(NAME): $(OBJ) $(LIBFT_ARCHIVE)
 	$(CC) $(CFLAGS) $(OBJ) $(LINKERS) -o $(NAME)
