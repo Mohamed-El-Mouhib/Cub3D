@@ -472,7 +472,7 @@ bool validate_config(t_config *config)
 	size_t i;
 
 	if (!is_config_done(config))
-		return (false);
+		return (log_error("Missing some required element"));
 	i = 0;
 	while (i < 4)
 	{
