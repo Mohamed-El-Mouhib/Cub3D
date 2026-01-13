@@ -39,11 +39,13 @@ void init_game(t_game *game, char *filename)
 	game->screen_width = 1280;
 	game->screen_height = 720;
 	game->assets = dyn_init_ptr();
-	while (i < 2)
+	while (i < 4)
 	{
 		game->wall[i] = *assets_get_data_from_path(game, game->world.values[i]);
 		i++;
 	}
+	printf("Everything is good love 💋\n");
+	exit(0);
 	game->win = mlx_new_window(game->mlx, game->screen_width, game->screen_height, "MOUSE");
 	if (!game->win)
 		ft_exit_error("Faild to allocate window");

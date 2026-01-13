@@ -89,16 +89,18 @@ bool image_load_xpm(t_game *game, t_data *buff, char *path)
 {
 	t_data img;
 
-	printf("Info: Loading the XPM file: '%s'\n", path);
-	img.img = mlx_xpm_file_to_image(game->mlx, path, &img.width, &img.height);
+	printf("Info: loading the XPM file: '%s'\n", path);
 	if (!buff)
 	{
-		printf("Error: %s: Null buffer pointer provided when opening '%s'\n", __func__, path);
+		printf("Error: null buffer when opening: '%s'\n", path);
+		exit(1);
 		return (false);
 	}
+	img.img = mlx_xpm_file_to_image(game->mlx, path, &img.width, &img.height);
 	if (!img.img)
 	{
-		printf("Error: '%s': Failed to load XPM file\n", path);
+		printf("Error: failed to load XPM file: '%s'\n", path);
+		exit(1);
 		return (false);
 	}
 	img.addr = mlx_get_data_addr(img.img, &img.bpp, &img.line_len, &img.endian);

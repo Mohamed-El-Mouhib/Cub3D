@@ -592,6 +592,5 @@ bool parse_content(char *filename, t_game* game)
 	if (!construct_game(&config, game))
 		release_file_exit(&lines, game);
 	dyn_erase(&lines, free);
-	printf("Everything is good love 💋\n");
 	return (true);
 }

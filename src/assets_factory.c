@@ -23,12 +23,7 @@ int assets_load_xpm(t_game *game, char *path)
 
 	data = malloc(sizeof(t_data));
 	if (!image_load_xpm(game, data, path))
-	{
-		printf("Error: %s: Frame loading failed: Exiting...\n", __func__);
-		printf("* Delete this message when you handle releasing resources *\n");
-		exit(1);
 		return (-1);
-	}
 	dyn_add_back(game->assets, data); 
 	return (game->assets->length - 1);
 }
