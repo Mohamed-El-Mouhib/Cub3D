@@ -44,8 +44,6 @@ void init_game(t_game *game, char *filename)
 		game->wall[i] = *assets_get_data_from_path(game, game->world.values[i]);
 		i++;
 	}
-	printf("Everything is good love 💋\n");
-	exit(0);
 	game->win = mlx_new_window(game->mlx, game->screen_width, game->screen_height, "MOUSE");
 	if (!game->win)
 		ft_exit_error("Faild to allocate window");
@@ -56,7 +54,7 @@ void init_game(t_game *game, char *filename)
 	game->stripes = malloc(sizeof(double) * game->screen_width);
 	game->tick = curr_time_ms();
 	game->shake = 0;
-	int idx = assets_load_xpm(game, "./textures/digits.xpm");
+	int idx = assets_load_xpm(game, "./textures/Additional/Digits.xpm");
 	game->numbers = dyn_at(game->assets, idx);
 	
 	// assignment an instance to imaginary enemy

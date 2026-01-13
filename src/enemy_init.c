@@ -33,15 +33,15 @@ static t_animation *enemy_animation_attacking(t_game *game)
 {
 	size_t size;
 	static	char *paths[] = {
-		"./textures/enemy/A0.xpm",
 		"./textures/enemy/A1.xpm",
 		"./textures/enemy/A2.xpm",
 		"./textures/enemy/A3.xpm",
 		"./textures/enemy/A4.xpm",
+		"./textures/enemy/A5.xpm",
 	};
 
 	size = sizeof(paths)/sizeof(paths[0]);
-	return (load_animation_frames(game, paths, size, 200));
+	return (load_animation_frames(game, paths, size, 120));
 }
 
 void init_enemies(t_game *game)

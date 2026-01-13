@@ -7,7 +7,7 @@ NAME          = cub3d
 LIB_DIR       = libs
 CC            = cc
 UNAME         = $(shell uname)
-TEXTURES_LINK = "https://github.com/Mohamed-El-Mouhib/Cub3D/releases/download/CubAssets/texturees.tar.gz"
+ASSETS_LINK = https://github.com/Mohamed-El-Mouhib/Cub3D/releases/download/CubAssets/textures.zip
 
 ifeq ($(UNAME), Linux)
 	LINKERS = -lmlx -lXext -lX11 -lm -Llibs -lft
@@ -18,10 +18,12 @@ endif
 
 
 all: libft_rule $(NAME)
+	echo Run "make assets" to download the assets
 
-textures: TEXTURES_LINK
-	curl $(TEXTURES_LINK)
-	tar xzf $(TEXTURES_LINK)
+assets:
+	echo Downaloding the assets...
+	curl -OL $(ASSETS_LINK)
+	unzip ./textures.zip
 
 $(NAME): $(OBJ) $(LIBFT_ARCHIVE)
 	$(CC) $(CFLAGS) $(OBJ) $(LINKERS) -o $(NAME)
@@ -45,4 +47,4 @@ fclean: clean
 re: fclean all
 
 .SECONDARY: $(OBJ)
-.PHONY: all clean fclean re libft_rule
+.PHONY: all clean fclean re libft_rule assets

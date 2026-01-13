@@ -133,7 +133,7 @@ void enemy_update_state(t_game *game, t_enemy *enemy)
 	anim = enemy->animation[enemy->state];
 	if (enemy->state == ENEMY_ATTACKING && !anim->finished)
 	{
-		if (anim->end - anim->curr == 3)
+		if (anim->end == anim->curr)
 			game->shake = 30;
 	}
 	else if (enemy->state == ENEMY_ATTACKING && anim->finished)

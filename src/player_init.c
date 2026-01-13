@@ -4,7 +4,7 @@ static t_animation *animation_walking(t_game *game)
 {
 	size_t size;
 	static	char *paths[] = {
-		"./textures/average.xpm",
+		"./textures/weapon.xpm",
 	};
 
 	size = sizeof(paths)/sizeof(paths[0]);
