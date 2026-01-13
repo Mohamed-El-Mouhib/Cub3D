@@ -7,6 +7,7 @@ NAME          = cub3d
 LIB_DIR       = libs
 CC            = cc
 UNAME         = $(shell uname)
+ASSETS_LINK   = https://github.com/Mohamed-El-Mouhib/Cub3D/releases/download/CubAssets/texturees.tar.gz
 
 ifeq ($(UNAME), Linux)
 	LINKERS = -lmlx -lXext -lX11 -lm -Llibs -lft
@@ -15,6 +16,12 @@ else
 endif
 
 all: libft_rule $(NAME)
+
+assets:
+	@echo Downlaoding game assets...
+	rm -rf texturees.tar.gz textures
+	curl -OL $(ASSETS_LINK)
+	tar xf texturees.tar.gz
 
 $(NAME): $(OBJ) $(LIBFT_ARCHIVE)
 	$(CC) $(CFLAGS) $(OBJ) $(LINKERS) -o $(NAME)
@@ -38,4 +45,4 @@ fclean: clean
 re: fclean all
 
 .SECONDARY: $(OBJ)
-.PHONY: all clean fclean re libft_rule
+.PHONY: all clean fclean re libft_rule assets
