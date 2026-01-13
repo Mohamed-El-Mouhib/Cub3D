@@ -98,7 +98,7 @@ void game_update(t_game *game)
 	// printf("FRAME Id: %zu\n", enemy->animation[enemy->state]->curr);
 }
 
-void game_rander(t_game *game)
+void game_render(t_game *game)
 {
 	raycast_draw_walls(game);
 	draw_minimap(game);
@@ -130,7 +130,7 @@ int game_loop(t_game *game)
 		return (0);
 	game_handle_inputs(game);
 	game_update(game);
-	game_rander(game);
+	game_render(game);
 	return (0);
 }
 

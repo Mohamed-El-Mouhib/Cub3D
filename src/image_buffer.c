@@ -94,14 +94,12 @@ bool image_load_xpm_or_exit(t_game *game, t_data *buff, char *path)
 	{
 		printf("Error: null buffer when opening: '%s'\n", path);
 		exit(1);
-		return (false);
 	}
 	img.img = mlx_xpm_file_to_image(game->mlx, path, &img.width, &img.height);
 	if (!img.img)
 	{
 		printf("Error: failed to load XPM file: '%s'\n", path);
 		exit(1);
-		return (false);
 	}
 	img.addr = mlx_get_data_addr(img.img, &img.bpp, &img.line_len, &img.endian);
 	*buff = img;
@@ -111,7 +109,7 @@ bool image_load_xpm_or_exit(t_game *game, t_data *buff, char *path)
 /**
  * image_draw_transparent - draw the @image at (x_off, y_off) position of the
  * screen, the color at 0,0 of the @image will be ignored, this is a dirty trick
- * to work around the library's lack of ability to rander PNG files
+ * to work around the library's lack of ability to render PNG files
  */
 void image_draw_transparent(t_game *game, t_data *image, double x_off, double y_off)
 {

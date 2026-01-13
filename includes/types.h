@@ -191,7 +191,7 @@ typedef struct s_game
 	t_player player;
 	t_vec2	 mouse_pos;
 	t_vec2 last_mouse_pos;
-	// Rander fields
+	// Render fields
 	size_t  screen_width;
 	size_t  screen_height;
 	bool inputs[256];
