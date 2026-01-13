@@ -16,9 +16,6 @@
 
 bool init_game_world(char *filename, t_game* game)
 {
-	int	i;
-
-	i = 0;
 	ft_bzero(game, sizeof(t_game));
 	game->player.pos = vec2_new(-1, -1);
 	if (!parse_content(filename, game))

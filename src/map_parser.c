@@ -154,8 +154,6 @@ void	lex_skip_spaces(t_lex* lex)
 int	try_get_value(t_lex* lex)
 {
 	int	i;
-	char *strr;
-
 
 	i = 0;
 	while (lex->pos < lex->len)
@@ -205,7 +203,7 @@ char *get_token_type_str(t_tok type)
 	}
 }
 
-bool	config_readline(char* line, t_config* config, t_lex* lex)
+bool	config_readline(t_config* config, t_lex* lex)
 {
 	t_tok	type;
 	int	val_size;
@@ -246,7 +244,7 @@ bool	is_config_done(t_config* config)
 	return true;
 }
 
-bool read_config(t_lex* lex, t_dyn* dyn, t_config* config, char* file)
+bool read_config(t_lex* lex, t_dyn* dyn, t_config* config)
 {
 	size_t   i;
 	char**   lines;
@@ -258,7 +256,7 @@ bool read_config(t_lex* lex, t_dyn* dyn, t_config* config, char* file)
 		if (!is_empty_line(lines[i]))
 		{
 			lex_init(lex, lines[i], ft_strlen(lines[i]));
-			if (!config_readline(lines[i], config, lex))
+			if (!config_readline(config, lex))
 				return false;
 		}
 		else if (is_config_done(config))
@@ -394,7 +392,7 @@ void	get_map_size(t_config* config, size_t end)
 	config->map_width  = width;
 }
 
-bool is_val(char *curr, char *next, char *prev, int i)
+bool is_val(char *curr, char *next, char *prev, size_t i)
 {
 	if (i == 0)
 		return (false);
@@ -487,14 +485,14 @@ bool validate_config(t_config *config)
 	return true;
 }
 
-bool	read_file(t_dyn* dyn, t_config* config, char* file)
+bool	read_file(t_dyn* dyn, t_config* config)
 {
 	t_lex	lex;
 	char**	lines;
 	size_t	i;
 
 	ft_bzero(&lex, sizeof(lex));
-	if (!read_config(&lex, dyn, config, file))
+	if (!read_config(&lex, dyn, config))
 		return (false);
 	if (!validate_config(config))
 		return (false);
@@ -587,7 +585,7 @@ bool parse_content(char *filename, t_game* game)
 		exit(1);
 	fd = open_file(filename);
 	load_content_from_file(fd, &lines);
-	if (!read_file(&lines, &config, filename))
+	if (!read_file(&lines, &config))
 		release_file_exit(&lines, game);
 	if (!construct_game(&config, game))
 		release_file_exit(&lines, game);

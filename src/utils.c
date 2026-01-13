@@ -13,7 +13,7 @@
 
 void ft_exit_error(char *msg)
 {
-	write(STDERR_FILENO, msg, ft_strlen(msg));	
+	printf("%s\n", msg);
 	exit(1);
 }
 

@@ -40,7 +40,7 @@ void	dyn_add_back(t_dyn *arr, void *elem)
 {
 	if (arr->capacity == 0)
 	{
-		write(2, ADD_NEW_ELEMENT_FAIL, ft_strlen(ADD_NEW_ELEMENT_FAIL));
+		printf(ADD_NEW_ELEMENT_FAIL);
 		return ;
 	}
 	dynamic_ensure_capacity(arr);

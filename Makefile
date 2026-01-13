@@ -17,9 +17,8 @@ else
 endif
 
 
-
 all: libft_rule $(NAME)
-	echo Run "make assets" to download the assets
+	@echo -e '\nNOTE: run "make assets" to download the textures used in the game'
 
 assets: $(ASSET_DIR)
 	@echo Unzipping the assets Archive...
