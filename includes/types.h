@@ -184,6 +184,17 @@ typedef enum e_token
 	NOT,
 }	t_token;
 
+typedef enum e_ui_img
+{
+	UI_DIGITS = 0,
+	UI_HEARTH,
+	UI_BULLET_CONTAINER,
+	UI_OPEN_DOOR,
+	UI_CLOSE_DOOR,
+	UI_AIM,
+	UI_NBR,
+} t_ui_img;
+
 typedef struct s_game
 {
 	t_world  world;
@@ -207,6 +218,7 @@ typedef struct s_game
 	double shake;
 	double dt; // delta time
 	t_data *numbers;
+	t_data *ui[UI_NBR];
 }			t_game;
 
 /**

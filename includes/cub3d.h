@@ -119,4 +119,11 @@ void enemy_draw_all(t_game *game);
 void enemy_update_frame_all(t_game *game);
 int can_move(t_game *g, double x, double y);
 
+// ui
+
+void ui_render_aim(t_game *game);
+void ui_render_bullets(t_game *game);
+void ui_draw_number(t_game *game, t_vec2 pos, int number);
+void ui_render_hearts(t_game *game);
+
 #endif
