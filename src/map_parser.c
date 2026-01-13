@@ -17,6 +17,21 @@
 
 #define MAP_VALID_CHARACTERS "01NSEWOC "
 
+void	release_file_exit(t_dyn* dyn, t_game* game)
+{
+	int	i;
+
+	dyn_erase(dyn, free);
+	i = 0;
+	while (i < 4)
+	{
+		free(game->world.values[i]);
+		i++;
+	}
+	free_map(game);
+	exit(1);
+}
+
 typedef struct s_lex
 {
 	char*	file;
@@ -118,12 +133,11 @@ t_tok	try_read_type(t_lex *lex)
 	return TOKEN_INVALID;
 }
 
-void	lex_init(t_lex* lex, char* str, size_t len, char* file)
+void	lex_init(t_lex* lex, char* str, size_t len)
 {
 	lex->text = str;
 	lex->len = len;
 	lex->pos = 0;
-	lex->file = file;
 }
 
 void	lex_skip_spaces(t_lex* lex)
@@ -175,6 +189,7 @@ bool	err_print(int type)
 		printf("Invalid path\n");
 	return (false);
 }
+
 char *get_token_type_str(t_tok type)
 {
 	switch (type)
@@ -190,8 +205,7 @@ char *get_token_type_str(t_tok type)
 	}
 }
 
-
-bool	config_readline(char* line, t_foo* config, t_lex* lex)
+bool	config_readline(char* line, t_config* config, t_lex* lex)
 {
 	t_tok	type;
 	int	val_size;
@@ -211,7 +225,7 @@ bool	config_readline(char* line, t_foo* config, t_lex* lex)
 	return true;
 }
 
-void print_config(t_foo config)
+void print_config(t_config config)
 {
 	for (int i = 0; i < TOKEN_NBR; i++)
 	{
@@ -219,7 +233,7 @@ void print_config(t_foo config)
 	}
 }
 
-bool	is_config_done(t_foo* config)
+bool	is_config_done(t_config* config)
 {
 	int	i;
 
@@ -232,7 +246,7 @@ bool	is_config_done(t_foo* config)
 	return true;
 }
 
-bool read_config(t_lex* lex, t_dyn* dyn, t_foo* config, char* file)
+bool read_config(t_lex* lex, t_dyn* dyn, t_config* config, char* file)
 {
 	size_t   i;
 	char**   lines;
@@ -241,14 +255,14 @@ bool read_config(t_lex* lex, t_dyn* dyn, t_foo* config, char* file)
 	lines = (char**)dyn->buff;
 	while (i < dyn->length)
 	{
-		if (is_config_done(config))
-			break;
 		if (!is_empty_line(lines[i]))
 		{
-			lex_init(lex, lines[i], ft_strlen(lines[i]), file);
+			lex_init(lex, lines[i], ft_strlen(lines[i]));
 			if (!config_readline(lines[i], config, lex))
 				return false;
 		}
+		else if (is_config_done(config))
+			break;
 		i++;
 	}
 	lex->map_start = i;
@@ -267,22 +281,6 @@ void delete_last_newline(char *line)
 		i++;
 	}
 }
-
-// bool	check_file_name(char *filename)
-// {
-// 	if (!filename)
-// 		info()->error.err = NO_FILENAME;
-// 	else if (!*filename)
-// 		info()->error.err = EMPTY_FILE;
-// 	else if (!ft_strncmp(ft_strrchr(filename, '.'), ".cub", 5) && ft_strlen(filename) > 4)
-// 	{
-// 		info()->error.err = NO_ERR;
-// 		return true;
-// 	}
-// 	else
-// 		info()->error.err = INVALID_FILENAME;
-// 	return false;
-// }
 
 void	load_content_from_file(int fd, t_dyn* dyn)
 {
@@ -317,21 +315,10 @@ int	lex_color_octet(t_lex* lex)
 	}
 	if (!has_digit)
 		return (-1);
-	// *clr = (*clr << 8) | value;
 	return (value);
 }
 
-// enum ErrType{
-// 	ERR_DUP_ELEM,
-// 	ERR_UNKNOWN_ELEM,
-// 	ERR_INVALID_VALUE,
-// 	ERR_INVALID_KEY,
-// 	ERR_INVALID_COLOR,
-// 	ERR_OCT_BIG,
-// 	ERR_INVALID_OCT,
-// } type;
-//
-bool	parse_last_octet(t_lex* lex, char * color, t_color* c)
+bool	parse_last_octet(t_lex* lex, t_color* c)
 {
 	int octet;
 
@@ -352,8 +339,7 @@ bool	parse_color(char * color, t_color* c)
 	t_lex lex;
 
 	i = 0;
-	lex_init(&lex, color, ft_strlen(color), "unused");
-	color = 0;
+	lex_init(&lex, color, ft_strlen(color));
 	while (i < 2)
 	{
 		octet = lex_color_octet(&lex);
@@ -366,7 +352,7 @@ bool	parse_color(char * color, t_color* c)
 		*c = (*c << 8) | octet;
 		++i;
 	}
-	return (parse_last_octet(&lex, color, c));
+	return (parse_last_octet(&lex, c));
 }
 
 bool	validate_paths(char* path)
@@ -389,7 +375,7 @@ bool	validate_paths(char* path)
 	return err_print(ERR_INVALID_PATH);
 }
 
-void	get_map_size(t_foo* config, size_t end)
+void	get_map_size(t_config* config, size_t end)
 {
 	size_t	i;
 	size_t	width;
@@ -405,11 +391,10 @@ void	get_map_size(t_foo* config, size_t end)
 		i++;
 	}
 	config->map_height = i;
-	printf("i %d ------- %d lafan dialo\n", i , end);
 	config->map_width  = width;
 }
 
-bool is_(char *curr, char *next, char *prev, int i)
+bool is_val(char *curr, char *next, char *prev, int i)
 {
 	if (i == 0)
 		return (false);
@@ -428,16 +413,30 @@ bool	log_error(char *error)
 	return (false);
 }
 
-bool	check_map_line(char** lines, size_t j)
+static bool	set_player(int y, int x, char dir, t_config* config)
+{
+	if (config->player_x != -1)
+		return (log_error("Duplicated Player instance"));
+	config->player_x = x;
+	config->player_y = y;
+	config->player_dir = dir;
+	return true;
+}
+
+bool	check_map_line(char** lines, size_t j, t_config* config)
 {
 	size_t   i;
+	char	c;
 
 	i = 0;
 	while (lines[j][i])
 	{
-		if (ft_strchr("0WESNCO", lines[j][i]))
+		c = lines[j][i];
+		if (ft_strchr("0WESNCO", c))
 		{
-			if (!is_(lines[j], lines[j + 1], lines[j - 1], i))
+			if (ft_strchr("WESN", c) && !set_player(j, i, c, config))
+				return (false);
+			if (!is_val(lines[j], lines[j + 1], lines[j - 1], i))
 				return (log_error("Invalid character position"));
 		}
 		else if (!is_valid_char(lines[j][i]))
@@ -447,26 +446,28 @@ bool	check_map_line(char** lines, size_t j)
 	return true;
 }
 
-bool	read_map(t_foo* config)
+bool	read_map(t_config* config)
 {
 	size_t i;
 
 	if (!check_is_closed(config->map[0]))
-		return (log_error("Surrounded by Invalid character"));
+		return (log_error("Map surrounded by Invalid character"));
 	if (!check_is_closed(config->map[config->map_height - 1]))
-		return (log_error("Surrounded by Invalid character"));
+		return (log_error("Map surrounded by Invalid character"));
 	i = 0;
 	while (i < config->map_height)
 	{
-		if (!check_map_line(config->map, i))
+		if (!check_map_line(config->map, i, config))
 			return (false);
 		i++;
 	}
+	if (config->player_x == -1)
+		return (log_error("Map has no player"));
+
 	return (true);
 }
 
-
-bool validate_config(t_foo *config)
+bool validate_config(t_config *config)
 {
 	size_t i;
 
@@ -486,9 +487,7 @@ bool validate_config(t_foo *config)
 	return true;
 }
 
-
-
-bool	read_file(t_dyn* dyn, t_foo* config, char* file)
+bool	read_file(t_dyn* dyn, t_config* config, char* file)
 {
 	t_lex	lex;
 	char**	lines;
@@ -507,31 +506,92 @@ bool	read_file(t_dyn* dyn, t_foo* config, char* file)
 		return (log_error("Missing map"));
 	config->map = lines + i;
 	get_map_size(config, dyn->length - i);
-	printf("MAP_SIZE %zux%zu\n", config->map_width,config->map_height);
 	if (!read_map(config))
 		return (false);
 	i += config->map_height;
-	while (i < dyn->length && !is_empty_line(lines[i]))
+	while (i < dyn->length && is_empty_line(lines[i]))
 		++i;
 	if (i != dyn->length)
 		return (log_error("Map is not the last element"));
 	return true;
 }
 
+bool	check_file_name(char *filename)
+{
+	char* ptr;
+
+	if (!filename || !*filename)
+		return (log_error("No filename provided"));
+	ptr = ft_strrchr(filename, '.');
+	if (ptr && !ft_strncmp(ptr, ".cub", 5) && ft_strlen(filename) > 4)
+		return (true);
+	return (log_error("Invalid filename"));
+}
+
+t_world	build_map(t_config* config)
+{
+	t_world	tmp;
+	int	i;
+	size_t	len;
+
+	ft_bzero(&tmp, sizeof(tmp));
+	tmp.map_width = config->map_width;
+	tmp.map_height = config->map_height;
+	i = 0;
+	tmp.map = malloc(sizeof(char*) * config->map_height);
+	while (i < tmp.map_height)
+	{
+		len = ft_strlen(config->map[i]);
+		tmp.map[i] = malloc(tmp.map_width * sizeof(char) + 1);
+		if (!tmp.map || !tmp.map[i])
+			break ;
+		ft_memcpy(tmp.map[i], config->map[i], len);
+		ft_memset(tmp.map[i] + len, ' ', tmp.map_width - len);
+		tmp.map[i][tmp.map_width] = '\0';
+		i++;
+	}
+	return (tmp);
+}
+
+
+bool	construct_game(t_config *config, t_game* game)
+{
+	int	i;
+	t_vec2	pos;
+
+	i = 0;
+	pos = vec2_new((double)config->player_x
+		* TILE_SIZE, (double)config->player_y * TILE_SIZE);
+	game->ceiling = config->c;
+	game->floor = config->f;
+	game->player.pos = pos;
+	game->world = build_map(config);
+	while (i < 4)
+	{
+		game->world.values[i] = ft_strdup(config->value[i]);
+		i++;
+	}
+	return (true);
+}
+
 bool parse_content(char *filename, t_game* game)
 {
+	t_config config;
 	t_dyn	lines;
-	t_foo	config;
 	int	fd;
-	int	i;
 
-	// info()->error.file = filename;
 	ft_bzero(&config, sizeof(config));
-	// if (!check_file_name(filename))
-	// 	return false;
+	config.player_x = -1;
+	config.player_y = -1;
+	if (!check_file_name(filename))
+		exit(1);
 	fd = open_file(filename);
 	load_content_from_file(fd, &lines);
 	if (!read_file(&lines, &config, filename))
-		exit(1);
+		release_file_exit(&lines, game);
+	if (!construct_game(&config, game))
+		release_file_exit(&lines, game);
+	dyn_erase(&lines, free);
+	printf("Everything is good love 💋\n");
 	return (true);
 }

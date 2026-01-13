@@ -6,6 +6,14 @@ t_data *assets_get(t_game *game, int id)
 	return (dyn_at(game->assets, id));
 }
 
+t_data *assets_get_data_from_path(t_game *game, char *path)
+{
+	int id;
+
+	id = assets_load_xpm(game, path);
+	return (assets_get(game, id));
+}
+
 /**
  * assets_load_xpm - Loading an exp
  */

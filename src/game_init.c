@@ -11,37 +11,44 @@
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 bool init_game_world(char *filename, t_game* game)
 {
+	int	i;
+
+	i = 0;
 	ft_bzero(game, sizeof(t_game));
 	game->player.pos = vec2_new(-1, -1);
 	if (!parse_content(filename, game))
 		return (false);
 	if (game->player.pos.x == -1 && game->player.pos.y == -1)
 		return (false);
+	game->mlx = mlx_init();
+	if (!game->mlx)
+		ft_exit_error("Faild to allocate mlx");
 	return (true);
 }
 
 void init_game(t_game *game, char *filename)
 {
+	int i = 0;
 	if (!init_game_world(filename, game))
-	{
-		// error_indexing();
 		return;
-	}
-	game->mlx = mlx_init();
-	if (!game->mlx)
-		ft_exit_error("Faild to allocate mlx");
 	game->screen_width = 1280;
 	game->screen_height = 720;
+	game->assets = dyn_init_ptr();
+	while (i < 2)
+	{
+		game->wall[i] = *assets_get_data_from_path(game, game->world.values[i]);
+		i++;
+	}
 	game->win = mlx_new_window(game->mlx, game->screen_width, game->screen_height, "MOUSE");
 	if (!game->win)
 		ft_exit_error("Faild to allocate window");
 	game->scene = image_new(game, game->screen_width, game->screen_height);
 	game->mouse_pos = vec2_new(0, 0);
-	game->assets = dyn_init_ptr();
 	ft_bzero(game->inputs, sizeof(game->inputs));
 	player_init(game);
 	game->stripes = malloc(sizeof(double) * game->screen_width);
