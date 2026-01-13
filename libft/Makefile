@@ -10,7 +10,7 @@ SRC = ft_atoi.c ft_bzero.c ft_itoa.c ft_putendl_fd.c ft_strjoin.c ft_strrchr.c\
 	ft_lstadd_front_bonus.c ft_lstiter_bonus.c ft_lstnew_bonus.c\
 	ft_lstclear_bonus.c ft_lstlast_bonus.c ft_lstsize_bonus.c
 OBJ = ${SRC:.c=.o}
-CFLAGS = -Wall -Werror -Wextra -I../includes
+CFLAGS = -Wall -Werror -Wextra -I../includes -fPIE
 NAME = ../libs/libft.a
 
 all : $(NAME)
