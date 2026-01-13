@@ -17,6 +17,21 @@
 
 #define MAP_VALID_CHARACTERS "01NSEWOC "
 
+typedef struct s_lex
+{
+	char*	file;
+	char*	text;// string text
+	size_t  len; // length
+	size_t	pos; // index
+	size_t	map_start; // index
+}	t_lex;
+
+bool	log_error(char *error)
+{
+	printf("Error\n%s\n", error);
+	return (false);
+}
+
 void	release_file_exit(t_dyn* dyn, t_game* game)
 {
 	int	i;
@@ -31,26 +46,6 @@ void	release_file_exit(t_dyn* dyn, t_game* game)
 	free_map(game);
 	exit(1);
 }
-
-typedef struct s_lex
-{
-	char*	file;
-	char*	text;// string text
-	size_t  len; // lenght
-	size_t	pos; // index
-	size_t	map_start; // index
-}	t_lex;
-
-enum ErrType{
-	ERR_DUP_ELEM,
-	ERR_UNKNOWN_ELEM,
-	ERR_INVALID_VALUE,
-	ERR_INVALID_PATH,
-	ERR_INVALID_KEY,
-	ERR_INVALID_COLOR,
-	ERR_OCT_BIG,
-	ERR_INVALID_OCT,
-} type;
 
 bool is_valid_char(char c)
 {
@@ -166,27 +161,6 @@ int	try_get_value(t_lex* lex)
 	return (i);
 }
 
-bool	err_print(int type)
-{
-	printf("Error\n");
-	if (type == ERR_DUP_ELEM)
-		printf("Duplicated element found\n");
-	else if (type == ERR_UNKNOWN_ELEM)
-		printf("Unknown element found\n");
-	else if (type == ERR_INVALID_VALUE)
-		printf("invalid value element found\n");
-	else if (type == ERR_INVALID_KEY)
-		printf("Invalid or missing key element\n");
-	else if (type == ERR_INVALID_OCT)
-		printf("Invalid octet\n");
-	else if (type == ERR_OCT_BIG)
-		printf("Invalid octet size\n");
-	else if (type == ERR_INVALID_COLOR)
-		printf("Invalid color foramt\n");
-	else if (type == ERR_INVALID_PATH)
-		printf("Invalid path\n");
-	return (false);
-}
 
 char *get_token_type_str(t_tok type)
 {
@@ -211,23 +185,27 @@ bool	config_readline(t_config* config, t_lex* lex)
 	lex_skip_spaces(lex);
 	type = try_read_type(lex);
 	if (type == TOKEN_INVALID)
-		return (err_print(ERR_INVALID_KEY));
+		return (log_error("Invalid or missing key element"));
 	lex_skip_spaces(lex);
 	if (config->value[type])
-		return (err_print(ERR_DUP_ELEM));
+		return (log_error("Duplicated element found"));
 	config->value[type] = &lex->text[lex->pos];
 	val_size = try_get_value(lex);
 	lex_skip_spaces(lex);
 	if (!val_size)
-		return (err_print(ERR_INVALID_VALUE));
+		return (log_error("Invalid value element found"));
 	return true;
 }
 
-void print_config(t_config config)
+void print_config(t_config *config)
 {
-	for (int i = 0; i < TOKEN_NBR; i++)
+	int i;
+
+	i = 0;
+	while (i < TOKEN_NBR)
 	{
-		printf("%8s = '%s'\n", get_token_type_str(i), config.value[i]);
+		printf("%8s = '%s'\n", get_token_type_str(i), config->value[i]);
+		i++;
 	}
 }
 
@@ -303,7 +281,7 @@ int	lex_color_octet(t_lex* lex)
 
 	value = 0;
 	has_digit = false;
-	while (ft_isdigit(lex->text[lex->pos]))
+	while (lex->pos < lex->len && ft_isdigit(lex->text[lex->pos]))
 	{
 		has_digit = true;
 		value = value * 10 + (lex->text[lex->pos] - '0');
@@ -322,11 +300,11 @@ bool	parse_last_octet(t_lex* lex, t_color* c)
 
 	octet = lex_color_octet(lex);
 	if (octet == -1)
-		return (err_print(ERR_INVALID_OCT));
+		return (log_error("Invalid octet"));
 	*c = (*c << 8) | octet;
 	lex_skip_spaces(lex);
 	if (lex->pos != lex->len)
-		return (err_print(ERR_INVALID_OCT));
+		return (log_error("Invalid octet"));
 	return (true);
 }
 
@@ -336,16 +314,17 @@ bool	parse_color(char * color, t_color* c)
 	int octet;
 	t_lex lex;
 
+	*c = 0;
 	i = 0;
 	lex_init(&lex, color, ft_strlen(color));
 	while (i < 2)
 	{
 		octet = lex_color_octet(&lex);
 		if (octet == -1)
-			return (err_print(ERR_INVALID_OCT));
+			return (log_error("Invalid octet"));
 		lex_skip_spaces(&lex);
 		if (!lex_try_read_str(&lex, ","))
-			return (err_print(ERR_INVALID_COLOR));
+			return (log_error("Invalid color format\n"));
 		lex_skip_spaces(&lex);
 		*c = (*c << 8) | octet;
 		++i;
@@ -366,11 +345,11 @@ bool	validate_paths(char* path)
 			&& is_empty_line(path + i + 1))
 		{
 			path[i + 1] = '\0';
-			return true;
+			return (true);
 		}
 		break;
 	}
-	return err_print(ERR_INVALID_PATH);
+	return (log_error("Invalid path"));
 }
 
 void	get_map_size(t_config* config, size_t end)
@@ -392,6 +371,11 @@ void	get_map_size(t_config* config, size_t end)
 	config->map_width  = width;
 }
 
+/**
+ * is_val - Check if the charachter is in the right position
+ *
+ * For example we can't have W (player) next to ' ' (void space)
+ */
 bool is_val(char *curr, char *next, char *prev, size_t i)
 {
 	if (i == 0)
@@ -405,20 +389,15 @@ bool is_val(char *curr, char *next, char *prev, size_t i)
 	return (true);
 }
 
-bool	log_error(char *error)
-{
-	printf("Error\n%s\n", error);
-	return (false);
-}
 
-static bool	set_player(int y, int x, char dir, t_config* config)
+static bool	set_player(int x, int y, char dir, t_config* config)
 {
 	if (config->player_x != -1)
 		return (log_error("Duplicated Player instance"));
 	config->player_x = x;
 	config->player_y = y;
 	config->player_dir = dir;
-	return true;
+	return (true);
 }
 
 bool	check_map_line(char** lines, size_t j, t_config* config)
@@ -432,7 +411,7 @@ bool	check_map_line(char** lines, size_t j, t_config* config)
 		c = lines[j][i];
 		if (ft_strchr("0WESNCO", c))
 		{
-			if (ft_strchr("WESN", c) && !set_player(j, i, c, config))
+			if (ft_strchr("WESN", c) && !set_player(i, j, c, config))
 				return (false);
 			if (!is_val(lines[j], lines[j + 1], lines[j - 1], i))
 				return (log_error("Invalid character position"));
@@ -526,29 +505,47 @@ bool	check_file_name(char *filename)
 	return (log_error("Invalid filename"));
 }
 
+/**
+ * free_world - Release world memory
+ */
+void release_world(t_world *world)
+{
+	int i;
+
+	i = 0;
+	while (world->map && i < world->map_height)
+		free(world->map[i++]);
+	free(world->map);
+	world->map_width = 0;
+	world->map_height = 0;
+	world->map = NULL;
+}
+
 t_world	build_map(t_config* config)
 {
-	t_world	tmp;
+	t_world	world;
 	int	i;
 	size_t	len;
 
-	ft_bzero(&tmp, sizeof(tmp));
-	tmp.map_width = config->map_width;
-	tmp.map_height = config->map_height;
+	ft_bzero(&world, sizeof(world));
+	world.map_width = config->map_width;
+	world.map_height = config->map_height;
 	i = 0;
-	tmp.map = malloc(sizeof(char*) * config->map_height);
-	while (i < tmp.map_height)
+	world.map = malloc(sizeof(char*) * config->map_height);
+	if (!world.map)
+		release_world(&world);
+	while (i < world.map_height)
 	{
 		len = ft_strlen(config->map[i]);
-		tmp.map[i] = malloc(tmp.map_width * sizeof(char) + 1);
-		if (!tmp.map || !tmp.map[i])
-			break ;
-		ft_memcpy(tmp.map[i], config->map[i], len);
-		ft_memset(tmp.map[i] + len, ' ', tmp.map_width - len);
-		tmp.map[i][tmp.map_width] = '\0';
+		world.map[i] = malloc(world.map_width * sizeof(char) + 1);
+		if (!world.map[i])
+			release_world(&world);
+		ft_memcpy(world.map[i], config->map[i], len);
+		ft_memset(world.map[i] + len, ' ', world.map_width - len);
+		world.map[i][world.map_width] = '\0';
 		i++;
 	}
-	return (tmp);
+	return (world);
 }
 
 
@@ -558,8 +555,7 @@ bool	construct_game(t_config *config, t_game* game)
 	t_vec2	pos;
 
 	i = 0;
-	pos = vec2_new((double)config->player_x
-		* TILE_SIZE, (double)config->player_y * TILE_SIZE);
+	pos = vec2_new(config->player_x * TILE_SIZE, config->player_y * TILE_SIZE);
 	game->ceiling = config->c;
 	game->floor = config->f;
 	game->player.pos = pos;
