@@ -26,11 +26,11 @@
 #define PLAYER_SWAY_SPEED 10
 
 // bobbing
-#define PLAYER_BOB_AMOUNT 0.15
+#define PLAYER_BOB_AMOUNT 0.09
 
 // Moving
-#define PLAYER_WALK_SPEED 40.0
-#define PLAYER_RUN_SPEED 80.0
+#define PLAYER_WALK_SPEED 60.0
+#define PLAYER_RUN_SPEED 150.0
 #define PLAYER_ACCEL_RATE 0.1   // How fast you reach max speed
 
 // Live
@@ -40,7 +40,7 @@
 #define PLAYER_MAX_AMMO 15
 
 // enemy stuff
-#define ENEMY_WALK_SPEED 40.0
+#define ENEMY_WALK_SPEED 50.0
 #define ENEMY_MAX_HEALTH 100
 
 # define TILE_SIZE 80.0
@@ -119,5 +119,13 @@ void enemy_draw_all(t_game *game);
 void enemy_update_frame_all(t_game *game);
 int can_move(t_game *g, double x, double y);
 
+// ui
+void ui_render_aim(t_game *game);
+void ui_draw_number(t_game *game, t_vec2 pos, int number);
+void ui_render_hearts(t_game *game);
+void ui_render_ammo(t_game *game);
+
+// access specifier
 char get_map_cell(t_game *game, int x, int y);
+
 #endif

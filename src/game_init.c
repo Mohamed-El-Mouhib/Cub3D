@@ -11,8 +11,22 @@
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
-#include <stdio.h>
-#include <stdlib.h>
+
+void game_init_ui(t_game *game)
+{
+	game->ui[UI_BULLET_CONTAINER] =
+		assets_get_data_from_path(game, "./textures/Additional/Bullet.xpm");
+	game->ui[UI_HEARTH] =
+		assets_get_data_from_path(game, "./textures/Additional/Heart.xpm");
+	game->ui[UI_DIGITS] =
+		assets_get_data_from_path(game, "./textures/Additional/Digits.xpm");
+	game->ui[UI_OPEN_DOOR] =
+		assets_get_data_from_path(game, "./textures/Additional/Open.xpm");
+	game->ui[UI_CLOSE_DOOR] =
+		assets_get_data_from_path(game, "./textures/Additional/Close.xpm");
+	game->ui[UI_AIM] =
+		assets_get_data_from_path(game, "./textures/Additional/CrossHair.xpm");
+}
 
 bool init_game_world(char *filename, t_game* game)
 {
@@ -53,9 +67,6 @@ void init_game(t_game *game, char *filename)
 	game->stripes = malloc(sizeof(double) * game->screen_width);
 	game->tick = curr_time_ms();
 	game->shake = 0;
-	game->numbers = assets_get_data_from_path(game, "./textures/Additional/Digits.xpm");
-	
-	// assignment an instance to imaginary enemy
+	game_init_ui(game);
 	init_enemies(game);
 }
-

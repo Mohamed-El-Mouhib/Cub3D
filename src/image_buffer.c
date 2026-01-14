@@ -56,7 +56,7 @@ void	image_put_pixel(t_data *buff, int x, int y, unsigned int color)
 {
 	unsigned int	offset;
 
-	if (!buff || x < 0 || y < 0 || x > buff->width || y > buff->height)
+	if (!buff || x < 0 || y < 0 || x >= buff->width || y >= buff->height)
 		return ;
 	offset = (y * buff->line_len + x * (buff->bpp / 8));
 	*((unsigned int *)(buff->addr + offset)) = color;
@@ -75,7 +75,7 @@ unsigned int image_get_pixel(t_data *img, int x, int y)
 	int offset;
 	unsigned int color;
 
-	if (!img || x < 0 || y < 0 || x > img->width || y > img->height)
+	if (!img || x < 0 || y < 0 || x >= img->width || y >= img->height)
 		return (UINT_MAX);
 	offset= (y * img->line_len + x * (img->bpp / 8));
 	color = *((unsigned int *)(img->addr + offset));

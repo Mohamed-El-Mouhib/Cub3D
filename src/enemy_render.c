@@ -152,7 +152,6 @@ void enemy_draw_one(t_game *game, t_enemy *enemy)
 	if (enemy->screen > w + enemy->size)
 		return ;
 	enemy_draw_frame(game, enemy);
-	enemy_draw_borders(game, enemy);
 }
 
 /**
@@ -165,8 +164,6 @@ void enemy_update_frame_all(t_game *game)
 	for (size_t i = 0; i < game->enemies->length; i++)
 	{
 		enemy = dyn_at(game->enemies, i);
-		if (enemy->state == ENEMY_WALKING && !enemy->moving)
-			continue;
 		animation_cycle(game, enemy->animation[enemy->state]);
 	}
 }

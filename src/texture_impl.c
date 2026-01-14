@@ -57,8 +57,6 @@ double	get_side_and_cords(t_game *game, t_dda_ctx *info)
  */
 unsigned int get_color_info(t_data* side, t_dda_ctx *info, int i, t_vec2 *vec)
 {
-	int	offs;
-
 	vec->y = (double)(i / info->line_height)
 		* side->height;
 	if (vec->y < 0)

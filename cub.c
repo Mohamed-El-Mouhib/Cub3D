@@ -20,53 +20,7 @@ void game_update_shaking(t_game *game)
 	game->shake = lerp(game->shake, 0, 0.2);
 }
 
-void draw_digit(t_game *game, t_data *image, int x_off, int y_off, int number)
-{
-	unsigned int ignore_color; 
-	unsigned int color; 
-	int x;
-	int y;
-	int start;
 
-	if (!image)
-		return ;
-	ignore_color = image_get_pixel(image, 0, 0);
-	y = 0;
-	while (y < image->height)
-	{
-		x = start = 45 * number;
-		while (x < image->width && x < start + 45)
-		{
-			color = image_get_pixel(image, x, y);
-			if (color != ignore_color)
-				image_put_pixel(&game->scene, x + x_off - start, y + y_off, color);
-			x++;
-		}
-		y++;
-	}
-}
-
-void put_number(t_game *game, t_vec2 pos, int number)
-{
-	int digits[15];
-	int i = 0;
-	int j = 0;
-
-	digits[i] = 0;
-	while (number > 0)
-	{
-		digits[i++] = number % 10;
-		number /= 10;
-	}
-	if (i > 0)
-		i--;
-	while (i >= 0)
-	{
-		draw_digit(game, game->numbers, pos.x + j * 45, pos.y, digits[i]);
-		j++;
-		i--;
-	}
-}
 
 void game_update_time(t_game *game)
 {
@@ -93,6 +47,11 @@ void	render_message(t_game* game)
 
 void game_update(t_game *game)
 {
+	if (game->player.lives == 0)
+	{
+		printf("R.I.P DARLING MOUSE :(\n");
+		exit(0);
+	}
 	// game
 	game_update_time(game);
 	game_update_shaking(game);
@@ -116,11 +75,12 @@ void game_update(t_game *game)
 void game_render(t_game *game)
 {
 	raycast_draw_walls(game);
-	draw_minimap(game);
 	enemy_draw_all(game);
+	ui_render_hearts(game);
+	ui_render_ammo(game);
+	ui_render_aim(game);
 	player_render_frame(game);
-	draw_filled_circle(&game->scene, vec2_new(game->screen_width / 2.0, game->screen_height / 2.0), 8, COLOR_RED);
-	put_number(game,vec2_new(10, game->screen_height - 80), game->player.ammo);
+	draw_minimap(game);
 	mlx_put_image_to_window(game->mlx, game->win, game->scene.img, 0, 0);
 }
 

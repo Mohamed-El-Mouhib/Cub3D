@@ -41,49 +41,33 @@ char get_map_cell(t_game *game, int x, int y)
 
 void player_update_pos(t_game *game)
 {
-    t_vec2  new_pos;
-    int     map_x;
-    int     map_y;
+	t_vec2  new_pos;
+	int     map_x;
+	int     map_y;
 
-    // ---------------------------
-    // 1. X-AXIS CHECK (Horizontal)
-    // ---------------------------
     new_pos.x = game->player.pos.x + game->player.velocity.x;
     new_pos.y = game->player.pos.y; // Keep Y constant for this check
-
-    // Determine which grid cell to check based on direction
-    // We add/subtract the buffer so we check the "edge" of the player, not the center
     if (game->player.velocity.x > 0)
         map_x = (int)((new_pos.x + PLAYER_BUFFER) / TILE_SIZE);
     else
         map_x = (int)((new_pos.x - PLAYER_BUFFER) / TILE_SIZE);
 
     map_y = (int)(new_pos.y / TILE_SIZE);
-
-    // Only update X if the cell is free
     char cell = get_map_cell(game, map_x, map_y);
     if (cell != 'C' && cell != '1')
         game->player.pos.x = new_pos.x;
-
-    // ---------------------------
-    // 2. Y-AXIS CHECK (Vertical)
-    // ---------------------------
     new_pos.x = game->player.pos.x; // Use the (potentially updated) X
     new_pos.y = game->player.pos.y + game->player.velocity.y;
-
     map_x = (int)(new_pos.x / TILE_SIZE);
-
-    // Determine grid cell for Y direction with buffer
     if (game->player.velocity.y > 0)
         map_y = (int)((new_pos.y + PLAYER_BUFFER) / TILE_SIZE);
     else
         map_y = (int)((new_pos.y - PLAYER_BUFFER) / TILE_SIZE);
-
-    // Only update Y if the cell is free
     cell = get_map_cell(game, map_x, map_y);
     if (cell != 'C' && cell != '1')
         game->player.pos.y = new_pos.y;
 }
+
 /**
  * player_update_bobing - Calcualte current player bob amount
  *

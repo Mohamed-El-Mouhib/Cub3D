@@ -21,13 +21,10 @@ endif
 all: libft_rule $(NAME)
 	@echo -e '\nNOTE: run "make assets" to download the textures used in the game'
 
-assets: $(ASSET_ARC) $(ASSET_DIR)
-
-$(ASSET_ARC):
+assets:
+	rm -rf $(ASSET_DIR) $(ASSET_ARC)
 	@echo Downloading the assets...
 	@curl -sOL $(ASSETS_LINK)
-
-$(ASSET_DIR): $(ASSET_ARC)
 	@echo Unzipping the assets Archive...
 	@unzip -oq $(ASSET_ARC)
 
@@ -46,6 +43,7 @@ clean:
 	rm -rf $(OBJ)
 	@echo "\033[31m""it suppose to run make -C libft clean""\033[0m"
 	# make -C libft clean
+
 
 fclean: clean
 	rm -rf $(NAME) $(LIB_DIR)
