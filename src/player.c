@@ -96,9 +96,9 @@ void player_fire_bullet(t_game *game)
 	bullet = game->player.pos;
 	while (1)
 	{
-		cell = get_map_cell(game, bullet.x / TILE_SIZE,
-		      bullet.y / TILE_SIZE);
 		bullet = vec2_add(bullet, game->player.dir);
+		cell = get_map_cell(game, bullet.x / TILE_SIZE,
+			bullet.y / TILE_SIZE);
 		if (cell == '1' || cell == 'C')
 			return ;
 		if (enemy_foreach(game, bullet))
