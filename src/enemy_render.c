@@ -152,7 +152,6 @@ void enemy_draw_one(t_game *game, t_enemy *enemy)
 	if (enemy->screen > w + enemy->size)
 		return ;
 	enemy_draw_frame(game, enemy);
-	enemy_draw_borders(game, enemy);
 }
 
 /**
