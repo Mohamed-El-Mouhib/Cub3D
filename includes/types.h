@@ -222,7 +222,8 @@ typedef enum e_wall_side
 	WALL_NORTH, 
 	WALL_SOUTH,
 	WALL_EAST,
-	WALL_WEST
+	WALL_WEST,
+	WALL_DOOR
 }	t_wall_side;
 
 typedef enum e_keycode{

@@ -119,4 +119,5 @@ void enemy_draw_all(t_game *game);
 void enemy_update_frame_all(t_game *game);
 int can_move(t_game *g, double x, double y);
 
+char get_map_cell(t_game *game, int x, int y);
 #endif
