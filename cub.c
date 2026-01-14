@@ -12,6 +12,8 @@
 
 #include "includes/cub3d.h"
 #include "includes/graphics.h"
+#include "includes/types.h"
+#include <stdio.h>
 
 void game_update_shaking(t_game *game)
 {
@@ -29,6 +31,19 @@ void game_update_time(t_game *game)
 	game->tick = curr_time_ms();
 }
 
+void	render_message(t_game* game)
+{
+	t_vec2	head;
+	char	c;
+
+	head = vec2_add(game->player.pos, vec2_scale(game->player.dir, TILE_SIZE));
+	c = get_map_cell(game, (int)head.x/TILE_SIZE, (int)head.y/TILE_SIZE);
+	if (c == 'C')
+		printf("op[E]n the door\n");
+	else if (c == 'O')
+		printf("clos[E] the door\n");
+	// vec2_print(head, "player's head");
+}
 
 void game_update(t_game *game)
 {
@@ -60,12 +75,12 @@ void game_update(t_game *game)
 void game_render(t_game *game)
 {
 	raycast_draw_walls(game);
-	draw_minimap(game);
 	enemy_draw_all(game);
 	ui_render_hearts(game);
 	ui_render_ammo(game);
 	ui_render_aim(game);
 	player_render_frame(game);
+	draw_minimap(game);
 	mlx_put_image_to_window(game->mlx, game->win, game->scene.img, 0, 0);
 }
 
@@ -91,6 +106,7 @@ int game_loop(t_game *game)
 	game_handle_inputs(game);
 	game_update(game);
 	game_render(game);
+	render_message(game);
 	return (0);
 }
 

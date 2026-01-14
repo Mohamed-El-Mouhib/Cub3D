@@ -56,6 +56,7 @@ void init_game(t_game *game, char *filename)
 		game->wall[i] = *assets_get_data_from_path(game, game->world.values[i]);
 		i++;
 	}
+	game->wall[i] = *assets_get_data_from_path(game, "./textures/Wall/DOOR.xpm");
 	game->win = mlx_new_window(game->mlx, game->screen_width, game->screen_height, "MOUSE");
 	if (!game->win)
 		ft_exit_error("Failed to allocate window");

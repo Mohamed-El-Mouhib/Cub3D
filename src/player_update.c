@@ -27,7 +27,7 @@ void player_update_velocity(t_game *game)
 	p->speed = hypot(p->velocity.x, p->velocity.y) * 100;
 }
 
-static char get_map_cell(t_game *game, int x, int y)
+char get_map_cell(t_game *game, int x, int y)
 {
 	if (x >= (int)game->world.map_width || y >= (int)game->world.map_height || x < 0 || y < 0)
 		return ('1');
@@ -45,24 +45,27 @@ void player_update_pos(t_game *game)
 	int     map_x;
 	int     map_y;
 
-	new_pos.x = game->player.pos.x + game->player.velocity.x;
-	new_pos.y = game->player.pos.y;
-	if (game->player.velocity.x > 0)
-		map_x = (int)((new_pos.x + PLAYER_BUFFER) / TILE_SIZE);
-	else
-		map_x = (int)((new_pos.x - PLAYER_BUFFER) / TILE_SIZE);
-	map_y = (int)(new_pos.y / TILE_SIZE);
-	if (get_map_cell(game, map_x, map_y) != '1')
-		game->player.pos.x = new_pos.x;
-	new_pos.x = game->player.pos.x;
-	new_pos.y = game->player.pos.y + game->player.velocity.y;
-	map_x = new_pos.x / TILE_SIZE;
-	if (game->player.velocity.y > 0)
-		map_y = (int)((new_pos.y + PLAYER_BUFFER) / TILE_SIZE);
-	else
-		map_y = (int)((new_pos.y - PLAYER_BUFFER) / TILE_SIZE);
-	if (get_map_cell(game, map_x, map_y) != '1')
-		game->player.pos.y = new_pos.y;
+    new_pos.x = game->player.pos.x + game->player.velocity.x;
+    new_pos.y = game->player.pos.y; // Keep Y constant for this check
+    if (game->player.velocity.x > 0)
+        map_x = (int)((new_pos.x + PLAYER_BUFFER) / TILE_SIZE);
+    else
+        map_x = (int)((new_pos.x - PLAYER_BUFFER) / TILE_SIZE);
+
+    map_y = (int)(new_pos.y / TILE_SIZE);
+    char cell = get_map_cell(game, map_x, map_y);
+    if (cell != 'C' && cell != '1')
+        game->player.pos.x = new_pos.x;
+    new_pos.x = game->player.pos.x; // Use the (potentially updated) X
+    new_pos.y = game->player.pos.y + game->player.velocity.y;
+    map_x = (int)(new_pos.x / TILE_SIZE);
+    if (game->player.velocity.y > 0)
+        map_y = (int)((new_pos.y + PLAYER_BUFFER) / TILE_SIZE);
+    else
+        map_y = (int)((new_pos.y - PLAYER_BUFFER) / TILE_SIZE);
+    cell = get_map_cell(game, map_x, map_y);
+    if (cell != 'C' && cell != '1')
+        game->player.pos.y = new_pos.y;
 }
 
 /**

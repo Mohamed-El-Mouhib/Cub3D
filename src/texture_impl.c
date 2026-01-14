@@ -55,19 +55,15 @@ double	get_side_and_cords(t_game *game, t_dda_ctx *info)
  * This function ensures the texture coordinates are within bounds and
  * returns the correct color vector from the texture map.
  */
-unsigned int get_color_info(t_game *game, t_dda_ctx *info, int i, t_vec2 *vec)
+unsigned int get_color_info(t_data* side, t_dda_ctx *info, int i, t_vec2 *vec)
 {
-	int	offs;
-
 	vec->y = (double)(i / info->line_height)
-		* game->wall[info->side].height;
+		* side->height;
 	if (vec->y < 0)
 		vec->y = 0;
-	else if (vec->y >= game->wall[info->side].height)
-		vec->y = game->wall[info->side].height - 1;
-	offs = (int)vec->y * game->wall[info->side].line_len
-		+ (int)vec->x * (game->wall[info->side].bpp / 8);
-	return *(unsigned int *)(game->wall[info->side].addr + offs);
+	else if (vec->y >= side->height)
+		vec->y = side->height - 1;
+	return (image_get_pixel(side, (int)vec->x, (int)vec->y));
 }
 
 /**
@@ -120,15 +116,25 @@ double	get_texture_y(t_game* game, t_dda_ctx* info, int i)
 	return (y);
 }
 
+t_data	*init_side(t_game* game, t_dda_ctx* info)
+{
+	if (game->world.map[(int)info->map_pos.y][(int)info->map_pos.x] == 'C')
+		return (&game->wall[WALL_DOOR]);
+	else
+		return (&game->wall[info->side]);
+}
+
 void	draw_texture_line(t_game *game, t_dda_ctx *info)
 {
 	int		i;
 	t_vec2		vec;
+	t_data		*side;
 	unsigned int	px;
 	double factor;
 
 	i = -1;
 	vec.x = get_texture_x(game, info);
+	side = init_side(game, info);
 	while (++i < (int)game->screen_height)
 	{
 		if (i < info->line_start.y)
@@ -148,7 +154,7 @@ void	draw_texture_line(t_game *game, t_dda_ctx *info)
 			else
 				factor = 1;
 			vec.y = get_texture_y(game, info, i - info->line_start.y);
-			px = get_color_info(game, info, i - info->line_start.y, &vec);
+			px = get_color_info(side, info, i - info->line_start.y, &vec);
 		}
 		px = apply_fog(px, factor);
 		image_put_pixel(&game->scene, info->line_start.x, i, px);
