@@ -36,7 +36,7 @@
 # include <limits.h>
 
 # define FRAME_RATE 24
-# define INIT_ROTATION_STEP_DEGREE 80.0
+# define INIT_ROTATION_STEP_DEGREE 100.0
 # define INIT_ROTATION_STEP ((INIT_ROTATION_STEP_DEGREE * M_PI) / 180.0)
 
 #define MINIMAP_SCALE 4.0
@@ -217,7 +217,6 @@ typedef struct s_game
 	time_t tick;
 	double shake;
 	double dt; // delta time
-	t_data *numbers;
 	t_data *ui[UI_NBR];
 }			t_game;
 
