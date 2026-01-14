@@ -1,5 +1,7 @@
 #include "../includes/cub3d.h"
 
+#define UI_DIGIT_SIZE 20
+
 void ui_render_hearts(t_game *game)
 {
 	int i;
@@ -26,8 +28,8 @@ static void ui_draw_digit(t_game *game, t_data *image, int x_off, int y_off, int
 	y = 0;
 	while (y < image->height)
 	{
-		x = start = 20 * number;
-		while (x < image->width && x < start + 20)
+		x = start = UI_DIGIT_SIZE * number;
+		while (x < image->width && x < start + UI_DIGIT_SIZE)
 		{
 			color = image_get_pixel(image, x, y);
 			if (color != ignore_color)
@@ -42,9 +44,10 @@ static void ui_draw_digit(t_game *game, t_data *image, int x_off, int y_off, int
 void ui_draw_number(t_game *game, t_vec2 pos, int number)
 {
 	int digits[15];
-	int i = 0;
-	int j = 0;
+	int i;
+	int j;
 
+	i = 0;
 	digits[i] = 0;
 	while (number > 0)
 	{
@@ -53,18 +56,22 @@ void ui_draw_number(t_game *game, t_vec2 pos, int number)
 	}
 	if (i > 0)
 		i--;
+	j = 0;
 	while (i >= 0)
 	{
-		ui_draw_digit(game, game->numbers, pos.x + j * 22, pos.y, digits[i]);
+		ui_draw_digit(game, game->ui[UI_DIGITS], pos.x + j * UI_DIGIT_SIZE + 2, pos.y, digits[i]);
 		j++;
 		i--;
 	}
 }
 
-void ui_render_bullets(t_game *game)
+void ui_render_ammo(t_game *game)
 {
 	image_draw_transparent(game, game->ui[UI_BULLET_CONTAINER], 20, 565);
-	ui_draw_number(game,vec2_new(70, 645), game->player.ammo);
+	if (game->player.ammo > 9)
+		ui_draw_number(game,vec2_new(65, 643), game->player.ammo);
+	else
+		ui_draw_number(game,vec2_new(75, 643), game->player.ammo);
 }
 
 void ui_render_aim(t_game *game)
@@ -76,6 +83,3 @@ void ui_render_aim(t_game *game)
 	y = 405;
 	image_draw_transparent(game, game->ui[UI_AIM], x, y);
 }
-
-
-

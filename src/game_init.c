@@ -66,9 +66,6 @@ void init_game(t_game *game, char *filename)
 	game->stripes = malloc(sizeof(double) * game->screen_width);
 	game->tick = curr_time_ms();
 	game->shake = 0;
-	game->numbers = assets_get_data_from_path(game, "./textures/Additional/Digits.xpm");
 	game_init_ui(game);
-	
-	// assignment an instance to imaginary enemy
 	init_enemies(game);
 }
