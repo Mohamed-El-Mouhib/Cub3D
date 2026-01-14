@@ -3,14 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   texture_impl.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: your_login <your_login@student.1337.ma>    +#+  +:+       +#+        */
+/*   By: mel-mouh <mel-mouh@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/20 11:49:22 by your_login        #+#    #+#             */
-/*   Updated: 2025/08/20 11:50:43 by your_login       ###   ########.fr       */
+/*   Created: 2025/08/20 11:49:22 by mel-mouh          #+#    #+#             */
+/*   Updated: 2025/08/20 11:50:43 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
+
+typedef struct s_color {
+	unsigned char r;
+	unsigned char g;
+	unsigned char b;
+	unsigned char a;
+} t_color_;
 
 /**
  * hit_point - Extracts coordinate of the wall hit point.
@@ -18,15 +25,19 @@
  *         For a vertical wall, use the y coordinate. Both are normalized by TILE_SIZE.
  * return: The intersection point on the wall.
 */
-double	hit_points(t_game *game, t_dda_ctx *info)
+double	get_side_and_cords(t_game *game, t_dda_ctx *info)
 {
 	t_vec2	hit;
 
-	hit = vec2_add(game->player.pos, vec2_scale(info->ray, info->hit_dist));
-	if (info->side)
+	hit = vec2_add(game->player.pos,
+		vec2_scale(info->ray, info->hit_dist));
+	if (info->side == WALL_WEST)
 		return (hit.x/TILE_SIZE);
-	else
+	if (info->side == WALL_EAST)
+		return (TILE_SIZE - hit.x/TILE_SIZE);
+	if (info->side == WALL_NORTH)
 		return (hit.y/TILE_SIZE);
+	return (TILE_SIZE - (hit.y/TILE_SIZE));
 }
 
 /**
@@ -48,22 +59,16 @@ unsigned int get_color_info(t_game *game, t_dda_ctx *info, int i, t_vec2 *vec)
 {
 	int	offs;
 
-	vec->y = (double)(i / info->line_height) * game->wall[info->side].height;
+	vec->y = (double)(i / info->line_height)
+		* game->wall[info->side].height;
 	if (vec->y < 0)
 		vec->y = 0;
 	else if (vec->y >= game->wall[info->side].height)
 		vec->y = game->wall[info->side].height - 1;
-
-	offs = (int)vec->y * game->wall[info->side].line_len + (int)vec->x * (game->wall[info->side].bpp / 8);
+	offs = (int)vec->y * game->wall[info->side].line_len
+		+ (int)vec->x * (game->wall[info->side].bpp / 8);
 	return *(unsigned int *)(game->wall[info->side].addr + offs);
 }
-
-typedef struct s_color {
-	unsigned char r;
-	unsigned char g;
-	unsigned char b;
-	unsigned char a;
-} t_color_;
 
 /**
  * draw_texture_line - Draws a vertical line with ceiling, wall, and floor colors.
@@ -90,6 +95,31 @@ static unsigned int apply_fog(unsigned int color_val, double factor)
 	return (*(unsigned int *)c);
 }
 
+double	get_texture_x(t_game* game, t_dda_ctx* info)
+{
+	double	x;
+
+	x = fmod(get_side_and_cords(game, info), 1.0) * game->wall[info->side].width;
+	if (x < 0)
+		x = 0;
+	else if (x >= game->wall[info->side].width)
+		x = game->wall[info->side].width - 1;
+	return (x);
+}
+
+double	get_texture_y(t_game* game, t_dda_ctx* info, int i)
+{
+	double	y;
+
+	y = (double)(i / info->line_height)
+		* game->wall[info->side].height;
+	if (y < 0)
+		y = 0;
+	else if (y >= game->wall[info->side].height)
+		y = game->wall[info->side].height - 1;
+	return (y);
+}
+
 void	draw_texture_line(t_game *game, t_dda_ctx *info)
 {
 	int		i;
@@ -98,11 +128,7 @@ void	draw_texture_line(t_game *game, t_dda_ctx *info)
 	double factor;
 
 	i = -1;
-	vec.x = fmod(hit_points(game, info), 1.0) * game->wall[info->side].width;
-	if (vec.x < 0)
-		vec.x = 0;
-	else if (vec.x >= game->wall[info->side].width)
-		vec.x = game->wall[info->side].width - 1;
+	vec.x = get_texture_x(game, info);
 	while (++i < (int)game->screen_height)
 	{
 		if (i < info->line_start.y)
@@ -115,12 +141,13 @@ void	draw_texture_line(t_game *game, t_dda_ctx *info)
 			factor  = lerp(6, 1, i / (double)game->screen_height);
 			px = game->floor; // this supposed to be ceiling
 		}
-		else
+		else if (i < info->line_end.y && i > info->line_start.y)
 		{
 			if (info->hit_dist > 95)
 				factor = info->hit_dist / 95;
 			else
 				factor = 1;
+			vec.y = get_texture_y(game, info, i - info->line_start.y);
 			px = get_color_info(game, info, i - info->line_start.y, &vec);
 		}
 		px = apply_fog(px, factor);
