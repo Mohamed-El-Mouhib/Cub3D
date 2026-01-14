@@ -11,6 +11,11 @@
 /* ************************************************************************** */
 #include "../includes/cub3d.h"
 
+int	calc_distance(int x, int y)
+{
+	return (x * x + y * y);
+}
+
 void minimap_draw_player(t_game *game)
 {
 	double scale = TILE_SIZE / MINIMAP_SCALE;
@@ -18,11 +23,11 @@ void minimap_draw_player(t_game *game)
 	t_vec2 mini_player_pos;
 
 
-	// mini_player_pos = vec2_div(game->player.pos, MINIMAP_SCALE);
 	mini_player_pos = vec2_new(HALF_MINIMAP + X_OFFSET, HALF_MINIMAP + Y_OFFSET);
 	head = vec2_add(vec2_scale(game->player.dir, scale), mini_player_pos);
 	draw_line(&game->scene, mini_player_pos, head, COLOR_WHITE);
 	draw_filled_circle(&game->scene, mini_player_pos, 5, COLOR_WHITE);
+	// minimap_draw_enemy(game, mini_player_pos);
 }
 
 void draw_fov_in_minimap(t_game *game, t_dda_ctx *dda)
@@ -99,8 +104,8 @@ void	calc_minimap_tiles(t_game* game, int i, int j)
 	int	t_x;
 	char	tile;
 
-	p_x = game->player.pos.x - HALF_MINIMAP * MINIMAP_ZOOM + i * MINIMAP_ZOOM ;
-	p_y = game->player.pos.y - HALF_MINIMAP * MINIMAP_ZOOM + j * MINIMAP_ZOOM ;
+	p_x = game->player.pos.x - (HALF_MINIMAP * MINIMAP_ZOOM) + (i * MINIMAP_ZOOM) ;
+	p_y = game->player.pos.y - (HALF_MINIMAP * MINIMAP_ZOOM) + (j * MINIMAP_ZOOM) ;
 	t_x = p_x / TILE_SIZE;
 	t_y = p_y / TILE_SIZE;
 	if (p_x < 0 || p_y < 0 || t_x < 0 || t_y < 0
@@ -110,19 +115,10 @@ void	calc_minimap_tiles(t_game* game, int i, int j)
 		return;
 	}
 	tile = game->world.map[t_y][t_x];
-	if (tile == '1')
+	if (tile == '1' || tile == 'C')
 		image_put_pixel(&game->scene, i + X_OFFSET, j + Y_OFFSET, 0x8a8a8a);
-	else if (tile == ' ')
-		image_put_pixel(&game->scene, i + X_OFFSET, j + Y_OFFSET, 0xd1d1d1);
-	else if (tile == 'C')
-		image_put_pixel(&game->scene, i + X_OFFSET, j + Y_OFFSET, 0xB1B1B1);
 	else
-		image_put_pixel(&game->scene, i + X_OFFSET, j + Y_OFFSET, 0xafafaf);
-}
-
-int	calc_distance(int x, int y)
-{
-	return (x * x + y * y);
+		image_put_pixel(&game->scene, i + X_OFFSET, j + Y_OFFSET, 0xB1B1B1);
 }
 
 void	draw_circle_map(t_game* game)

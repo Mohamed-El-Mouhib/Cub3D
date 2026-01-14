@@ -1,12 +1,5 @@
 #include "../includes/cub3d.h"
 
-static char get_map_cell(t_game *game, int x, int y)
-{
-	if (x >= (int)game->world.map_width || y >= (int)game->world.map_height || x < 0 || y < 0)
-		return ('1');
-	return (game->world.map[y][x]);
-}
-
 
 /**
  * has_los - chack if point @from has line of sight into point @to
@@ -17,6 +10,7 @@ int has_los(t_game *g, t_vec2 from, t_vec2 to)
 	t_vec2  curr;
 	float   dist;
 	int     steps;
+	char	c;
 
 	d = vec2_sub(to, from);
 	dist = sqrt(vec2_len_squared(to, from));
@@ -29,7 +23,8 @@ int has_los(t_game *g, t_vec2 from, t_vec2 to)
 	while (steps-- > 0)
 	{
 		curr = vec2_add(curr, d);
-		if (get_map_cell(g, (int)curr.x / TILE_SIZE, (int)curr.y / TILE_SIZE) == '1')
+		c = get_map_cell(g, (int)curr.x / TILE_SIZE, (int)curr.y / TILE_SIZE);
+		if (c == '1' || c == 'C')
 			return (0);
 	}
 	return (1);
@@ -41,16 +36,21 @@ int has_los(t_game *g, t_vec2 from, t_vec2 to)
  */
 int can_move(t_game *g, double x, double y)
 {
-	int pad;
+	int	pad;
+	char	cell;
 
 	pad = TILE_SIZE / 4;
-	if (get_map_cell(g, (x + pad) / TILE_SIZE, (y + pad) / TILE_SIZE) == '1')
+	cell = get_map_cell(g, (x + pad) / TILE_SIZE, (y + pad) / TILE_SIZE);
+	if (cell == '1' || cell == 'C')
 		return 0;
-	if (get_map_cell(g, (x - pad) / TILE_SIZE, (y + pad) / TILE_SIZE) == '1')
+	cell = get_map_cell(g, (x - pad) / TILE_SIZE, (y - pad) / TILE_SIZE);
+	if (cell == '1' || cell == 'C')
 		return 0;
-	if (get_map_cell(g, (x + pad) / TILE_SIZE, (y - pad) / TILE_SIZE) == '1')
+	cell = get_map_cell(g, (x - pad) / TILE_SIZE, (y + pad) / TILE_SIZE);
+	if (cell == '1' || cell == 'C')
 		return 0;
-	if (get_map_cell(g, (x - pad) / TILE_SIZE, (y - pad) / TILE_SIZE) == '1')
+	cell = get_map_cell(g, (x + pad) / TILE_SIZE, (y - pad) / TILE_SIZE);
+	if (cell == '1' || cell == 'C')
 		return 0;
 	return (1);
 }
@@ -71,7 +71,6 @@ bool enemy_is_too_close(t_game *game, t_enemy *enemy)
 	}
 	return (false);
 }
-
 
 void enemy_update_pos(t_game *game, t_enemy *enemy)
 {

@@ -42,24 +42,25 @@ void	toggle_door(t_game* game)
 	t_vec2 p;
 	int p_x;
 	int p_y;
+	int e_x;
+	int e_y;
 	int t_x;
 	int t_y;
 
-	p = vec2_add(game->player.pos, vec2_scale(game->player.dir, TILE_SIZE));
+	p = vec2_add(game->player.pos,
+	      vec2_scale(game->player.dir, TILE_SIZE));
 	p_x = game->player.pos.x / TILE_SIZE;
 	p_y = game->player.pos.y / TILE_SIZE;
 	t_x = p.x / TILE_SIZE;
 	t_y = p.y / TILE_SIZE;
-	if (t_x == p_x && t_y == p_y)
+	e_x = (*(t_enemy*)game->enemies->buff[0]).pos.x / TILE_SIZE;
+	e_y = (*(t_enemy*)game->enemies->buff[0]).pos.y / TILE_SIZE;
+	if ((t_x == p_x && t_y == p_y) || (e_x == t_x && e_y == t_y))
 		return;
 	if (game->world.map[t_y][t_x] == 'C')
-	{
 		game->world.map[t_y][t_x] = 'O';
-	}
 	else if (game->world.map[t_y][t_x] == 'O')
-	{
 		game->world.map[t_y][t_x] = 'C';
-	}
 }
 
 int	key_press(int key_code, t_game *game)
@@ -82,6 +83,8 @@ int	key_press(int key_code, t_game *game)
 		game->inputs[KEY_A] = true;
 	else if (key_code == XK_space)
 		game->inputs[KEY_SPACE] = true;
+	else if (key_code == XK_e)
+		toggle_door(game);
 	else if (key_code == XK_Shift_L)
 		game->player.max_speed = PLAYER_RUN_SPEED;
 	return (0);

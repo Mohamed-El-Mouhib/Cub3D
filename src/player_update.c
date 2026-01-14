@@ -27,7 +27,7 @@ void player_update_velocity(t_game *game)
 	p->speed = hypot(p->velocity.x, p->velocity.y) * 100;
 }
 
-static char get_map_cell(t_game *game, int x, int y)
+char get_map_cell(t_game *game, int x, int y)
 {
 	if (x >= (int)game->world.map_width || y >= (int)game->world.map_height || x < 0 || y < 0)
 		return ('1');
@@ -61,7 +61,8 @@ void player_update_pos(t_game *game)
     map_y = (int)(new_pos.y / TILE_SIZE);
 
     // Only update X if the cell is free
-    if (get_map_cell(game, map_x, map_y) != '1')
+    char cell = get_map_cell(game, map_x, map_y);
+    if (cell != 'C' && cell != '1')
         game->player.pos.x = new_pos.x;
 
     // ---------------------------
@@ -79,7 +80,8 @@ void player_update_pos(t_game *game)
         map_y = (int)((new_pos.y - PLAYER_BUFFER) / TILE_SIZE);
 
     // Only update Y if the cell is free
-    if (get_map_cell(game, map_x, map_y) != '1')
+    cell = get_map_cell(game, map_x, map_y);
+    if (cell != 'C' && cell != '1')
         game->player.pos.y = new_pos.y;
 }
 /**

@@ -54,7 +54,7 @@ void init_enemies(t_game *game)
 		enemy = malloc(sizeof(t_enemy));
 		if (!enemy)
 			printf("Warn: Faild to allocate memory %s\n", __func__);
-		enemy->pos = vec2_new(TILE_SIZE * i, TILE_SIZE * 2);
+		enemy->pos = vec2_new(TILE_SIZE * 11 + 40, TILE_SIZE * 1 + 40);
 		enemy->animation[ENEMY_WALKING] = enemy_animation_walking(game);
                 enemy->animation[ENEMY_ATTACKING] = enemy_animation_attacking(game);
                 enemy->animation[ENEMY_DEAD] = enemy_animation_dead(game);

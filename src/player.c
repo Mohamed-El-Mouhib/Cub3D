@@ -41,12 +41,12 @@ void player_rotate(t_game *game, t_rotate_dir rot_dir)
 	player->plane = plane;
 }
 
-static char get_map_cell(t_game *game, int x, int y)
-{
-	if (x >= (int)game->world.map_width || y >= (int)game->world.map_height || x < 0 || y < 0)
-		return ('1');
-	return (game->world.map[y][x]);
-}
+// static char get_map_cell(t_game *game, int x, int y)
+// {
+// 	if (x >= (int)game->world.map_width || y >= (int)game->world.map_height || x < 0 || y < 0)
+// 		return ('1');
+// 	return (game->world.map[y][x]);
+// }
 
 void enemy_took_bullet(t_game *game, t_enemy *enemy)
 {
@@ -91,12 +91,15 @@ bool enemy_foreach(t_game *game, t_vec2 bullet)
 void player_fire_bullet(t_game *game)
 {
 	t_vec2 bullet;
+	char	cell;
 
 	bullet = game->player.pos;
 	while (1)
 	{
+		cell = get_map_cell(game, bullet.x / TILE_SIZE,
+		      bullet.y / TILE_SIZE);
 		bullet = vec2_add(bullet, game->player.dir);
-		if (get_map_cell(game, (int)bullet.x / TILE_SIZE, (int)bullet.y / TILE_SIZE) == '1')
+		if (cell == '1' || cell == 'C')
 			return ;
 		if (enemy_foreach(game, bullet))
 			return ;
