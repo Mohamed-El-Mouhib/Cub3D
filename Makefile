@@ -7,6 +7,7 @@ NAME          = cub3d
 LIB_DIR       = libs
 CC            = cc
 ASSET_DIR     = textures
+ASSET_ARC     = textures.zip
 UNAME         = $(shell uname)
 ASSETS_LINK   = https://github.com/Mohamed-El-Mouhib/Cub3D/releases/download/CubAssets/textures.zip
 
@@ -20,13 +21,15 @@ endif
 all: libft_rule $(NAME)
 	@echo -e '\nNOTE: run "make assets" to download the textures used in the game'
 
-assets: $(ASSET_DIR)
-	@echo Unzipping the assets Archive...
-	@unzip -oq ./textures.zip
+assets: $(ASSET_ARC) $(ASSET_DIR)
 
-$(ASSET_DIR):
+$(ASSET_ARC):
 	@echo Downloading the assets...
 	@curl -sOL $(ASSETS_LINK)
+
+$(ASSET_DIR): $(ASSET_ARC)
+	@echo Unzipping the assets Archive...
+	@unzip -oq $(ASSET_ARC)
 
 $(NAME): $(OBJ) $(LIBFT_ARCHIVE)
 	$(CC) $(CFLAGS) $(OBJ) $(LINKERS) -o $(NAME)
