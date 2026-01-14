@@ -22,7 +22,6 @@ static int	dynamic_ensure_capacity(t_dyn *arr)
 	if (arr->capacity >= req_cap)
 		return (0);
 	new_cap = arr->capacity * 2;
-	printf("DEBUG: DYN REALLOC %zu => %zu\n", arr->length, new_cap);
 	new_buff = malloc(new_cap * sizeof(void *));
 	if (!new_buff)
 	{

@@ -63,10 +63,9 @@ void game_render(t_game *game)
 	draw_minimap(game);
 	enemy_draw_all(game);
 	ui_render_hearts(game);
-	ui_render_bullets(game);
+	ui_render_ammo(game);
 	ui_render_aim(game);
 	player_render_frame(game);
-
 	mlx_put_image_to_window(game->mlx, game->win, game->scene.img, 0, 0);
 }
 
