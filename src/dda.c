@@ -38,6 +38,8 @@ void	compute_dist_to_hit_wall(t_dda_ctx *dda)
 		dda->hit_dist = (dda->side_dist.y / TILE_SIZE - dda->delta_dist.y);
 	else
 		dda->hit_dist = (dda->side_dist.x / TILE_SIZE - dda->delta_dist.x);
+	if (dda->hit_dist < 1)
+		dda->hit_dist = 1;
 }
 
 /**
