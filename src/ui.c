@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ui.c                                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/15 16:21:22 by aljbari           #+#    #+#             */
+/*   Updated: 2026/01/15 16:21:22 by aljbari          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/cub3d.h"
 
 #define UI_DIGIT_SIZE 20
@@ -14,8 +26,7 @@ void	ui_render_hearts(t_game *game)
 	}
 }
 
-static void	ui_draw_digit(t_game *game, t_data *image, int x_off, int y_off,
-		int number)
+static void	ui_draw_digit(t_game *game, t_data *image, t_vec2 off, int number)
 {
 	unsigned int	ignore_color;
 	unsigned int	color;
@@ -29,12 +40,13 @@ static void	ui_draw_digit(t_game *game, t_data *image, int x_off, int y_off,
 	y = 0;
 	while (y < image->height)
 	{
-		x = start = UI_DIGIT_SIZE * number;
+		start = UI_DIGIT_SIZE * number;
+		x = start;
 		while (x < image->width && x < start + UI_DIGIT_SIZE)
 		{
 			color = image_get_pixel(image, x, y);
 			if (color != ignore_color)
-				image_put_pixel(&game->scene, x + x_off - start, y + y_off,
+				image_put_pixel(&game->scene, x + off.x - start, y + off.y,
 					color);
 			x++;
 		}
@@ -60,8 +72,8 @@ void	ui_draw_number(t_game *game, t_vec2 pos, int number)
 	j = 0;
 	while (i >= 0)
 	{
-		ui_draw_digit(game, game->ui[UI_DIGITS], pos.x + j * UI_DIGIT_SIZE + 2,
-			pos.y, digits[i]);
+		ui_draw_digit(game, game->ui[UI_DIGITS], vec2_new(pos.x + j
+				* UI_DIGIT_SIZE + 2, pos.y), digits[i]);
 		j++;
 		i--;
 	}

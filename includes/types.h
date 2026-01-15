@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
-	/*                                                        :::      ::::::::   */
-	/*   types.h                                            :+:      :+:    :+:   */
+/*                                                        :::      ::::::::   */
+/*   types.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aljbari    <aljbari@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -15,39 +15,25 @@
 
 # include "dynamic_array.h"
 # include "libft.h"
-# ifdef __APPLE__
-#  include "../../mlx/mlx.h"
-#  define XK_Escape 53
-#  define XK_Right 123
-#  define XK_Left 124
-#  define XK_a 0
-#  define XK_s 1
-#  define XK_d 2
-#  define XK_w 13
-#  define XK_r 15
-# else
-#  include <X11/keysym.h>
-#  include <mlx.h>
-# endif
+# include <X11/keysym.h>
 # include <fcntl.h>
 # include <limits.h>
 # include <math.h>
+# include <mlx.h>
 # include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
 
-# define FRAME_RATE 24
-# define INIT_ROTATION_STEP_DEGREE 100.0
-# define INIT_ROTATION_STEP ((INIT_ROTATION_STEP_DEGREE * M_PI) / 180.0)
+# define INIT_ROTATION_STEP 3.0
 
 # define MINIMAP_SCALE 4.0
 # define MINIMAP_LEN 200
+# define HALF_MINIMAP 100
+# define SQR_REDIOUS 10000
 # define MINIMAP_ZOOM 4
 # define X_OFFSET 10
 # define Y_OFFSET 10
-# define HALF_MINIMAP (int)(MINIMAP_LEN / 2)
-# define SQR_REDIOUS HALF_MINIMAP *HALF_MINIMAP
 
 typedef int			t_color;
 
@@ -98,7 +84,7 @@ typedef struct s_animation
 	time_t			last_changed;
 }					t_animation;
 
-enum				t_player_stats
+enum				e_player_stats
 {
 	PLAYER_SHOOTING = 0,
 	PLAYER_RELOAD,
@@ -149,7 +135,7 @@ typedef struct s_player
 	double			max_speed;
 	t_animation		*animations[PLAYER_STATS_NBR];
 	size_t			state;
-	double rot_angle; // the rotation step angle
+	double			rot_angle;
 	int				lives;
 	int				ammo;
 }					t_player;
@@ -181,25 +167,25 @@ typedef struct e_config
 	t_color			c;
 }					t_config;
 
-/*
- * @instance:	the instance of the enemy
- * @pos:			vectore holding enemy position in map
-
-			* @t_ai:		struct holding the instance of the enemy AI if they exist in the map
- * @t_stat:		enum holding the status of the enemy
- * @speed:		movement speed of the enemy
+/**
+ * @s: draw start
+ * @e: draw end
+ * @pos: player position
+ * @size: size of the enemy rendered box
+ * @camera: position of enemy relative to the player camera
+ * @screen: intersaction with the screen projection
  */
 typedef struct s_enemy
 {
-	t_vec2 s; // draw start
-	t_vec2 e; // draw end
+	t_vec2			s;
+	t_vec2			e;
 	t_vec2			pos;
 	int				size;
 	t_enemy_stats	state;
 	t_vec2			camera;
 	t_animation		*animation[ENEMY_STATS_NBR];
 	time_t			last_attack_time;
-	double screen; // intersaction with the screen projection
+	double			screen;
 	int				health;
 }					t_enemy;
 
@@ -220,7 +206,6 @@ typedef struct s_game
 	t_player		player;
 	t_vec2			mouse_pos;
 	t_vec2			last_mouse_pos;
-	// Render fields
 	size_t			screen_width;
 	size_t			screen_height;
 	bool			inputs[256];
@@ -235,7 +220,7 @@ typedef struct s_game
 	t_dyn			*assets;
 	time_t			tick;
 	double			shake;
-	double dt; // delta time
+	double			dt;
 	t_data			*ui[UI_NBR];
 }					t_game;
 

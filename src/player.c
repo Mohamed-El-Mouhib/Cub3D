@@ -11,16 +11,16 @@
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
+#include <stddef.h>
 
 /**
  * player_rotate - Rotates the player's direction vector by the player's
  * rotation angle
  *
- * this is the formula that have been:
+ * this is the formula that have been used:
  *     | x |    | cos(a)  -sin(a) |    | x |
  *     | y | =  | sin(a)   cos(a) | *  | y |
-
-	* @player: Pointer to the player containing direction vector and rotation values
+ * @player: Pointer to the player containing direction vector and rotation values
  * @direction: the rotation direction use ROTATE_LEFT or ROTATE_RIGHT macros
  */
 void	player_rotate(t_game *game, t_rotate_dir rot_dir)
@@ -65,18 +65,20 @@ void	enemy_took_bullet(t_game *game, t_enemy *enemy)
 		enemy->pos.y = next.y;
 }
 
-bool	enemy_foreach(t_game *game, t_vec2 bullet)
+bool	enemy_check_hit_by_bullet(t_game *game, t_vec2 bullet)
 {
 	t_enemy	*enemy;
 	double	d;
+	size_t	i;
 
 	d = 15 * 15;
-	for (size_t i = 0; i < game->enemies->length; i++)
+	i = 0;
+	while (i < game->enemies->length)
 	{
 		enemy = dyn_at(game->enemies, i);
 		if (enemy->health > 0 && vec2_len_squared(bullet, enemy->pos) < d)
 		{
-			enemy->health -= 5; // 20 bullet to kill
+			enemy->health -= 5;
 			enemy_took_bullet(game, enemy);
 			if (enemy->health <= 0)
 			{
@@ -85,6 +87,7 @@ bool	enemy_foreach(t_game *game, t_vec2 bullet)
 			}
 			return (true);
 		}
+		i++;
 	}
 	return (false);
 }
@@ -101,7 +104,7 @@ void	player_fire_bullet(t_game *game)
 		cell = get_map_cell(game, bullet.x / TILE_SIZE, bullet.y / TILE_SIZE);
 		if (cell == '1' || cell == 'C')
 			return ;
-		if (enemy_foreach(game, bullet))
+		if (enemy_check_hit_by_bullet(game, bullet))
 			return ;
 	}
 }
