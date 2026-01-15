@@ -86,3 +86,23 @@ void	enemy_draw_all(t_game *game)
 		enemy_draw_one(game, dyn_at(game->enemies, i++));
 	}
 }
+
+/**
+ * enemy_camera_pos - Calculate the position of the player in the coordinate
+ * system: (player->dir, player->plane)
+ */
+t_vec2	enemy_camera_pos(t_game *game, t_enemy *enemy)
+{
+	t_player	*p;
+	t_vec2		camera_pos;
+	t_vec2		p_to_enemy;
+	double		invdet;
+
+	p = &game->player;
+	p_to_enemy = vec2_scale(vec2_sub(enemy->pos, p->pos), 1 / TILE_SIZE);
+	invdet = 1.0 / (p->plane.x * p->dir.y - p->dir.x * p->plane.y);
+	camera_pos.x = invdet * (p->dir.y * p_to_enemy.x - p->dir.x * p_to_enemy.y);
+	camera_pos.y = invdet * (-p->plane.y * p_to_enemy.x + p->plane.x
+			* p_to_enemy.y);
+	return (camera_pos);
+}

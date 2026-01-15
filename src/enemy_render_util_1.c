@@ -10,27 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
-
-/**
- * enemy_camera_pos - Calculate the position of the player in the coordinate
- * system: (player->dir, player->plane)
- */
-t_vec2	enemy_camera_pos(t_game *game, t_enemy *enemy)
-{
-	t_player	*p;
-	t_vec2		camera_pos;
-	t_vec2		p_to_enemy;
-	double		invdet;
-
-	p = &game->player;
-	p_to_enemy = vec2_scale(vec2_sub(enemy->pos, p->pos), 1 / TILE_SIZE);
-	invdet = 1.0 / (p->plane.x * p->dir.y - p->dir.x * p->plane.y);
-	camera_pos.x = invdet * (p->dir.y * p_to_enemy.x - p->dir.x * p_to_enemy.y);
-	camera_pos.y = invdet * (-p->plane.y * p_to_enemy.x + p->plane.x
-			* p_to_enemy.y);
-	return (camera_pos);
-}
+#include "../includes/cub3d.h"
 
 /**
  *    --------------------------------
@@ -95,30 +75,41 @@ unsigned int	get_point_color(t_game *game, t_enemy *enemy, int i, int j)
 	return (image_get_pixel(frame, x, y));
 }
 
+void	_enemy_draw_stipe(t_game *game, t_enemy *enemy, int x)
+{
+	t_color	color;
+	t_color	ignore_color;
+	t_data	*frame;
+	int		y;
+
+	frame = animation_get_frame(game, enemy->animation[enemy->state]);
+	ignore_color = *(unsigned int *)frame->addr;
+	y = enemy->s.y;
+	while (y < enemy->e.y)
+	{
+		if (y >= 0)
+		{
+			color = get_point_color(game, enemy, x, y);
+			if (ignore_color != color)
+				image_put_pixel(&game->scene, x, y, color);
+		}
+		y++;
+	}
+}
+
 /**
  * enemy_draw_frame - draw the current frame of the enemy in the correct
  * position
  */
 void	enemy_draw_frame(t_game *game, t_enemy *enemy)
 {
-	t_color	color;
-	t_color	ignore_color;
-	t_data	*frame;
+	int	x;
 
-	frame = animation_get_frame(game, enemy->animation[enemy->state]);
-	ignore_color = *(unsigned int *)frame->addr;
-	for (int x = enemy->s.x; x < enemy->e.x; x++)
+	x = enemy->s.x;
+	while (x < enemy->e.x)
 	{
-		if (x < 0 || enemy->camera.y > game->stripes[x] / TILE_SIZE)
-			continue ;
-		for (int y = enemy->s.y; y < enemy->e.y; y++)
-		{
-			if (y < 0)
-				continue ;
-			color = get_point_color(game, enemy, x, y);
-			if (ignore_color == color)
-				continue ;
-			image_put_pixel(&game->scene, x, y, color);
-		}
+		if (x > 0 && enemy->camera.y < game->stripes[x] / TILE_SIZE)
+			_enemy_draw_stipe(game, enemy, x);
+		x++;
 	}
 }
