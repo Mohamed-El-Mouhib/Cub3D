@@ -1,6 +1,6 @@
 #include "../includes/cub3d.h"
 
-void realse_player(t_game *game)
+void release_player(t_game *game)
 {
 	int i;
 
@@ -23,7 +23,7 @@ void release_enemy(void *e)
 	free(enemy);
 }
 
-void realse_enemies(t_game *game)
+void release_enemies(t_game *game)
 {
 	if (!game->enemies)
 		return ;
@@ -78,8 +78,8 @@ void release_walls_paths(t_game *game)
 void release_game_and_exit(t_game *game, int status)
 {
 	free(game->stripes);
-	realse_player(game);
-	realse_enemies(game);
+	release_player(game);
+	release_enemies(game);
 	release_assets(game);
 	release_map(game);
 	release_walls_paths(game);
