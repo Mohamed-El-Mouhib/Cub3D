@@ -44,19 +44,16 @@ bool init_game_world(char *filename, t_game* game)
 
 void init_game(t_game *game, char *filename)
 {
-	int i;
 	if (!init_game_world(filename, game))
 		return;
 	game->screen_width = 1280;
 	game->screen_height = 720;
 	game->assets = dyn_init_ptr();
-	i = 0;
-	while (i < 4)
-	{
-		game->wall[i] = *assets_get_data_from_path(game, game->world.values[i]);
-		i++;
-	}
-	game->wall[i] = *assets_get_data_from_path(game, "./textures/Wall/DOOR.xpm");
+	game->wall[WALL_NORTH] = *assets_get_data_from_path(game, game->world.values[WALL_NORTH]);
+	game->wall[WALL_SOUTH] = *assets_get_data_from_path(game, game->world.values[WALL_SOUTH]);
+	game->wall[WALL_WEST] = *assets_get_data_from_path(game, game->world.values[WALL_WEST]);
+	game->wall[WALL_EAST] = *assets_get_data_from_path(game, game->world.values[WALL_EAST]);
+	game->wall[WALL_DOOR] = *assets_get_data_from_path(game, "./textures/Wall/DOOR.xpm");
 	game->win = mlx_new_window(game->mlx, game->screen_width, game->screen_height, "MOUSE");
 	if (!game->win)
 		ft_exit_error("Failed to allocate window");

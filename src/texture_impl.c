@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
+#include <stdio.h>
 
 typedef struct s_color {
 	unsigned char r;
@@ -29,15 +30,15 @@ double	get_side_and_cords(t_game *game, t_dda_ctx *info)
 {
 	t_vec2	hit;
 
-	hit = vec2_add(game->player.pos,
-		vec2_scale(info->ray, info->hit_dist));
-	if (info->side == WALL_WEST)
-		return (hit.x/TILE_SIZE);
-	if (info->side == WALL_EAST)
-		return (TILE_SIZE - hit.x/TILE_SIZE);
+	hit = vec2_add(game->player.pos, vec2_scale(info->ray, info->hit_dist));
 	if (info->side == WALL_NORTH)
+		return (TILE_SIZE - (hit.x/TILE_SIZE));
+	if (info->side == WALL_SOUTH)
+		return (hit.x/TILE_SIZE);
+	if (info->side == WALL_WEST)
+		return (TILE_SIZE - (hit.y/TILE_SIZE));
+	else
 		return (hit.y/TILE_SIZE);
-	return (TILE_SIZE - (hit.y/TILE_SIZE));
 }
 
 /**
@@ -135,6 +136,7 @@ void	draw_texture_line(t_game *game, t_dda_ctx *info)
 	i = -1;
 	vec.x = get_texture_x(game, info);
 	side = init_side(game, info);
+	// vec2_print(info->line_end, "end line");
 	while (++i < (int)game->screen_height)
 	{
 		if (i < info->line_start.y)
