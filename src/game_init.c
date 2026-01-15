@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   game_init.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
+/*   By: mel-mouh <mel-mouh@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 11:05:39 by aljbari           #+#    #+#             */
-/*   Updated: 2025/11/17 22:49:38 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2026/01/15 17:37:07 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,13 +45,8 @@ bool	init_game_world(char *filename, t_game *game)
 	return (true);
 }
 
-void	init_game(t_game *game, char *filename)
+void	init_game_walls(t_game *game)
 {
-	if (!init_game_world(filename, game))
-		return ;
-	game->screen_width = 1280;
-	game->screen_height = 720;
-	game->assets = dyn_init_ptr();
 	game->wall[WALL_NORTH] = *assets_get_data_from_path(game,
 			game->world.values[WALL_NORTH]);
 	game->wall[WALL_SOUTH] = *assets_get_data_from_path(game,
@@ -62,6 +57,16 @@ void	init_game(t_game *game, char *filename)
 			game->world.values[WALL_EAST]);
 	game->wall[WALL_DOOR] = *assets_get_data_from_path(game,
 			"./textures/Wall/DOOR.xpm");
+}
+
+void	init_game(t_game *game, char *filename)
+{
+	if (!init_game_world(filename, game))
+		return ;
+	game->screen_width = 1280;
+	game->screen_height = 720;
+	game->assets = dyn_init_ptr();
+	init_game_walls(game);
 	game->win = mlx_new_window(game->mlx, game->screen_width,
 			game->screen_height, "MOUSE");
 	if (!game->win)
@@ -69,7 +74,8 @@ void	init_game(t_game *game, char *filename)
 		printf("Failed to allocate window\n");
 		release_game_and_exit(game, EXIT_FAILURE);
 	}
-	game->scene = image_new(game, game->screen_width, game->screen_height);
+	game->scene = image_new(game,
+			game->screen_width, game->screen_height);
 	game->mouse_pos = vec2_new(0, 0);
 	ft_bzero(game->inputs, sizeof(game->inputs));
 	player_init(game);
