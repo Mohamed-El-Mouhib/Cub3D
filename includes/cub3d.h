@@ -6,7 +6,7 @@
 /*   By: mel-mouh <mel-mouh@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 19:33:13 by aljbari           #+#    #+#             */
-/*   Updated: 2026/01/15 17:58:21 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2026/01/15 18:07:15 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,6 +158,12 @@ double			get_side_and_cords(t_game *game, t_dda_ctx *info);
 unsigned int	apply_fog(unsigned int color_val, double factor);
 unsigned int	get_color_info(t_data *side, t_dda_ctx *info,
 					int i, t_vec2 *vec);
+
+void			game_handle_inputs(t_game *game);
+void			game_update(t_game *game);
+void			game_render(t_game *game);
+void			render_message(t_game *game);
+void			player_render_frame(t_game *game);
 
 void			draw_texture_line(t_game *game, t_dda_ctx *info, int i);
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   types.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aljbari    <aljbari@student.1337.ma>       +#+  +:+       +#+        */
+/*   By: mel-mouh <mel-mouh@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:53:45 by your_login        #+#    #+#             */
-/*   Updated: 2025/11/17 22:39:41 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2026/01/15 18:08:51 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,11 +49,11 @@ typedef struct s_vec2
 	double			y;
 }					t_vec2;
 
-typedef	struct e_ivec
+typedef struct e_ivec
 {
 	int	x;
 	int	y;
-}	t_ivec;
+}		t_ivec;
 
 typedef struct s_color
 {
