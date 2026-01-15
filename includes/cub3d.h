@@ -6,7 +6,7 @@
 /*   By: mel-mouh <mel-mouh@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 19:33:13 by aljbari           #+#    #+#             */
-/*   Updated: 2026/01/15 17:31:36 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2026/01/15 17:58:21 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,118 +57,107 @@ typedef struct s_lex
 }			t_lex;
 
 // minimap
-void		draw_minimap(t_game *game);
-void		draw_fov_in_minimap(t_game *game, t_dda_ctx *dda);
-void		raycast_draw_walls(t_game *game);
+void			draw_minimap(t_game *game);
+void			draw_fov_in_minimap(t_game *game, t_dda_ctx *dda);
+void			raycast_draw_walls(t_game *game);
 
 // Keyboard events
-int			key_press(int key_code, t_game *game);
-int			key_release(int key_code, t_game *game);
-void		game_handle_inputs(t_game *game);
+int				key_press(int key_code, t_game *game);
+int				key_release(int key_code, t_game *game);
+void			game_handle_inputs(t_game *game);
 
 // Mouse events
-int			handle_mouse_move(int x, int y, t_game *game);
-int			handle_mouse_press(int keycode, int x, int y, t_game *game);
-int			handle_mouse_release(int keycode, int x, int y, t_game *game);
+int				handle_mouse_move(int x, int y, t_game *game);
+int				handle_mouse_press(int keycode, int x, int y, t_game *game);
+int				handle_mouse_release(int keycode, int x, int y, t_game *game);
 
 // Utils
-void		ft_exit_error(char *msg);
-time_t		curr_time_ms(void);
-double		sign(double x);
-double		lerp(double start, double end, double t);
-t_vec2		vec2_lerp(t_vec2 start, t_vec2 end, double factor);
+time_t			curr_time_ms(void);
+double			sign(double x);
+double			lerp(double start, double end, double t);
+t_vec2			vec2_lerp(t_vec2 start, t_vec2 end, double factor);
 
 // initializers
-void		init_game(t_game *game, char *filename);
-void		player_init(t_game *game);
+void			init_game(t_game *game, char *filename);
+void			player_init(t_game *game);
 
 // Parser
-bool		parse_content(char *filename, t_game *game);
+bool			parse_content(char *filename, t_game *game);
 
 // release memory
-void		release_map(t_game *game);
-void		release_game_and_exit(t_game *game, int status);
-
-// textures
-void		init_texture_assets(t_game *game);
-
-bool		is_valid_char(char c);
-
-// error
-void		error_indexing(void);
+void			release_map(t_game *game);
+void			release_game_and_exit(t_game *game, int status);
+bool			is_valid_char(char c);
 
 // assets factory
-t_data		*assets_get_data_from_path(t_game *game, char *path);
-int			assets_load_xpm(t_game *game, char *path);
-t_animation	*init_animation(size_t start, size_t end, int duration);
-t_animation	*load_animation_frames(t_game *game, char **paths, size_t size,
-				int duration);
-t_data		*assets_get(t_game *game, int id);
-
+t_data			*assets_get_data_from_path(t_game *game, char *path);
+int				assets_load_xpm(t_game *game, char *path);
+t_animation		*init_animation(size_t start, size_t end, int duration);
+t_animation		*load_animation_frames(t_game *game, char **paths, size_t size,
+					int duration);
+t_data			*assets_get(t_game *game, int id);
 // Player
-void		player_update_bobbing(t_game *game);
-void		player_update_sway(t_game *game);
-void		player_update_pos(t_game *game);
-void		player_update_velocity(t_game *game);
-void		player_update_frame(t_game *game);
-void		player_update_state(t_game *game);
-void		player_rotate(t_game *game, t_rotate_dir rot_dir);
-void		player_move(t_player *player, t_move_dir move_dir);
-void		player_render_frame(t_game *game);
+void			player_update_bobbing(t_game *game);
+void			player_update_sway(t_game *game);
+void			player_update_pos(t_game *game);
+void			player_update_velocity(t_game *game);
+void			player_update_frame(t_game *game);
+void			player_update_state(t_game *game);
+void			player_rotate(t_game *game, t_rotate_dir rot_dir);
 
 // Animations
-t_data		*animation_get_frame(t_game *game, t_animation *anim);
-void		animation_cycle(t_game *game, t_animation *anim);
+t_data			*animation_get_frame(t_game *game, t_animation *anim);
+void			animation_cycle(t_game *game, t_animation *anim);
 
 // enemy utils
-void		init_enemies(t_game *game);
-void		enemy_update_pos(t_game *g, t_enemy *e);
-void		enemy_update_pos(t_game *g, t_enemy *e);
-void		enemy_update_state(t_game *g, t_enemy *e);
-void		enemy_draw_all(t_game *game);
-void		enemy_update_frame_all(t_game *game);
-int			can_move(t_game *g, double x, double y);
+void			init_enemies(t_game *game);
+void			enemy_update_pos(t_game *g, t_enemy *e);
+void			enemy_update_pos(t_game *g, t_enemy *e);
+void			enemy_update_state(t_game *g, t_enemy *e);
+void			enemy_draw_all(t_game *game);
+void			enemy_update_frame_all(t_game *game);
+int				can_move(t_game *g, double x, double y);
 
 // ui
-void		ui_render_aim(t_game *game);
-void		ui_draw_number(t_game *game, t_vec2 pos, int number);
-void		ui_render_hearts(t_game *game);
-void		ui_render_ammo(t_game *game);
+void			ui_render_aim(t_game *game);
+void			ui_draw_number(t_game *game, t_vec2 pos, int number);
+void			ui_render_hearts(t_game *game);
+void			ui_render_ammo(t_game *game);
 
 // access specifier
-char		get_map_cell(t_game *game, int x, int y);
+char			get_map_cell(t_game *game, int x, int y);
 
 // error logs
-bool		log_error(char *error);
+bool			log_error(char *error);
 
-void	init_side_dist_and_step(t_player *player, t_dda_ctx *dda);
-void	find_first_hitting_wall(t_game *game, t_dda_ctx *dda);
-void	set_left_right_side(t_dda_ctx *dda);
-void	set_up_down_side(t_dda_ctx *dda);
-void	init_delta_dist(t_dda_ctx *dda);
+void			init_side_dist_and_step(t_player *player, t_dda_ctx *dda);
+void			find_first_hitting_wall(t_game *game, t_dda_ctx *dda);
+void			set_left_right_side(t_dda_ctx *dda);
+void			set_up_down_side(t_dda_ctx *dda);
+void			init_delta_dist(t_dda_ctx *dda);
 
-void	dda_init_map_pos(t_player *player, t_dda_ctx *dda);
+void			dda_init_map_pos(t_player *player, t_dda_ctx *dda);
 
-t_vec2	enemy_camera_pos(t_game *game, t_enemy *enemy);
-void	enemy_draw_frame(t_game *game, t_enemy *enemy);
-t_vec2	enemy_get_drawing_end(t_game *game, t_enemy *enemy);
-t_vec2	enemy_get_drawing_start(t_game *game, t_enemy *enemy);
+t_vec2			enemy_camera_pos(t_game *game, t_enemy *enemy);
+void			enemy_draw_frame(t_game *game, t_enemy *enemy);
+t_vec2			enemy_get_drawing_end(t_game *game, t_enemy *enemy);
+t_vec2			enemy_get_drawing_start(t_game *game, t_enemy *enemy);
 unsigned int	get_point_color(t_game *game, t_enemy *enemy, int i, int j);
 
-void	player_init_animations(t_game *game);
-void	set_cardinal_dir(char dir, t_player *player);
-void	player_fire_bullet(t_game *game);
+void			player_init_animations(t_game *game);
+void			set_cardinal_dir(char dir, t_player *player);
+void			player_fire_bullet(t_game *game);
 
-void	release_player(t_game *game);
-void	release_enemies(t_game *game);
-void	release_assets(t_game *game);
+void			release_player(t_game *game);
+void			release_enemies(t_game *game);
+void			release_assets(t_game *game);
 
-
-double	get_tex_x(t_game *game, t_dda_ctx *info);
-double	get_tex_y(t_game *game, t_dda_ctx *info, int i);
-double	get_side_and_cords(t_game *game, t_dda_ctx *info);
+double			get_tex_x(t_game *game, t_dda_ctx *info);
+double			get_tex_y(t_game *game, t_dda_ctx *info, int i);
+double			get_side_and_cords(t_game *game, t_dda_ctx *info);
 unsigned int	apply_fog(unsigned int color_val, double factor);
-unsigned int	get_color_info(t_data *side, t_dda_ctx *info, int i, t_vec2 *vec);
+unsigned int	get_color_info(t_data *side, t_dda_ctx *info,
+					int i, t_vec2 *vec);
 
-void	draw_texture_line(t_game *game, t_dda_ctx *info, int i);
+void			draw_texture_line(t_game *game, t_dda_ctx *info, int i);
 #endif
