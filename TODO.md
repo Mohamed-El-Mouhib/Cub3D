@@ -7,7 +7,7 @@
 [X] Render bullet counters
 [X] Improve DDA to detect which side (4 dimension instead of 2)
 [!] Fix rendering multiple enemies (cancled)
-[ ] NORM the thing in seperated branch
+[X] NORM the thing in seperated branch
 [X] Render the wall textures without flipping 4D
 [ ] UPDATE README (contains actual images of game and a technical details of design)
 [X] Fix enemy size

@@ -22,6 +22,8 @@ ASSET_ARC     = textures.zip
 
 all: libft_rule $(NAME)
 
+bonus: all
+
 $(ASSET_DIR):
 	unzip -oq $(ASSET_ARC)
 
