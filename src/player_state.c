@@ -1,9 +1,9 @@
 #include "../includes/cub3d.h"
 
-void player_reload_state(t_game *game)
+void	player_reload_state(t_game *game)
 {
-	t_animation *anim;
-	t_player *p;
+	t_animation	*anim;
+	t_player	*p;
 
 	p = &game->player;
 	anim = game->player.animations[PLAYER_RELOAD];
@@ -20,11 +20,11 @@ void player_reload_state(t_game *game)
 	}
 }
 
-void player_fire_bullet(t_game *game);
-void player_shooting_state(t_game *game)
+void	player_fire_bullet(t_game *game);
+void	player_shooting_state(t_game *game)
 {
-	t_animation *anim;
-	t_player *p;
+	t_animation	*anim;
+	t_player	*p;
 
 	p = &game->player;
 	anim = game->player.animations[PLAYER_SHOOTING];
@@ -45,7 +45,7 @@ void player_shooting_state(t_game *game)
 	}
 }
 
-void player_update_state(t_game *game)
+void	player_update_state(t_game *game)
 {
 	if (game->player.state == PLAYER_WALKING)
 		return ;

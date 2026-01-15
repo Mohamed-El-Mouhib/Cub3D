@@ -1,11 +1,11 @@
 #include "../includes/cub3d.h"
 
-void player_render_frame(t_game *game)
+void	player_render_frame(t_game *game)
 {
-	t_animation *anim;
-	t_data *frame;
-	int x_off;
-	int y_off;
+	t_animation	*anim;
+	t_data		*frame;
+	int			x_off;
+	int			y_off;
 
 	anim = game->player.animations[game->player.state];
 	frame = animation_get_frame(game, anim);

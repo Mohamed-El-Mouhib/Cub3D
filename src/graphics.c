@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/graphics.h"
 #include "../includes/cub3d.h"
+#include "../includes/graphics.h"
 
 /**
  * draw_line - draw line between two points
@@ -20,12 +20,12 @@
  * @p2: the second point
  * @color: color to use
  */
-void draw_line(t_data *buff, t_vec2 p1, t_vec2 p2, int color)
+void	draw_line(t_data *buff, t_vec2 p1, t_vec2 p2, int color)
 {
-	t_vec2 delta;
-	float steps;
-	t_vec2 inc;
-	int i;
+	t_vec2	delta;
+	float	steps;
+	t_vec2	inc;
+	int		i;
 
 	delta = vec2_sub(p2, p1);
 	steps = fmax(fabs(delta.x), fabs(delta.y));
@@ -44,13 +44,14 @@ void draw_line(t_data *buff, t_vec2 p1, t_vec2 p2, int color)
 /**
  * _fill_vertical_line - used internally to draw circle
  */
-static void _fill_vertical_line(t_data *img, int cx, int cy, int x, int y, int color)
+static void	_fill_vertical_line(t_data *img, int cx, int cy, int x, int y,
+		int color)
 {
-	int i;
+	int	i;
 
-	(void) cx;
+	(void)cx;
 	if (x < 0 || x >= img->width || y < 0 || y >= img->height)
-		return;
+		return ;
 	i = cy;
 	while (i != y)
 	{
@@ -64,11 +65,11 @@ static void _fill_vertical_line(t_data *img, int cx, int cy, int x, int y, int c
  * draw_filled_circle - Draws a filled circle on an image using the midpoint
  * algorithm
  */
-void draw_filled_circle(void *img, t_vec2 c, int r, int color)
+void	draw_filled_circle(void *img, t_vec2 c, int r, int color)
 {
-	int x;
-	int y;
-	int p;
+	int	x;
+	int	y;
+	int	p;
 
 	x = 0;
 	y = -r;
@@ -103,13 +104,15 @@ void draw_filled_circle(void *img, t_vec2 c, int r, int color)
  *
  * Return: Tetsing
  */
-void draw_circle(t_data *buff, t_vec2 c, int r, int color)
+void	draw_circle(t_data *buff, t_vec2 c, int r, int color)
 {
+	int	x;
+	int	y;
+	int	d;
 
-	int x = 0;
-	int y = r;
-	int d = 1 - r;
-
+	x = 0;
+	y = r;
+	d = 1 - r;
 	while (x <= y)
 	{
 		image_put_pixel(buff, c.x + x, c.y + y, color);
@@ -120,7 +123,6 @@ void draw_circle(t_data *buff, t_vec2 c, int r, int color)
 		image_put_pixel(buff, c.x - y, c.y + x, color);
 		image_put_pixel(buff, c.x + y, c.y - x, color);
 		image_put_pixel(buff, c.x - y, c.y - x, color);
-
 		if (d < 0)
 			d += 2 * x + 3;
 		else
@@ -144,9 +146,9 @@ void draw_circle(t_data *buff, t_vec2 c, int r, int color)
  *
  * Return: Northing.
  */
-void draw_vertical_line(t_data *buff, t_vec2 p1, double len, int color)
+void	draw_vertical_line(t_data *buff, t_vec2 p1, double len, int color)
 {
-	t_vec2 p;
+	t_vec2	p;
 
 	if (len < 0)
 	{
@@ -176,9 +178,9 @@ void draw_vertical_line(t_data *buff, t_vec2 p1, double len, int color)
  *
  * Return: Northing.
  */
-void draw_horizontal_line(t_data *buff, t_vec2 p1, double len, int color)
+void	draw_horizontal_line(t_data *buff, t_vec2 p1, double len, int color)
 {
-	t_vec2 p;
+	t_vec2	p;
 
 	if (len < 0)
 	{
@@ -202,10 +204,10 @@ void draw_horizontal_line(t_data *buff, t_vec2 p1, double len, int color)
  * @s: top left corner coordinations of the square
  * @len: side length of square
  */
-void draw_filled_square(t_data *image, t_vec2 s, int len, unsigned int color)
+void	draw_filled_square(t_data *image, t_vec2 s, int len, unsigned int color)
 {
-	t_vec2 p;
-	int	max_x;
+	t_vec2	p;
+	int		max_x;
 
 	p = s;
 	max_x = p.x + len;
@@ -222,7 +224,7 @@ void draw_filled_square(t_data *image, t_vec2 s, int len, unsigned int color)
  * @s: top left corner coordinations of the square
  * @len: side length of square
  */
-void draw_square(t_data *image, t_vec2 s, int len, unsigned int color)
+void	draw_square(t_data *image, t_vec2 s, int len, unsigned int color)
 {
 	draw_vertical_line(image, s, len, color);
 	draw_horizontal_line(image, s, len, color);

@@ -12,23 +12,23 @@
 
 #include "../includes/cub3d.h"
 
-void game_init_ui(t_game *game)
+void	game_init_ui(t_game *game)
 {
-	game->ui[UI_BULLET_CONTAINER] =
-		assets_get_data_from_path(game, "./textures/Additional/Bullet.xpm");
-	game->ui[UI_HEARTH] =
-		assets_get_data_from_path(game, "./textures/Additional/Heart.xpm");
-	game->ui[UI_DIGITS] =
-		assets_get_data_from_path(game, "./textures/Additional/Digits.xpm");
-	game->ui[UI_OPEN_DOOR] =
-		assets_get_data_from_path(game, "./textures/Additional/Open.xpm");
-	game->ui[UI_CLOSE_DOOR] =
-		assets_get_data_from_path(game, "./textures/Additional/Close.xpm");
-	game->ui[UI_AIM] =
-		assets_get_data_from_path(game, "./textures/Additional/CrossHair.xpm");
+	game->ui[UI_BULLET_CONTAINER] = assets_get_data_from_path(game,
+			"./textures/Additional/Bullet.xpm");
+	game->ui[UI_HEARTH] = assets_get_data_from_path(game,
+			"./textures/Additional/Heart.xpm");
+	game->ui[UI_DIGITS] = assets_get_data_from_path(game,
+			"./textures/Additional/Digits.xpm");
+	game->ui[UI_OPEN_DOOR] = assets_get_data_from_path(game,
+			"./textures/Additional/Open.xpm");
+	game->ui[UI_CLOSE_DOOR] = assets_get_data_from_path(game,
+			"./textures/Additional/Close.xpm");
+	game->ui[UI_AIM] = assets_get_data_from_path(game,
+			"./textures/Additional/CrossHair.xpm");
 }
 
-bool init_game_world(char *filename, t_game* game)
+bool	init_game_world(char *filename, t_game *game)
 {
 	ft_bzero(game, sizeof(t_game));
 	game->player.pos = vec2_new(-1, -1);
@@ -45,19 +45,25 @@ bool init_game_world(char *filename, t_game* game)
 	return (true);
 }
 
-void init_game(t_game *game, char *filename)
+void	init_game(t_game *game, char *filename)
 {
 	if (!init_game_world(filename, game))
-		return;
+		return ;
 	game->screen_width = 1280;
 	game->screen_height = 720;
 	game->assets = dyn_init_ptr();
-	game->wall[WALL_NORTH] = *assets_get_data_from_path(game, game->world.values[WALL_NORTH]);
-	game->wall[WALL_SOUTH] = *assets_get_data_from_path(game, game->world.values[WALL_SOUTH]);
-	game->wall[WALL_WEST] = *assets_get_data_from_path(game, game->world.values[WALL_WEST]);
-	game->wall[WALL_EAST] = *assets_get_data_from_path(game, game->world.values[WALL_EAST]);
-	game->wall[WALL_DOOR] = *assets_get_data_from_path(game, "./textures/Wall/DOOR.xpm");
-	game->win = mlx_new_window(game->mlx, game->screen_width, game->screen_height, "MOUSE");
+	game->wall[WALL_NORTH] = *assets_get_data_from_path(game,
+			game->world.values[WALL_NORTH]);
+	game->wall[WALL_SOUTH] = *assets_get_data_from_path(game,
+			game->world.values[WALL_SOUTH]);
+	game->wall[WALL_WEST] = *assets_get_data_from_path(game,
+			game->world.values[WALL_WEST]);
+	game->wall[WALL_EAST] = *assets_get_data_from_path(game,
+			game->world.values[WALL_EAST]);
+	game->wall[WALL_DOOR] = *assets_get_data_from_path(game,
+			"./textures/Wall/DOOR.xpm");
+	game->win = mlx_new_window(game->mlx, game->screen_width,
+			game->screen_height, "MOUSE");
 	if (!game->win)
 	{
 		printf("Failed to allocate window\n");

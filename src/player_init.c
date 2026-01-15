@@ -1,33 +1,34 @@
 #include "../includes/cub3d.h"
 
-static t_animation *animation_walking(t_game *game)
+static t_animation	*animation_walking(t_game *game)
 {
-	size_t size;
-	static	char *paths[] = {
+	size_t	size;
+
+	static char *paths[] = {
 		"./textures/weapon.xpm",
 	};
-
-	size = sizeof(paths)/sizeof(paths[0]);
+	size = sizeof(paths) / sizeof(paths[0]);
 	return (load_animation_frames(game, paths, size, 1000));
 }
 
-static t_animation *animation_shooting(t_game *game)
+static t_animation	*animation_shooting(t_game *game)
 {
-	size_t size;
-	static	char *paths[] = {
+	size_t	size;
+
+	static char *paths[] = {
 		"./textures/shot/1.xpm",
 		"./textures/shot/2.xpm",
 		"./textures/shot/3.xpm",
 	};
-
-	size = sizeof(paths)/sizeof(paths[0]);
-	return load_animation_frames(game, paths, size, 50);
+	size = sizeof(paths) / sizeof(paths[0]);
+	return (load_animation_frames(game, paths, size, 50));
 }
 
-static t_animation *animation_reload(t_game *game)
+static t_animation	*animation_reload(t_game *game)
 {
-	size_t size;
-	static	char *paths[] = {
+	size_t	size;
+
+	static char *paths[] = {
 		"./textures/reload/1.xpm",
 		"./textures/reload/2.xpm",
 		"./textures/reload/3.xpm",
@@ -41,12 +42,11 @@ static t_animation *animation_reload(t_game *game)
 		"./textures/reload/11.xpm",
 		"./textures/reload/12.xpm",
 	};
-
-	size = sizeof(paths)/sizeof(paths[0]);
-	return load_animation_frames(game, paths, size, 90);
+	size = sizeof(paths) / sizeof(paths[0]);
+	return (load_animation_frames(game, paths, size, 90));
 }
 
-void	set_cardinal_dir(char dir, t_player* player)
+void	set_cardinal_dir(char dir, t_player *player)
 {
 	if (dir == 'E')
 	{
@@ -70,19 +70,20 @@ void	set_cardinal_dir(char dir, t_player* player)
 	}
 }
 
-void player_init_animations(t_game *game)
+void	player_init_animations(t_game *game)
 {
-	game->player.state                       = PLAYER_WALKING;
-	game->player.animations[PLAYER_WALKING]  = animation_walking(game);
+	game->player.state = PLAYER_WALKING;
+	game->player.animations[PLAYER_WALKING] = animation_walking(game);
 	game->player.animations[PLAYER_SHOOTING] = animation_shooting(game);
-	game->player.animations[PLAYER_RELOAD]   = animation_reload(game);
+	game->player.animations[PLAYER_RELOAD] = animation_reload(game);
 }
 
-void player_init(t_game *game)
+void	player_init(t_game *game)
 {
 	char	dir;
 
-	dir = get_map_cell(game, game->player.pos.x/TILE_SIZE, game->player.pos.y/TILE_SIZE);
+	dir = get_map_cell(game, game->player.pos.x / TILE_SIZE, game->player.pos.y
+			/ TILE_SIZE);
 	set_cardinal_dir(dir, &game->player);
 	game->player.bob = vec2_new(0, 0);
 	game->player.sway = 0;

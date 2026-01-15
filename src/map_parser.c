@@ -19,12 +19,12 @@
 
 typedef struct s_lex
 {
-	char*	file;
-	char*	text;// string text
-	size_t  len; // length
-	size_t	pos; // index
-	size_t	map_start; // index
-}	t_lex;
+	char	*file;
+	char *text;       // string text
+	size_t len;       // length
+	size_t pos;       // index
+	size_t map_start; // index
+}			t_lex;
 
 bool	log_error(char *error)
 {
@@ -32,7 +32,7 @@ bool	log_error(char *error)
 	return (false);
 }
 
-void	release_file_exit(t_dyn* file, t_game* game)
+void	release_file_exit(t_dyn *file, t_game *game)
 {
 	int	i;
 
@@ -47,29 +47,29 @@ void	release_file_exit(t_dyn* file, t_game* game)
 	exit(1);
 }
 
-bool is_valid_char(char c)
+bool	is_valid_char(char c)
 {
 	return (ft_strchr(MAP_VALID_CHARACTERS, c));
 }
 
-bool	is_empty_line(char* line)
+bool	is_empty_line(char *line)
 {
 	int	i;
 
 	if (!line || !*line)
-		return true;
+		return (true);
 	i = -1;
-	while(line[++i])
+	while (line[++i])
 	{
 		if (line[i] != ' ')
-			return false;
+			return (false);
 	}
-	return true;
+	return (true);
 }
 
-int open_file(char *filename)
+int	open_file(char *filename)
 {
-	int fd;
+	int	fd;
 
 	fd = open(filename, O_RDONLY);
 	if (fd < 0)
@@ -81,7 +81,7 @@ int open_file(char *filename)
 	return (fd);
 }
 
-bool	check_is_closed(char* line)
+bool	check_is_closed(char *line)
 {
 	int	i;
 
@@ -89,12 +89,12 @@ bool	check_is_closed(char* line)
 	while (line[++i])
 	{
 		if (line[i] != '1' && line[i] != ' ')
-			 return false;
+			return (false);
 	}
-	return true;
+	return (true);
 }
 
-bool lex_try_read_str(t_lex *lex, char *str)
+bool	lex_try_read_str(t_lex *lex, char *str)
 {
 	size_t	len;
 
@@ -110,43 +110,42 @@ bool lex_try_read_str(t_lex *lex, char *str)
 		return (false);
 }
 
-
 t_tok	try_read_type(t_lex *lex)
 {
 	if (lex_try_read_str(lex, "NO "))
-		return TOKEN_NO;
+		return (TOKEN_NO);
 	else if (lex_try_read_str(lex, "SO "))
-		return TOKEN_SO;
+		return (TOKEN_SO);
 	else if (lex_try_read_str(lex, "WE "))
-		return TOKEN_WE;
+		return (TOKEN_WE);
 	else if (lex_try_read_str(lex, "EA "))
-		return TOKEN_EA;
+		return (TOKEN_EA);
 	else if (lex_try_read_str(lex, "F "))
-		return TOKEN_F;
+		return (TOKEN_F);
 	else if (lex_try_read_str(lex, "C "))
-		return TOKEN_C;
-	return TOKEN_INVALID;
+		return (TOKEN_C);
+	return (TOKEN_INVALID);
 }
 
-void	lex_init(t_lex* lex, char* str, size_t len)
+void	lex_init(t_lex *lex, char *str, size_t len)
 {
 	lex->text = str;
 	lex->len = len;
 	lex->pos = 0;
 }
 
-void	lex_skip_spaces(t_lex* lex)
+void	lex_skip_spaces(t_lex *lex)
 {
 	while (lex->pos < lex->len)
 	{
 		if (lex->text[lex->pos] == ' ')
 			lex->pos++;
 		else
-			return;
+			return ;
 	}
 }
 
-int	try_get_value(t_lex* lex)
+int	try_get_value(t_lex *lex)
 {
 	int	i;
 
@@ -161,26 +160,33 @@ int	try_get_value(t_lex* lex)
 	return (i);
 }
 
-
-char *get_token_type_str(t_tok type)
+char	*get_token_type_str(t_tok type)
 {
 	switch (type)
 	{
-		case TOKEN_NO: return "TOKEN_NO";
-		case TOKEN_SO: return "TOKEN_SO";
-		case TOKEN_WE: return "TOKEN_WE";
-		case TOKEN_EA: return "TOKEN_EA";
-		case TOKEN_F: return "TOKEN_F";
-		case TOKEN_C: return "TOKEN_C";
-		case TOKEN_INVALID: return "TOKEN_INVALID";
-		default:return  "TOKEN_INVALID";
+	case TOKEN_NO:
+		return ("TOKEN_NO");
+	case TOKEN_SO:
+		return ("TOKEN_SO");
+	case TOKEN_WE:
+		return ("TOKEN_WE");
+	case TOKEN_EA:
+		return ("TOKEN_EA");
+	case TOKEN_F:
+		return "TOKEN_F";
+	case TOKEN_C:
+		return "TOKEN_C";
+	case TOKEN_INVALID:
+		return "TOKEN_INVALID";
+	default:
+		return "TOKEN_INVALID";
 	}
 }
 
-bool	config_readline(t_config* config, t_lex* lex)
+bool	config_readline(t_config *config, t_lex *lex)
 {
 	t_tok	type;
-	int	val_size;
+	int		val_size;
 
 	lex_skip_spaces(lex);
 	type = try_read_type(lex);
@@ -197,9 +203,9 @@ bool	config_readline(t_config* config, t_lex* lex)
 	return true;
 }
 
-void print_config(t_config *config)
+void	print_config(t_config *config)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < TOKEN_NBR)
@@ -209,7 +215,7 @@ void print_config(t_config *config)
 	}
 }
 
-bool	is_config_done(t_config* config)
+bool	is_config_done(t_config *config)
 {
 	int	i;
 
@@ -222,13 +228,13 @@ bool	is_config_done(t_config* config)
 	return true;
 }
 
-bool read_config(t_lex* lex, t_dyn* dyn, t_config* config)
+bool	read_config(t_lex *lex, t_dyn *dyn, t_config *config)
 {
-	size_t   i;
-	char**   lines;
+	size_t	i;
+	char	**lines;
 
 	i = 0;
-	lines = (char**)dyn->buff;
+	lines = (char **)dyn->buff;
 	while (i < dyn->length)
 	{
 		if (!is_empty_line(lines[i]))
@@ -238,16 +244,16 @@ bool read_config(t_lex* lex, t_dyn* dyn, t_config* config)
 				return false;
 		}
 		else if (is_config_done(config))
-			break;
+			break ;
 		i++;
 	}
 	lex->map_start = i;
 	return true;
 }
 
-void delete_last_newline(char *line)
+void	delete_last_newline(char *line)
 {
-	size_t i;
+	size_t	i;
 
 	i = 0;
 	while (line && line[i])
@@ -258,26 +264,26 @@ void delete_last_newline(char *line)
 	}
 }
 
-void	load_content_from_file(int fd, t_dyn* dyn)
+void	load_content_from_file(int fd, t_dyn *dyn)
 {
-	char* line;
+	char	*line;
 
 	*dyn = dyn_init();
 	while (1)
 	{
 		line = get_next_line(fd);
 		if (!line)
-			break;
+			break ;
 		delete_last_newline(line);
 		dyn_add_back(dyn, line);
 	}
 	close(fd);
 }
 
-int	lex_color_octet(t_lex* lex)
+int	lex_color_octet(t_lex *lex)
 {
-	bool has_digit;
-	int  value;
+	bool	has_digit;
+	int		value;
 
 	value = 0;
 	has_digit = false;
@@ -294,9 +300,9 @@ int	lex_color_octet(t_lex* lex)
 	return (value);
 }
 
-bool	parse_last_octet(t_lex* lex, t_color* c)
+bool	parse_last_octet(t_lex *lex, t_color *c)
 {
-	int octet;
+	int	octet;
 
 	octet = lex_color_octet(lex);
 	if (octet == -1)
@@ -308,11 +314,11 @@ bool	parse_last_octet(t_lex* lex, t_color* c)
 	return (true);
 }
 
-bool	parse_color(char * color, t_color* c)
+bool	parse_color(char *color, t_color *c)
 {
-	int	i;
-	int octet;
-	t_lex lex;
+	int		i;
+	int		octet;
+	t_lex	lex;
 
 	*c = 0;
 	i = 0;
@@ -332,27 +338,27 @@ bool	parse_color(char * color, t_color* c)
 	return (parse_last_octet(&lex, c));
 }
 
-bool	validate_paths(char* path)
+bool	validate_paths(char *path)
 {
-	int  i;
+	int	i;
 
 	i = -1;
-	while(path[++i])
+	while (path[++i])
 	{
 		if (path[i + 1] != ' ' && path[i + 1])
-			continue;
-		if (i >= 4 && !ft_strncmp(path + i - 3,".xpm", 4)
-			&& is_empty_line(path + i + 1))
+			continue ;
+		if (i >= 4 && !ft_strncmp(path + i - 3, ".xpm", 4) && is_empty_line(path
+				+ i + 1))
 		{
 			path[i + 1] = '\0';
 			return (true);
 		}
-		break;
+		break ;
 	}
 	return (log_error("Invalid path"));
 }
 
-void	get_map_size(t_config* config, size_t end)
+void	get_map_size(t_config *config, size_t end)
 {
 	size_t	i;
 	size_t	width;
@@ -368,7 +374,7 @@ void	get_map_size(t_config* config, size_t end)
 		i++;
 	}
 	config->map_height = i;
-	config->map_width  = width;
+	config->map_width = width;
 }
 
 /**
@@ -376,21 +382,20 @@ void	get_map_size(t_config* config, size_t end)
  *
  * For example we can't have W (player) next to ' ' (void space)
  */
-bool is_val(char *curr, char *next, char *prev, size_t i)
+bool	is_val(char *curr, char *next, char *prev, size_t i)
 {
 	if (i == 0)
 		return (false);
 	if (curr[i - 1] == ' ' || !curr[i + 1] || curr[i + 1] == ' ')
 		return (false);
 	if (ft_strlen(prev) <= i || prev[i] == ' ')
-	     return (false);
+		return (false);
 	if (ft_strlen(next) <= i || next[i] == ' ')
 		return (false);
 	return (true);
 }
 
-
-static bool	set_player(int x, int y, char dir, t_config* config)
+static bool	set_player(int x, int y, char dir, t_config *config)
 {
 	if (config->player_x != -1)
 		return (log_error("Duplicated Player instance"));
@@ -400,9 +405,9 @@ static bool	set_player(int x, int y, char dir, t_config* config)
 	return (true);
 }
 
-bool	check_map_line(char** lines, size_t j, t_config* config)
+bool	check_map_line(char **lines, size_t j, t_config *config)
 {
-	size_t   i;
+	size_t	i;
 	char	c;
 
 	i = 0;
@@ -423,9 +428,9 @@ bool	check_map_line(char** lines, size_t j, t_config* config)
 	return true;
 }
 
-bool	read_map(t_config* config)
+bool	read_map(t_config *config)
 {
-	size_t i;
+	size_t	i;
 
 	if (!check_is_closed(config->map[0]))
 		return (log_error("Map surrounded by Invalid character"));
@@ -440,13 +445,12 @@ bool	read_map(t_config* config)
 	}
 	if (config->player_x == -1)
 		return (log_error("Map has no player"));
-
 	return (true);
 }
 
-bool validate_config(t_config *config)
+bool	validate_config(t_config *config)
 {
-	size_t i;
+	size_t	i;
 
 	if (!is_config_done(config))
 		return (log_error("Missing some required element"));
@@ -464,10 +468,10 @@ bool validate_config(t_config *config)
 	return true;
 }
 
-bool	read_file(t_dyn* dyn, t_config* config)
+bool	read_file(t_dyn *dyn, t_config *config)
 {
 	t_lex	lex;
-	char**	lines;
+	char	**lines;
 	size_t	i;
 
 	ft_bzero(&lex, sizeof(lex));
@@ -476,7 +480,7 @@ bool	read_file(t_dyn* dyn, t_config* config)
 	if (!validate_config(config))
 		return (false);
 	i = lex.map_start;
-	lines = (char**)dyn->buff;
+	lines = (char **)dyn->buff;
 	while (i < dyn->length && is_empty_line(lines[i]))
 		++i;
 	if (i == dyn->length)
@@ -495,7 +499,7 @@ bool	read_file(t_dyn* dyn, t_config* config)
 
 bool	check_file_name(char *filename)
 {
-	char* ptr;
+	char	*ptr;
 
 	if (!filename || !*filename)
 		return (log_error("No filename provided"));
@@ -508,9 +512,9 @@ bool	check_file_name(char *filename)
 /**
  * free_world - Release world memory
  */
-void release_world(t_world *world)
+void	release_world(t_world *world)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (world->map && i < world->map_height)
@@ -521,10 +525,10 @@ void release_world(t_world *world)
 	world->map = NULL;
 }
 
-t_world	build_map(t_config* config)
+t_world	build_map(t_config *config)
 {
 	t_world	world;
-	int	i;
+	int		i;
 	size_t	len;
 
 	ft_bzero(&world, sizeof(world));
@@ -547,12 +551,12 @@ t_world	build_map(t_config* config)
 	return (world);
 }
 
-
-bool	construct_game(t_config *config, t_game* game)
+bool	construct_game(t_config *config, t_game *game)
 {
 	t_vec2	pos;
 
-	pos = vec2_new(config->player_x * TILE_SIZE + TILE_SIZE/2, config->player_y * TILE_SIZE + TILE_SIZE/2);
+	pos = vec2_new(config->player_x * TILE_SIZE + TILE_SIZE / 2,
+			config->player_y * TILE_SIZE + TILE_SIZE / 2);
 	game->ceiling = config->c;
 	game->floor = config->f;
 	game->player.pos = pos;
@@ -564,11 +568,11 @@ bool	construct_game(t_config *config, t_game* game)
 	return (true);
 }
 
-bool parse_content(char *filename, t_game* game)
+bool	parse_content(char *filename, t_game *game)
 {
-	t_config config;
-	t_dyn	lines;
-	int	fd;
+	t_config	config;
+	t_dyn		lines;
+	int			fd;
 
 	ft_bzero(&config, sizeof(config));
 	config.player_x = -1;

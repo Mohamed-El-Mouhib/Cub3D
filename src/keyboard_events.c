@@ -36,27 +36,25 @@ int	key_release(int key_code, t_game *game)
 	return (0);
 }
 
-
-void	toggle_door(t_game* game)
+void	toggle_door(t_game *game)
 {
-	t_vec2 p;
-	int p_x;
-	int p_y;
-	int e_x;
-	int e_y;
-	int t_x;
-	int t_y;
+	t_vec2	p;
+	int		p_x;
+	int		p_y;
+	int		e_x;
+	int		e_y;
+	int		t_x;
+	int		t_y;
 
-	p = vec2_add(game->player.pos,
-	      vec2_scale(game->player.dir, TILE_SIZE));
+	p = vec2_add(game->player.pos, vec2_scale(game->player.dir, TILE_SIZE));
 	p_x = game->player.pos.x / TILE_SIZE;
 	p_y = game->player.pos.y / TILE_SIZE;
 	t_x = p.x / TILE_SIZE;
 	t_y = p.y / TILE_SIZE;
-	e_x = (*(t_enemy*)game->enemies->buff[0]).pos.x / TILE_SIZE;
-	e_y = (*(t_enemy*)game->enemies->buff[0]).pos.y / TILE_SIZE;
+	e_x = (*(t_enemy *)game->enemies->buff[0]).pos.x / TILE_SIZE;
+	e_y = (*(t_enemy *)game->enemies->buff[0]).pos.y / TILE_SIZE;
 	if ((t_x == p_x && t_y == p_y) || (e_x == t_x && e_y == t_y))
-		return;
+		return ;
 	if (game->world.map[t_y][t_x] == 'C')
 		game->world.map[t_y][t_x] = 'O';
 	else if (game->world.map[t_y][t_x] == 'O')
@@ -90,17 +88,16 @@ int	key_press(int key_code, t_game *game)
 	return (0);
 }
 
-
-void set_input_dir(t_game *game)
+void	set_input_dir(t_game *game)
 {
-	t_vec2 input_dir;
+	t_vec2	input_dir;
 
 	input_dir.y = game->inputs[KEY_W] - game->inputs[KEY_S];
 	input_dir.x = game->inputs[KEY_D] - game->inputs[KEY_A];
 	game->player.input_dir = input_dir;
 }
 
-void game_handle_inputs(t_game *game)
+void	game_handle_inputs(t_game *game)
 {
 	if (game->inputs[KEY_RIGHT])
 		player_rotate(game, ROTATE_RIGHT);
@@ -112,8 +109,6 @@ void game_handle_inputs(t_game *game)
 		game->player.state = PLAYER_SHOOTING;
 	if (game->inputs[KEY_LCLICK] && game->player.state == PLAYER_WALKING)
 		game->player.state = PLAYER_SHOOTING;
-
 	// read inputs and set the correct desired diretion
 	set_input_dir(game);
-
 }

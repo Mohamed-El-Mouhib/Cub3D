@@ -19,7 +19,7 @@
  */
 void	image_clear(t_data *img)
 {
-	if (!img->addr) 
+	if (!img->addr)
 		return ;
 	ft_bzero(img->addr, img->width * img->height * 4);
 }
@@ -31,14 +31,14 @@ void	image_clear(t_data *img)
  * @width: width of the image
  * @height: height of the image
  */
-t_data image_new(t_game *game, int width, int height)
+t_data	image_new(t_game *game, int width, int height)
 {
-	t_data img;
+	t_data	img;
 
-	img.img    = mlx_new_image(game->mlx, width, height);
-	img.width  = width;
+	img.img = mlx_new_image(game->mlx, width, height);
+	img.width = width;
 	img.height = height;
-	img.addr   = mlx_get_data_addr(img.img, &img.bpp, &img.line_len, &img.endian);
+	img.addr = mlx_get_data_addr(img.img, &img.bpp, &img.line_len, &img.endian);
 	return (img);
 }
 
@@ -70,14 +70,14 @@ void	image_put_pixel(t_data *buff, int x, int y, unsigned int color)
  *
  * Return: the pixel color or UINT_MAX if failed
  */
-unsigned int image_get_pixel(t_data *img, int x, int y)
+unsigned int	image_get_pixel(t_data *img, int x, int y)
 {
-	int offset;
-	unsigned int color;
+	int				offset;
+	unsigned int	color;
 
 	if (!img || x < 0 || y < 0 || x >= img->width || y >= img->height)
 		return (UINT_MAX);
-	offset= (y * img->line_len + x * (img->bpp / 8));
+	offset = (y * img->line_len + x * (img->bpp / 8));
 	color = *((unsigned int *)(img->addr + offset));
 	return (color);
 }
@@ -85,9 +85,9 @@ unsigned int image_get_pixel(t_data *img, int x, int y)
 /**
  * image_load_xpm_or_exit - load xpm file from the @path into the @buff
  */
-bool image_load_xpm_or_exit(t_game *game, t_data *buff, char *path)
+bool	image_load_xpm_or_exit(t_game *game, t_data *buff, char *path)
 {
-	t_data img;
+	t_data	img;
 
 	printf("Info: loading the XPM file: '%s'\n", path);
 	if (!buff)
@@ -111,12 +111,13 @@ bool image_load_xpm_or_exit(t_game *game, t_data *buff, char *path)
  * screen, the color at 0,0 of the @image will be ignored, this is a dirty trick
  * to work around the library's lack of ability to render PNG files
  */
-void image_draw_transparent(t_game *game, t_data *image, double x_off, double y_off)
+void	image_draw_transparent(t_game *game, t_data *image, double x_off,
+		double y_off)
 {
-	unsigned int ignore_color; 
-	unsigned int color; 
-	int x;
-	int y;
+	unsigned int	ignore_color;
+	unsigned int	color;
+	int				x;
+	int				y;
 
 	if (!image)
 		return ;

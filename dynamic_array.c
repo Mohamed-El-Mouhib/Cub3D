@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "includes/dynamic_array.h"
+#include "includes/dynamic_array.h"
 
 static int	dynamic_ensure_capacity(t_dyn *arr)
 {
@@ -47,28 +47,29 @@ void	dyn_add_back(t_dyn *arr, void *elem)
 	arr->length++;
 }
 
-void dyn_foreach(t_dyn *arr, void f(void *))
+void	dyn_foreach(t_dyn *arr, void f(void *))
 {
-	size_t i;
+	size_t	i;
 
 	i = 0;
 	while (i < arr->length)
 		f(arr->buff[i++]);
 }
 
-void *dyn_at(t_dyn *arr, size_t index)
+void	*dyn_at(t_dyn *arr, size_t index)
 {
 	if (index >= arr->length)
 	{
-		printf("Error: index %zu out of range (length: %zu)\n", index, arr->length);
+		printf("Error: index %zu out of range (length: %zu)\n", index,
+			arr->length);
 		return (NULL);
 	}
 	return (arr->buff[index]);
 }
 
-void dyn_erase(t_dyn *arr, void delete_func(void *))
+void	dyn_erase(t_dyn *arr, void delete_func(void *))
 {
-	size_t i;
+	size_t	i;
 
 	if (!arr)
 		return ;

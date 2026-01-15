@@ -19,7 +19,7 @@
  * Delta distances represent the length a ray has to travel in order to
  * move exactly one tile unit in the x or y direction
  */
-void init_delta_dist(t_dda_ctx *dda)
+void	init_delta_dist(t_dda_ctx *dda)
 {
 	if (dda->ray.x != 0)
 		dda->delta_dist.x = (fabs(1.0 / dda->ray.x) * TILE_SIZE);
@@ -55,7 +55,7 @@ void	set_left_right_side(t_dda_ctx *dda)
 		dda->side = WALL_EAST;
 }
 
-void find_first_hitting_wall(t_game *game, t_dda_ctx *dda)
+void	find_first_hitting_wall(t_game *game, t_dda_ctx *dda)
 {
 	while (1)
 	{
@@ -71,9 +71,11 @@ void find_first_hitting_wall(t_game *game, t_dda_ctx *dda)
 			dda->map_pos.y += (int)dda->step_dir.y;
 			set_up_down_side(dda);
 		}
-		if (dda->map_pos.x < 0 || dda->map_pos.x >= game->world.map_width || dda->map_pos.y < 0 || dda->map_pos.y >= game->world.map_height)
+		if (dda->map_pos.x < 0 || dda->map_pos.x >= game->world.map_width
+			|| dda->map_pos.y < 0 || dda->map_pos.y >= game->world.map_height)
 			break ;
-		if ((game->world.map)[(int)dda->map_pos.y][(int)dda->map_pos.x] == '1' || (game->world.map)[(int)dda->map_pos.y][(int)dda->map_pos.x] == 'C')
+		if ((game->world.map)[(int)dda->map_pos.y][(int)dda->map_pos.x] == '1'
+			|| (game->world.map)[(int)dda->map_pos.y][(int)dda->map_pos.x] == 'C')
 			break ;
 	}
 }
@@ -86,26 +88,30 @@ void find_first_hitting_wall(t_game *game, t_dda_ctx *dda)
  * @player: pointer to player
  * @dda: pointer to dda algorithm context
  */
-void init_side_dist_and_step(t_player *player, t_dda_ctx *dda)
+void	init_side_dist_and_step(t_player *player, t_dda_ctx *dda)
 {
 	if (dda->ray.x < 0)
 	{
-		dda->side_dist.x = dda->delta_dist.x * (player->pos.x - dda->map_pos.x * TILE_SIZE);
+		dda->side_dist.x = dda->delta_dist.x * (player->pos.x - dda->map_pos.x
+				* TILE_SIZE);
 		dda->step_dir.x = -1.0;
 	}
 	else
 	{
-		dda->side_dist.x = dda->delta_dist.x * ((dda->map_pos.x + 1) * TILE_SIZE - player->pos.x);
+		dda->side_dist.x = dda->delta_dist.x * ((dda->map_pos.x + 1) * TILE_SIZE
+				- player->pos.x);
 		dda->step_dir.x = 1.0;
 	}
 	if (dda->ray.y < 0)
 	{
-		dda->side_dist.y = dda->delta_dist.y * (player->pos.y - dda->map_pos.y * TILE_SIZE);
+		dda->side_dist.y = dda->delta_dist.y * (player->pos.y - dda->map_pos.y
+				* TILE_SIZE);
 		dda->step_dir.y = -1.0;
 	}
 	else
 	{
-		dda->side_dist.y = dda->delta_dist.y * ((dda->map_pos.y + 1) * TILE_SIZE - player->pos.y);
+		dda->side_dist.y = dda->delta_dist.y * ((dda->map_pos.y + 1) * TILE_SIZE
+				- player->pos.y);
 		dda->step_dir.y = 1.0;
 	}
 }
@@ -116,10 +122,10 @@ void init_side_dist_and_step(t_player *player, t_dda_ctx *dda)
  * @player: pointer to player
  * @dda: pointer to dda algorithm context
  */
-void dda_init_map_pos(t_player *player, t_dda_ctx *dda)
+void	dda_init_map_pos(t_player *player, t_dda_ctx *dda)
 {
-	dda->map_pos.x = (int) (player->pos.x / TILE_SIZE);
-	dda->map_pos.y = (int) (player->pos.y / TILE_SIZE);
+	dda->map_pos.x = (int)(player->pos.x / TILE_SIZE);
+	dda->map_pos.y = (int)(player->pos.y / TILE_SIZE);
 	// vec2_print(dda->map_pos, "MAP POSITION");
 }
 
@@ -131,10 +137,11 @@ void dda_init_map_pos(t_player *player, t_dda_ctx *dda)
  * @dda: pointer to dda algorithm context
  * @x: current screen column
  */
-void compute_ray_dir(t_game *game, t_dda_ctx *dda, double x)
+void	compute_ray_dir(t_game *game, t_dda_ctx *dda, double x)
 {
 	dda->ray_size = 2.0 * x / game->screen_width - 1;
-	dda->ray = vec2_add(game->player.dir, vec2_scale(game->player.plane, dda->ray_size));
+	dda->ray = vec2_add(game->player.dir, vec2_scale(game->player.plane,
+				dda->ray_size));
 }
 
 /**
@@ -142,12 +149,12 @@ void compute_ray_dir(t_game *game, t_dda_ctx *dda, double x)
  *
  * @dda: pointer to dda algorithm context
  */
-void compute_dist_to_hit_wall(t_dda_ctx *dda)
+void	compute_dist_to_hit_wall(t_dda_ctx *dda)
 {
-	if(dda->side == WALL_NORTH || dda->side == WALL_SOUTH)
-		dda->hit_dist = (dda->side_dist.y  / TILE_SIZE - dda->delta_dist.y);
+	if (dda->side == WALL_NORTH || dda->side == WALL_SOUTH)
+		dda->hit_dist = (dda->side_dist.y / TILE_SIZE - dda->delta_dist.y);
 	else
-		dda->hit_dist = (dda->side_dist.x  / TILE_SIZE - dda->delta_dist.x);
+		dda->hit_dist = (dda->side_dist.x / TILE_SIZE - dda->delta_dist.x);
 }
 
 /**
@@ -157,11 +164,11 @@ void compute_dist_to_hit_wall(t_dda_ctx *dda)
  * @dda: pointer to dda algorithm context
  * @x: current screen column
  */
-void calculate_wall_boundaries(t_game *game, t_dda_ctx *dda, int x)
+void	calculate_wall_boundaries(t_game *game, t_dda_ctx *dda, int x)
 {
-	double line_height;
-	double h;
-	double shake;
+	double	line_height;
+	double	h;
+	double	shake;
 
 	shake = 0;
 	line_height = game->screen_height / dda->hit_dist * TILE_SIZE;
@@ -186,7 +193,7 @@ void calculate_wall_boundaries(t_game *game, t_dda_ctx *dda, int x)
  * every time this function runs, you'll find all the necessary info in the dda
  * context, changing the x, means changing the current column
  */
-void perform_dda(t_game *game, t_dda_ctx *dda, int x)
+void	perform_dda(t_game *game, t_dda_ctx *dda, int x)
 {
 	dda_init_map_pos(&game->player, dda);
 	compute_ray_dir(game, dda, x);
@@ -196,10 +203,9 @@ void perform_dda(t_game *game, t_dda_ctx *dda, int x)
 	compute_dist_to_hit_wall(dda);
 }
 
-
-void raycast_draw_walls(t_game *game)
+void	raycast_draw_walls(t_game *game)
 {
-	t_dda_ctx dda;
+	t_dda_ctx	dda;
 
 	for (int x = 0; x < (int)game->screen_width; x++)
 	{

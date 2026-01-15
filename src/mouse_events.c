@@ -14,52 +14,49 @@
 
 #define MOUSE_SENSITIVITY 0.002
 
-void player_rotate_mouse(t_game *game, double angle)
+void	player_rotate_mouse(t_game *game, double angle)
 {
-	t_player *player;
-	t_vec2 plane;
-	t_vec2 dir;
-	double c;
-	double s;
+	t_player	*player;
+	t_vec2		plane;
+	t_vec2		dir;
+	double		c;
+	double		s;
 
 	player = &game->player;
 	c = cos(angle);
 	s = sin(angle);
 	dir.x = player->dir.x * c - player->dir.y * s;
-	dir.y = player->dir.x * s  + player->dir.y * c;
+	dir.y = player->dir.x * s + player->dir.y * c;
 	plane.x = player->plane.x * c - player->plane.y * s;
 	plane.y = player->plane.x * s + player->plane.y * c;
 	player->dir = dir;
 	player->plane = plane;
 }
 
-
-int handle_mouse_press(int keycode, int x, int y, t_game *game)
+int	handle_mouse_press(int keycode, int x, int y, t_game *game)
 {
-	(void) x;
-	(void) y;
-
+	(void)x;
+	(void)y;
 	if (keycode == XK_LEFT_CLICK)
 		game->inputs[KEY_LCLICK] = true;
 	return (0);
 }
 
-int handle_mouse_release(int keycode, int x, int y, t_game *game)
+int	handle_mouse_release(int keycode, int x, int y, t_game *game)
 {
-	(void) x;
-	(void) y;
-
+	(void)x;
+	(void)y;
 	if (keycode == XK_LEFT_CLICK)
 		game->inputs[KEY_LCLICK] = false;
 	return (0);
 }
 
-int handle_mouse_move(int x, int y, t_game *game)
+int	handle_mouse_move(int x, int y, t_game *game)
 {
-	int delta_x;
+	int	delta_x;
 
 	delta_x = x - game->last_mouse_pos.x;
-	if (abs(delta_x) > 200) 
+	if (abs(delta_x) > 200)
 		delta_x = 0;
 	if (delta_x != 0)
 		player_rotate_mouse(game, delta_x * MOUSE_SENSITIVITY);
@@ -71,4 +68,3 @@ int handle_mouse_move(int x, int y, t_game *game)
 	game->last_mouse_pos.y = y;
 	return (0);
 }
-

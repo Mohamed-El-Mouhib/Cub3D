@@ -3,7 +3,7 @@
 /**
  * assets_get - Get image data from assets engine using its id
  */
-t_data *assets_get(t_game *game, int id)
+t_data	*assets_get(t_game *game, int id)
 {
 	return (dyn_at(game->assets, id));
 }
@@ -13,9 +13,9 @@ t_data *assets_get(t_game *game, int id)
  *
  * NOTE: program will abort if failed
  */
-t_data *assets_get_data_from_path(t_game *game, char *path)
+t_data	*assets_get_data_from_path(t_game *game, char *path)
 {
-	int id;
+	int	id;
 
 	id = assets_load_xpm(game, path);
 	return (assets_get(game, id));
@@ -27,9 +27,9 @@ t_data *assets_get_data_from_path(t_game *game, char *path)
  *
  * NOTE: program will abort if failed
  */
-int assets_load_xpm(t_game *game, char *path)
+int	assets_load_xpm(t_game *game, char *path)
 {
-	t_data *data;
+	t_data	*data;
 
 	data = ft_calloc(1, sizeof(t_data));
 	if (!data)
@@ -38,14 +38,14 @@ int assets_load_xpm(t_game *game, char *path)
 		release_game_and_exit(game, EXIT_FAILURE);
 	}
 	ft_bzero(data, sizeof(t_data));
-	dyn_add_back(game->assets, data); 
+	dyn_add_back(game->assets, data);
 	image_load_xpm_or_exit(game, data, path);
 	return (game->assets->length - 1);
 }
 
-t_animation *init_animation(size_t start, size_t end, int duration)
+t_animation	*init_animation(size_t start, size_t end, int duration)
 {
-	t_animation *anim;
+	t_animation	*anim;
 
 	anim = malloc(sizeof(t_animation));
 	anim->start = start;
@@ -61,12 +61,13 @@ t_animation *init_animation(size_t start, size_t end, int duration)
  * Load @size of frames using @paths, the duration is the time between
  * each frame when cycling through animation frames
  */
-t_animation *load_animation_frames(t_game *game, char **paths, size_t size, int duration)
+t_animation	*load_animation_frames(t_game *game, char **paths, size_t size,
+		int duration)
 {
-	t_animation *	anim;
+	t_animation	*anim;
 	size_t		i;
-	int		start;
-	int		end;
+	int			start;
+	int			end;
 
 	start = assets_load_xpm(game, paths[0]);
 	end = start;

@@ -19,16 +19,17 @@
  * this is the formula that have been:
  *     | x |    | cos(a)  -sin(a) |    | x |
  *     | y | =  | sin(a)   cos(a) | *  | y |
- * @player: Pointer to the player containing direction vector and rotation values
+
+	* @player: Pointer to the player containing direction vector and rotation values
  * @direction: the rotation direction use ROTATE_LEFT or ROTATE_RIGHT macros
  */
-void player_rotate(t_game *game, t_rotate_dir rot_dir)
+void	player_rotate(t_game *game, t_rotate_dir rot_dir)
 {
-	t_player *player;
-	t_vec2 plane;
-	t_vec2 dir;
-	double c;
-	double s;
+	t_player	*player;
+	t_vec2		plane;
+	t_vec2		dir;
+	double		c;
+	double		s;
 
 	player = &game->player;
 	c = cos(INIT_ROTATION_STEP * game->dt);
@@ -43,18 +44,19 @@ void player_rotate(t_game *game, t_rotate_dir rot_dir)
 
 // static char get_map_cell(t_game *game, int x, int y)
 // {
-// 	if (x >= (int)game->world.map_width || y >= (int)game->world.map_height || x < 0 || y < 0)
+// 	if (x >= (int)game->world.map_width || y >= (int)game->world.map_height
+		|| x < 0 || y < 0)
 // 		return ('1');
 // 	return (game->world.map[y][x]);
 // }
 
-void enemy_took_bullet(t_game *game, t_enemy *enemy)
+void	enemy_took_bullet(t_game *game, t_enemy *enemy)
 {
-	t_vec2  dir;
-	t_vec2  next;
+	t_vec2	dir;
+	t_vec2	next;
 
 	dir = vec2_unit(game->player.pos, enemy->pos);
-	dir  = vec2_scale(dir, 600 * game->dt);
+	dir = vec2_scale(dir, 600 * game->dt);
 	next.x = enemy->pos.x + dir.x;
 	if (can_move(game, next.x, enemy->pos.y))
 		enemy->pos.x = next.x;
@@ -63,12 +65,12 @@ void enemy_took_bullet(t_game *game, t_enemy *enemy)
 		enemy->pos.y = next.y;
 }
 
-bool enemy_foreach(t_game *game, t_vec2 bullet)
+bool	enemy_foreach(t_game *game, t_vec2 bullet)
 {
-	t_enemy *enemy;
-	double d;
+	t_enemy	*enemy;
+	double	d;
 
-	d = 15*15;
+	d = 15 * 15;
 	for (size_t i = 0; i < game->enemies->length; i++)
 	{
 		enemy = dyn_at(game->enemies, i);
@@ -87,18 +89,16 @@ bool enemy_foreach(t_game *game, t_vec2 bullet)
 	return (false);
 }
 
-
-void player_fire_bullet(t_game *game)
+void	player_fire_bullet(t_game *game)
 {
-	t_vec2 bullet;
+	t_vec2	bullet;
 	char	cell;
 
 	bullet = game->player.pos;
 	while (1)
 	{
 		bullet = vec2_add(bullet, game->player.dir);
-		cell = get_map_cell(game, bullet.x / TILE_SIZE,
-			bullet.y / TILE_SIZE);
+		cell = get_map_cell(game, bullet.x / TILE_SIZE, bullet.y / TILE_SIZE);
 		if (cell == '1' || cell == 'C')
 			return ;
 		if (enemy_foreach(game, bullet))

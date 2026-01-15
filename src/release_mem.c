@@ -1,18 +1,18 @@
 #include "../includes/cub3d.h"
 
-void release_player(t_game *game)
+void	release_player(t_game *game)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < PLAYER_STATS_NBR)
 		free(game->player.animations[i++]);
 }
 
-void release_enemy(void *e)
+void	release_enemy(void *e)
 {
-	int i;
-	t_enemy *enemy;
+	int		i;
+	t_enemy	*enemy;
 
 	enemy = e;
 	if (!enemy)
@@ -23,7 +23,7 @@ void release_enemy(void *e)
 	free(enemy);
 }
 
-void release_enemies(t_game *game)
+void	release_enemies(t_game *game)
 {
 	if (!game->enemies)
 		return ;
@@ -31,10 +31,10 @@ void release_enemies(t_game *game)
 	free(game->enemies);
 }
 
-void release_assets(t_game *game)
+void	release_assets(t_game *game)
 {
-	size_t i;
-	t_data *data;
+	size_t	i;
+	t_data	*data;
 
 	if (!game->assets)
 		return ;
@@ -50,7 +50,7 @@ void release_assets(t_game *game)
 	free(game->assets);
 }
 
-void	release_map(t_game* game)
+void	release_map(t_game *game)
 {
 	int	i;
 
@@ -66,16 +66,16 @@ void	release_map(t_game* game)
 	game->world.map = NULL;
 }
 
-void release_walls_paths(t_game *game)
+void	release_walls_paths(t_game *game)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < 4)
 		free(game->world.values[i++]);
 }
 
-void release_game_and_exit(t_game *game, int status)
+void	release_game_and_exit(t_game *game, int status)
 {
 	free(game->stripes);
 	release_player(game);
