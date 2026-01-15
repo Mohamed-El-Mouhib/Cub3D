@@ -11,12 +11,6 @@
 /* ************************************************************************** */
  #include "../includes/cub3d.h"
 
-void ft_exit_error(char *msg)
-{
-	printf("%s\n", msg);
-	exit(1);
-}
-
 time_t	curr_time_ms(void)
 {
 	struct timeval	tv;

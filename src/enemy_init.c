@@ -51,9 +51,13 @@ void init_enemies(t_game *game)
 	game->enemies = dyn_init_ptr();
 	for (int i = 2; i < 3; i++)
 	{
-		enemy = malloc(sizeof(t_enemy));
+		enemy = ft_calloc(1, sizeof(t_enemy));
 		if (!enemy)
+		{
 			printf("Warn: Faild to allocate memory %s\n", __func__);
+			release_game_and_exit(game, EXIT_FAILURE);
+		}
+		dyn_add_back(game->enemies, enemy);
 		enemy->pos = vec2_new(TILE_SIZE * 11 + 40, TILE_SIZE * 1 + 40);
 		enemy->animation[ENEMY_WALKING] = enemy_animation_walking(game);
                 enemy->animation[ENEMY_ATTACKING] = enemy_animation_attacking(game);
@@ -61,6 +65,5 @@ void init_enemies(t_game *game)
                 enemy->state = ENEMY_WALKING;
 		enemy->health = ENEMY_MAX_HEALTH;
 		enemy->last_attack_time = 0;
-		dyn_add_back(game->enemies, enemy);
 	}
 }

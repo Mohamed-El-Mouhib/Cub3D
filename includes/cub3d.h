@@ -75,8 +75,9 @@ void player_init(t_game *game);
 // Parser
 bool parse_content(char *filename, t_game* game);
 
-//mohamed's garbage
-void	free_map(t_game* game);
+// release memory
+void	release_map(t_game* game);
+void release_game_and_exit(t_game *game, int status);
 
 // textures
 void	init_texture_assets(t_game *game);

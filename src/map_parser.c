@@ -32,18 +32,18 @@ bool	log_error(char *error)
 	return (false);
 }
 
-void	release_file_exit(t_dyn* dyn, t_game* game)
+void	release_file_exit(t_dyn* file, t_game* game)
 {
 	int	i;
 
-	dyn_erase(dyn, free);
+	dyn_erase(file, free);
 	i = 0;
 	while (i < 4)
 	{
 		free(game->world.values[i]);
 		i++;
 	}
-	free_map(game);
+	release_map(game);
 	exit(1);
 }
 
@@ -531,18 +531,17 @@ t_world	build_map(t_config* config)
 	world.map_width = config->map_width;
 	world.map_height = config->map_height;
 	i = 0;
-	world.map = malloc(sizeof(char*) * config->map_height);
+	world.map = ft_calloc(config->map_height, sizeof(char *));
 	if (!world.map)
 		release_world(&world);
 	while (i < world.map_height)
 	{
 		len = ft_strlen(config->map[i]);
-		world.map[i] = malloc(world.map_width * sizeof(char) + 1);
+		world.map[i] = ft_calloc(world.map_width + 1, sizeof(char));
 		if (!world.map[i])
 			release_world(&world);
 		ft_memcpy(world.map[i], config->map[i], len);
 		ft_memset(world.map[i] + len, ' ', world.map_width - len);
-		world.map[i][world.map_width] = '\0';
 		i++;
 	}
 	return (world);

@@ -58,11 +58,11 @@ void dyn_foreach(t_dyn *arr, void f(void *))
 
 void *dyn_at(t_dyn *arr, size_t index)
 {
-	// if (index >= arr->length)
-	// {
-	// 	printf("Error: index %zu out of range (length: %zu)\n", index, arr->length);
-	// 	exit(1);
-	// }
+	if (index >= arr->length)
+	{
+		printf("Error: index %zu out of range (length: %zu)\n", index, arr->length);
+		return (NULL);
+	}
 	return (arr->buff[index]);
 }
 
@@ -70,6 +70,8 @@ void dyn_erase(t_dyn *arr, void delete_func(void *))
 {
 	size_t i;
 
+	if (!arr)
+		return ;
 	i = 0;
 	while (i < arr->length)
 		delete_func(arr->buff[i++]);
