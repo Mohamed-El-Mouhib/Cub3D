@@ -6,7 +6,7 @@
 /*   By: mel-mouh <mel-mouh@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 19:33:13 by aljbari           #+#    #+#             */
-/*   Updated: 2026/01/15 16:30:16 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2026/01/15 16:42:36 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,4 +147,13 @@ void	find_first_hitting_wall(t_game *game, t_dda_ctx *dda);
 void	set_left_right_side(t_dda_ctx *dda);
 void	set_up_down_side(t_dda_ctx *dda);
 void	init_delta_dist(t_dda_ctx *dda);
+
+void	dda_init_map_pos(t_player *player, t_dda_ctx *dda);
+
+t_vec2	enemy_camera_pos(t_game *game, t_enemy *enemy);
+void	enemy_draw_frame(t_game *game, t_enemy *enemy);
+t_vec2	enemy_get_drawing_end(t_game *game, t_enemy *enemy);
+t_vec2	enemy_get_drawing_start(t_game *game, t_enemy *enemy);
+unsigned int	get_point_color(t_game *game, t_enemy *enemy, int i, int j);
+
 #endif
