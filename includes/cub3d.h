@@ -6,7 +6,7 @@
 /*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 19:33:13 by aljbari           #+#    #+#             */
-/*   Updated: 2025/08/09 19:33:13 by aljbari          ###   ########.fr       */
+/*   Updated: 2026/01/15 15:33:01 by aljbari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,17 @@
 # define ENEMY_MAX_HEALTH 100
 
 # define TILE_SIZE 80.0
+
+#define MAP_VALID_CHARACTERS "01NSEWOC "
+
+typedef struct s_lex
+{
+	char	*file;
+	char *text;       // string text
+	size_t len;       // length
+	size_t pos;       // index
+	size_t map_start; // index
+}			t_lex;
 
 // minimap
 void		draw_minimap(t_game *game);

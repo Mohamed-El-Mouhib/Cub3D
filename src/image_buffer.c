@@ -6,23 +6,11 @@
 /*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 19:29:54 by aljbari           #+#    #+#             */
-/*   Updated: 2025/08/09 19:29:54 by aljbari          ###   ########.fr       */
+/*   Updated: 2026/01/15 15:27:44 by aljbari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
-
-/**
- * clear_img - clear img buffer by makeing all pixel zero
- *
- * @img: image to be reseted
- */
-void	image_clear(t_data *img)
-{
-	if (!img->addr)
-		return ;
-	ft_bzero(img->addr, img->width * img->height * 4);
-}
 
 /**
  * new_img_buff - init new image buffer

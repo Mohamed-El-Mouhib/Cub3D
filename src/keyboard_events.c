@@ -6,7 +6,7 @@
 /*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 10:38:40 by aljbari           #+#    #+#             */
-/*   Updated: 2025/08/17 19:03:49 by your_login       ###   ########.fr       */
+/*   Updated: 2026/01/15 15:32:37 by aljbari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../includes/cub3d.h"
@@ -109,6 +109,5 @@ void	game_handle_inputs(t_game *game)
 		game->player.state = PLAYER_SHOOTING;
 	if (game->inputs[KEY_LCLICK] && game->player.state == PLAYER_WALKING)
 		game->player.state = PLAYER_SHOOTING;
-	// read inputs and set the correct desired diretion
 	set_input_dir(game);
 }
