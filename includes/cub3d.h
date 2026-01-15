@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
+/*   By: mel-mouh <mel-mouh@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 19:33:13 by aljbari           #+#    #+#             */
-/*   Updated: 2026/01/15 15:33:01 by aljbari          ###   ########.fr       */
+/*   Updated: 2026/01/15 16:30:16 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,4 +141,10 @@ char		get_map_cell(t_game *game, int x, int y);
 
 // error logs
 bool		log_error(char *error);
+
+void	init_side_dist_and_step(t_player *player, t_dda_ctx *dda);
+void	find_first_hitting_wall(t_game *game, t_dda_ctx *dda);
+void	set_left_right_side(t_dda_ctx *dda);
+void	set_up_down_side(t_dda_ctx *dda);
+void	init_delta_dist(t_dda_ctx *dda);
 #endif
