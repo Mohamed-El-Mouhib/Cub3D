@@ -457,9 +457,9 @@ bool validate_config(t_config *config)
 			return (false);
 		i++;
 	}
-	if (!parse_color(config->value[C], &config->c))
+	if (!parse_color(config->value[TOKEN_C], &config->c))
 		return (false);
-	if (!parse_color(config->value[F], &config->f))
+	if (!parse_color(config->value[TOKEN_F], &config->f))
 		return (false);
 	return true;
 }
@@ -557,10 +557,10 @@ bool	construct_game(t_config *config, t_game* game)
 	game->floor = config->f;
 	game->player.pos = pos;
 	game->world = build_map(config);
-	game->world.values[WALL_NORTH] = ft_strdup(config->value[WALL_NORTH]);
-	game->world.values[WALL_SOUTH] = ft_strdup(config->value[WALL_SOUTH]);
-	game->world.values[WALL_WEST] = ft_strdup(config->value[WALL_WEST]);
-	game->world.values[WALL_EAST] = ft_strdup(config->value[WALL_EAST]);
+	game->world.values[WALL_NORTH] = ft_strdup(config->value[TOKEN_NO]);
+	game->world.values[WALL_SOUTH] = ft_strdup(config->value[TOKEN_SO]);
+	game->world.values[WALL_WEST] = ft_strdup(config->value[TOKEN_WE]);
+	game->world.values[WALL_EAST] = ft_strdup(config->value[TOKEN_EA]);
 	return (true);
 }
 

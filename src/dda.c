@@ -50,9 +50,9 @@ void	set_up_down_side(t_dda_ctx *dda)
 void	set_left_right_side(t_dda_ctx *dda)
 {
 	if (dda->step_dir.x > 0)
-		dda->side = WALL_EAST;
-	else
 		dda->side = WALL_WEST;
+	else
+		dda->side = WALL_EAST;
 }
 
 void find_first_hitting_wall(t_game *game, t_dda_ctx *dda)

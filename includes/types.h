@@ -95,6 +95,18 @@ typedef enum e_enemy_stats {
 	ENEMY_STATS_NBR
 } t_enemy_stats;
 
+typedef enum e_tok
+{
+	TOKEN_NO = 0,
+	TOKEN_SO,
+	TOKEN_WE,
+	TOKEN_EA,
+	TOKEN_F,
+	TOKEN_C,
+	TOKEN_NBR,
+	TOKEN_INVALID
+}	t_tok;
+
 typedef enum e_wall_side
 {
 	WALL_NORTH, 
@@ -137,17 +149,6 @@ t_world;
  */
 
 
-typedef enum e_tok
-{
-	TOKEN_NO = 0,
-	TOKEN_SO,
-	TOKEN_WE,
-	TOKEN_EA,
-	TOKEN_F,
-	TOKEN_C,
-	TOKEN_NBR,
-	TOKEN_INVALID
-}	t_tok;
 
 typedef struct e_config
 {
@@ -182,17 +183,6 @@ typedef struct s_enemy
 	double screen; // intersaction with the screen projection
 	int health;
 }	t_enemy;
-
-typedef enum e_token
-{
-	NO = 0,
-	SO,
-	EA,
-	WE,
-	F,
-	C,
-	NOT,
-}	t_token;
 
 typedef enum e_ui_img
 {

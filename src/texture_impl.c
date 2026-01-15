@@ -36,9 +36,9 @@ double	get_side_and_cords(t_game *game, t_dda_ctx *info)
 	if (info->side == WALL_SOUTH)
 		return (hit.x/TILE_SIZE);
 	if (info->side == WALL_WEST)
-		return (TILE_SIZE - (hit.y/TILE_SIZE));
-	else
 		return (hit.y/TILE_SIZE);
+	else
+		return (TILE_SIZE - (hit.y/TILE_SIZE));
 }
 
 /**
