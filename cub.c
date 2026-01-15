@@ -20,8 +20,6 @@ void game_update_shaking(t_game *game)
 	game->shake = lerp(game->shake, 0, 0.2);
 }
 
-
-
 void game_update_time(t_game *game)
 {
 	time_t ct;
@@ -39,10 +37,9 @@ void	render_message(t_game* game)
 	head = vec2_add(game->player.pos, vec2_scale(game->player.dir, TILE_SIZE));
 	c = get_map_cell(game, (int)head.x/TILE_SIZE, (int)head.y/TILE_SIZE);
 	if (c == 'C')
-		printf("op[E]n the door\n");
+		image_draw_transparent(game, game->ui[UI_OPEN_DOOR], 360, 450);
 	else if (c == 'O')
-		printf("clos[E] the door\n");
-	// vec2_print(head, "player's head");
+		image_draw_transparent(game, game->ui[UI_CLOSE_DOOR], 360, 450);
 }
 
 void game_update(t_game *game)
@@ -128,7 +125,7 @@ int	main(int ac, char **av)
 	t_game game;
 
 	if (ac != 2)
-		return (printf("No map provided\n"), 1);
+		return (log_error("No map provided"));
 	init_game(&game, av[1]);
 	mlx_loop_hook(game.mlx, game_loop, &game);
 	mlx_hook(game.win, 6, 1L << 6, handle_mouse_move, &game); // Our mouse friend
