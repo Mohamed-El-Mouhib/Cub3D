@@ -6,12 +6,11 @@
 /*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 19:22:30 by aljbari           #+#    #+#             */
-/*   Updated: 2025/08/09 19:22:30 by aljbari          ###   ########.fr       */
+/*   Updated: 2026/01/15 15:24:31 by aljbari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
-#include "../includes/graphics.h"
 
 /**
  * draw_line - draw line between two points
@@ -44,21 +43,22 @@ void	draw_line(t_data *buff, t_vec2 p1, t_vec2 p2, int color)
 /**
  * _fill_vertical_line - used internally to draw circle
  */
-static void	_fill_vertical_line(t_data *img, int cx, int cy, int x, int y,
-		int color)
+static void	_fill_vertical_line(t_data *img, t_vec2 c, t_vec2 p, int color)
 {
 	int	i;
 
-	(void)cx;
-	if (x < 0 || x >= img->width || y < 0 || y >= img->height)
+	if (p.x < 0 || p.x >= img->width || p.y < 0 || p.y >= img->height)
 		return ;
-	i = cy;
-	while (i != y)
+	i = c.y;
+	while (i != p.y)
 	{
-		image_put_pixel(img, x, i, color);
-		i += (y > cy ? 1 : -1);
+		image_put_pixel(img, p.x, i, color);
+		if (p.y > c.y)
+			i += 1;
+		else
+			i += -1;
 	}
-	image_put_pixel(img, x, y, color);
+	image_put_pixel(img, p.x, p.y, color);
 }
 
 /**
@@ -77,20 +77,17 @@ void	draw_filled_circle(void *img, t_vec2 c, int r, int color)
 	while (x < -y)
 	{
 		if (p > 0)
-		{
-			y += 1;
-			p += 2 * (x + y) + 1;
-		}
+			p += 2 * (x + ++y) + 1;
 		else
 			p += 2 * x + 1;
-		_fill_vertical_line(img, c.x, c.y, c.x + x, c.y + y, color);
-		_fill_vertical_line(img, c.x, c.y, c.x - x, c.y + y, color);
-		_fill_vertical_line(img, c.x, c.y, c.x + x, c.y - y, color);
-		_fill_vertical_line(img, c.x, c.y, c.x - x, c.y - y, color);
-		_fill_vertical_line(img, c.x, c.y, c.x + y, c.y + x, color);
-		_fill_vertical_line(img, c.x, c.y, c.x + y, c.y - x, color);
-		_fill_vertical_line(img, c.x, c.y, c.x - y, c.y + x, color);
-		_fill_vertical_line(img, c.x, c.y, c.x - y, c.y - x, color);
+		_fill_vertical_line(img, c, vec2_new(c.x + x, c.y + y), color);
+		_fill_vertical_line(img, c, vec2_new(c.x - x, c.y + y), color);
+		_fill_vertical_line(img, c, vec2_new(c.x + x, c.y - y), color);
+		_fill_vertical_line(img, c, vec2_new(c.x - x, c.y - y), color);
+		_fill_vertical_line(img, c, vec2_new(c.x + y, c.y + x), color);
+		_fill_vertical_line(img, c, vec2_new(c.x + y, c.y - x), color);
+		_fill_vertical_line(img, c, vec2_new(c.x - y, c.y + x), color);
+		_fill_vertical_line(img, c, vec2_new(c.x - y, c.y - x), color);
 		x += 1;
 	}
 }
@@ -126,10 +123,7 @@ void	draw_circle(t_data *buff, t_vec2 c, int r, int color)
 		if (d < 0)
 			d += 2 * x + 3;
 		else
-		{
-			d += 2 * (x - y) + 5;
-			y--;
-		}
+			d += 2 * (x - y--) + 5;
 		x++;
 	}
 }
@@ -164,72 +158,4 @@ void	draw_vertical_line(t_data *buff, t_vec2 p1, double len, int color)
 		len--;
 		p.y++;
 	}
-}
-
-/**
- * draw_horizontal_line - paint horizontal line string from p1
- *
- * @buff: buffer image to hold the image data
- * @p1: Starting point of the horizontal line
- * @len: length of the line
- *  if len > 0: the line will fo right
- *  if len < 0: the line will go left
- * @color: Color of line
- *
- * Return: Northing.
- */
-void	draw_horizontal_line(t_data *buff, t_vec2 p1, double len, int color)
-{
-	t_vec2	p;
-
-	if (len < 0)
-	{
-		p1.x += len;
-		draw_horizontal_line(buff, p1, len * -1, color);
-		return ;
-	}
-	p.x = p1.x;
-	p.y = p1.y;
-	while (len > 0)
-	{
-		image_put_pixel(buff, p.x, p.y, color);
-		len--;
-		p.x++;
-	}
-}
-
-/**
- * draw_filled_square - Draws a filled square on the image buffer
- *
- * @s: top left corner coordinations of the square
- * @len: side length of square
- */
-void	draw_filled_square(t_data *image, t_vec2 s, int len, unsigned int color)
-{
-	t_vec2	p;
-	int		max_x;
-
-	p = s;
-	max_x = p.x + len;
-	while (p.x < max_x)
-	{
-		draw_vertical_line(image, p, len, color);
-		p.x++;
-	}
-}
-
-/**
- * draw_square - Draws borders of square on image buffer
- *
- * @s: top left corner coordinations of the square
- * @len: side length of square
- */
-void	draw_square(t_data *image, t_vec2 s, int len, unsigned int color)
-{
-	draw_vertical_line(image, s, len, color);
-	draw_horizontal_line(image, s, len, color);
-	s.x += len;
-	draw_vertical_line(image, s, len, color);
-	s.y += len;
-	draw_horizontal_line(image, s, -len, color);
 }

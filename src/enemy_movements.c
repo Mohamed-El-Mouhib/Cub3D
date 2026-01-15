@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   enemy_movements.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/15 15:07:30 by aljbari           #+#    #+#             */
+/*   Updated: 2026/01/15 15:13:04 by aljbari          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/cub3d.h"
 
 /**
@@ -13,7 +25,6 @@ int	has_los(t_game *g, t_vec2 from, t_vec2 to)
 
 	d = vec2_sub(to, from);
 	dist = sqrt(vec2_len_squared(to, from));
-	// if (dist > 300) return (0);
 	d = vec2_scale(d, (TILE_SIZE / 2.0) / dist);
 	steps = (int)(dist / (TILE_SIZE / 2.0));
 	curr = from;
@@ -68,27 +79,6 @@ bool	enemy_is_too_close(t_game *game, t_enemy *enemy)
 	return (false);
 }
 
-void	enemy_update_pos(t_game *game, t_enemy *enemy)
-{
-	t_vec2	dir;
-	t_vec2	next;
-
-	if (enemy->state == ENEMY_DEAD)
-		return ;
-	if (enemy_is_too_close(game, enemy))
-		return ;
-	if (!has_los(game, enemy->pos, game->player.pos))
-		return ;
-	dir = vec2_unit(enemy->pos, game->player.pos);
-	dir = vec2_scale(dir, ENEMY_WALK_SPEED * game->dt);
-	next.x = enemy->pos.x + dir.x;
-	if (can_move(game, next.x, enemy->pos.y))
-		enemy->pos.x = next.x;
-	next.y = enemy->pos.y + dir.y;
-	if (can_move(game, enemy->pos.x, next.y))
-		enemy->pos.y = next.y;
-}
-
 void	enemy_attack_player(t_game *game, t_enemy *enemy)
 {
 	double	dist_sq;
@@ -96,21 +86,6 @@ void	enemy_attack_player(t_game *game, t_enemy *enemy)
 	dist_sq = vec2_len_squared(enemy->pos, game->player.pos);
 	if (dist_sq < TILE_SIZE * TILE_SIZE * 2)
 		game->player.lives--;
-}
-
-char	*get_enemy_state_string(t_enemy *enemy)
-{
-	switch (enemy->state)
-	{
-	case ENEMY_WALKING:
-		return ("ENEMY_WALKING");
-	case ENEMY_ATTACKING:
-		return ("ENEMY_ATTACKING");
-	case ENEMY_DEAD:
-		return ("ENEMY_DEAD");
-	default:
-		return ("Unknown state");
-	}
 }
 
 void	enemy_update_state(t_game *game, t_enemy *enemy)

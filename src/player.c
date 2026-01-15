@@ -6,7 +6,7 @@
 /*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 10:41:00 by aljbari           #+#    #+#             */
-/*   Updated: 2025/08/17 10:41:00 by aljbari          ###   ########.fr       */
+/*   Updated: 2026/01/15 15:10:24 by aljbari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	player_rotate(t_game *game, t_rotate_dir rot_dir)
 // static char get_map_cell(t_game *game, int x, int y)
 // {
 // 	if (x >= (int)game->world.map_width || y >= (int)game->world.map_height
-		|| x < 0 || y < 0)
+//		|| x < 0 || y < 0)
 // 		return ('1');
 // 	return (game->world.map[y][x]);
 // }
