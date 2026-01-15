@@ -6,13 +6,13 @@
 /*   By: mel-mouh <mel-mouh@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/15 16:48:18 by mel-mouh          #+#    #+#             */
-/*   Updated: 2026/01/15 16:50:13 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2026/01/15 16:57:10 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-static t_animation	*animation_walking(t_game *game)
+t_animation	*animation_walking(t_game *game)
 {
 	size_t		size;
 	static char	*paths[] = {
@@ -23,7 +23,7 @@ static t_animation	*animation_walking(t_game *game)
 	return (load_animation_frames(game, paths, size, 1000));
 }
 
-static t_animation	*animation_shooting(t_game *game)
+t_animation	*animation_shooting(t_game *game)
 {
 	size_t		size;
 	static char	*paths[] = {
@@ -36,7 +36,7 @@ static t_animation	*animation_shooting(t_game *game)
 	return (load_animation_frames(game, paths, size, 50));
 }
 
-static t_animation	*animation_reload(t_game *game)
+t_animation	*animation_reload(t_game *game)
 {
 	size_t		size;
 	static char	*paths[] = {

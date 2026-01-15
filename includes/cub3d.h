@@ -6,7 +6,7 @@
 /*   By: mel-mouh <mel-mouh@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 19:33:13 by aljbari           #+#    #+#             */
-/*   Updated: 2026/01/15 16:50:33 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2026/01/15 16:58:58 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,11 +156,8 @@ t_vec2	enemy_get_drawing_end(t_game *game, t_enemy *enemy);
 t_vec2	enemy_get_drawing_start(t_game *game, t_enemy *enemy);
 unsigned int	get_point_color(t_game *game, t_enemy *enemy, int i, int j);
 
-
 void	player_init_animations(t_game *game);
-static t_animation	*animation_reload(t_game *game);
 void	set_cardinal_dir(char dir, t_player *player);
-static t_animation	*animation_walking(t_game *game);
-static t_animation	*animation_shooting(t_game *game);
+void	player_fire_bullet(t_game *game);
 
 #endif

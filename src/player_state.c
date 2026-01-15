@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   player_state.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mel-mouh <mel-mouh@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/15 16:52:50 by mel-mouh          #+#    #+#             */
+/*   Updated: 2026/01/15 16:53:17 by mel-mouh         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/cub3d.h"
 
 void	player_reload_state(t_game *game)
@@ -20,7 +32,6 @@ void	player_reload_state(t_game *game)
 	}
 }
 
-void	player_fire_bullet(t_game *game);
 void	player_shooting_state(t_game *game)
 {
 	t_animation	*anim;
