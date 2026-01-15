@@ -1,10 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   enemy_init.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/15 16:11:22 by aljbari           #+#    #+#             */
+/*   Updated: 2026/01/15 16:11:22 by aljbari          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/cub3d.h"
 
 static t_animation	*enemy_animation_walking(t_game *game)
 {
-	size_t	size;
-
-	static char *paths[] = {
+	size_t		size;
+	static char	*paths[] = {
 		"./textures/enemy/W1.xpm",
 		"./textures/enemy/W2.xpm",
 		"./textures/enemy/W3.xpm",
@@ -14,32 +25,33 @@ static t_animation	*enemy_animation_walking(t_game *game)
 		"./textures/enemy/W7.xpm",
 		"./textures/enemy/W8.xpm",
 	};
+
 	size = sizeof(paths) / sizeof(paths[0]);
 	return (load_animation_frames(game, paths, size, 100));
 }
 
 static t_animation	*enemy_animation_dead(t_game *game)
 {
-	size_t	size;
-
-	static char *paths[] = {
+	size_t		size;
+	static char	*paths[] = {
 		"./textures/enemy/d.xpm",
 	};
+
 	size = sizeof(paths) / sizeof(paths[0]);
 	return (load_animation_frames(game, paths, size, 1000));
 }
 
 static t_animation	*enemy_animation_attacking(t_game *game)
 {
-	size_t	size;
-
-	static char *paths[] = {
+	size_t		size;
+	static char	*paths[] = {
 		"./textures/enemy/A1.xpm",
 		"./textures/enemy/A2.xpm",
 		"./textures/enemy/A3.xpm",
 		"./textures/enemy/A4.xpm",
 		"./textures/enemy/A5.xpm",
 	};
+
 	size = sizeof(paths) / sizeof(paths[0]);
 	return (load_animation_frames(game, paths, size, 120));
 }
@@ -47,9 +59,11 @@ static t_animation	*enemy_animation_attacking(t_game *game)
 void	init_enemies(t_game *game)
 {
 	t_enemy	*enemy;
+	int		i;
 
 	game->enemies = dyn_init_ptr();
-	for (int i = 2; i < 3; i++)
+	i = 0;
+	while (i < 1)
 	{
 		enemy = ft_calloc(1, sizeof(t_enemy));
 		if (!enemy)
@@ -65,5 +79,6 @@ void	init_enemies(t_game *game)
 		enemy->state = ENEMY_WALKING;
 		enemy->health = ENEMY_MAX_HEALTH;
 		enemy->last_attack_time = 0;
+		i++;
 	}
 }
