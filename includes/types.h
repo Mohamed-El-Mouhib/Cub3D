@@ -63,6 +63,12 @@ typedef struct s_vec2
 	double			y;
 }					t_vec2;
 
+typedef	struct e_ivec
+{
+	int	x;
+	int	y;
+}	t_ivec;
+
 typedef struct s_color
 {
 	unsigned char	r;

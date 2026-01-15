@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   keyboard_events.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
+/*   By: mel-mouh <mel-mouh@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 10:38:40 by aljbari           #+#    #+#             */
-/*   Updated: 2026/01/15 15:32:37 by aljbari          ###   ########.fr       */
+/*   Updated: 2026/01/15 17:47:47 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "../includes/cub3d.h"
 
 int	key_release(int key_code, t_game *game)
@@ -39,26 +40,24 @@ int	key_release(int key_code, t_game *game)
 void	toggle_door(t_game *game)
 {
 	t_vec2	p;
-	int		p_x;
-	int		p_y;
-	int		e_x;
-	int		e_y;
-	int		t_x;
-	int		t_y;
+	t_ivec	player;
+	t_ivec	enemy;
+	t_ivec	tile;
 
-	p = vec2_add(game->player.pos, vec2_scale(game->player.dir, TILE_SIZE));
-	p_x = game->player.pos.x / TILE_SIZE;
-	p_y = game->player.pos.y / TILE_SIZE;
-	t_x = p.x / TILE_SIZE;
-	t_y = p.y / TILE_SIZE;
-	e_x = (*(t_enemy *)game->enemies->buff[0]).pos.x / TILE_SIZE;
-	e_y = (*(t_enemy *)game->enemies->buff[0]).pos.y / TILE_SIZE;
-	if ((t_x == p_x && t_y == p_y) || (e_x == t_x && e_y == t_y))
+	p = vec2_add(game->player.pos, vec2_scale(game->player.dir, 90));
+	player.x = game->player.pos.x / TILE_SIZE;
+	player.y = game->player.pos.y / TILE_SIZE;
+	tile.x = p.x / TILE_SIZE;
+	tile.y = p.y / TILE_SIZE;
+	enemy.x = (*(t_enemy *)game->enemies->buff[0]).pos.x / TILE_SIZE;
+	enemy.y = (*(t_enemy *)game->enemies->buff[0]).pos.y / TILE_SIZE;
+	if ((tile.x == player.x && tile.y == player.y)
+		|| (enemy.x == tile.x && enemy.y == tile.y))
 		return ;
-	if (game->world.map[t_y][t_x] == 'C')
-		game->world.map[t_y][t_x] = 'O';
-	else if (game->world.map[t_y][t_x] == 'O')
-		game->world.map[t_y][t_x] = 'C';
+	if (get_map_cell(game, tile.x, tile.y) == 'C')
+		game->world.map[tile.y][tile.x] = 'O';
+	else if (get_map_cell(game, tile.x, tile.y) == 'O')
+		game->world.map[tile.y][tile.x] = 'C';
 }
 
 int	key_press(int key_code, t_game *game)
