@@ -1,5 +1,5 @@
 [X] Enemy is looking very stupid when it freezes delete that shit
-[ ] Player should face west when looking east
+[X] Player should face west when looking east
 [X] Render plyear hearts (lives)
 [X] End the game if player dies
 [X] Release resources when exiting, fail loading xpm,...
@@ -9,7 +9,6 @@
 [!] Fix rendering multiple enemies (cancled)
 [ ] NORM the thing in seperated branch
 [X] Render the wall textures without flipping 4D
-[ ] Separete Mandarin with chinese
 [ ] UPDATE README (contains actual images of game and a technical details of design)
 [X] Fix enemy size
 [ ] "nPushiw" <- ????

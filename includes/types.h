@@ -95,6 +95,28 @@ typedef enum e_enemy_stats {
 	ENEMY_STATS_NBR
 } t_enemy_stats;
 
+typedef enum e_tok
+{
+	TOKEN_NO = 0,
+	TOKEN_SO,
+	TOKEN_WE,
+	TOKEN_EA,
+	TOKEN_F,
+	TOKEN_C,
+	TOKEN_NBR,
+	TOKEN_INVALID
+}	t_tok;
+
+typedef enum e_wall_side
+{
+	WALL_NORTH, 
+	WALL_SOUTH,
+	WALL_EAST,
+	WALL_WEST,
+	WALL_DOOR,
+	WALL_NBR
+}	t_wall_side;
+
 typedef struct s_player
 {
 	t_vec2 dir;
@@ -127,17 +149,6 @@ t_world;
  */
 
 
-typedef enum e_tok
-{
-	TOKEN_NO = 0,
-	TOKEN_SO,
-	TOKEN_WE,
-	TOKEN_EA,
-	TOKEN_F,
-	TOKEN_C,
-	TOKEN_NBR,
-	TOKEN_INVALID
-}	t_tok;
 
 typedef struct e_config
 {
@@ -173,17 +184,6 @@ typedef struct s_enemy
 	int health;
 }	t_enemy;
 
-typedef enum e_token
-{
-	NO = 0,
-	SO,
-	WE,
-	EA,
-	F,
-	C,
-	NOT,
-}	t_token;
-
 typedef enum e_ui_img
 {
 	UI_DIGITS = 0,
@@ -210,7 +210,7 @@ typedef struct s_game
 	void	 *mlx;
 	t_color	ceiling;
 	t_color	floor;
-	t_data	wall[5];
+	t_data	wall[WALL_NBR];
 	double *stripes;
 	t_dyn	*enemies;
 	t_dyn *assets;
@@ -227,15 +227,6 @@ typedef struct s_game
  *       S
  *       🢓
  */
-typedef enum e_wall_side
-{
-	WALL_NORTH, 
-	WALL_SOUTH,
-	WALL_EAST,
-	WALL_WEST,
-	WALL_DOOR
-}	t_wall_side;
-
 typedef enum e_keycode{
 	KEY_ESCAPE = 0,
 	KEY_SHIFT_L,

@@ -39,20 +39,20 @@ void init_delta_dist(t_dda_ctx *dda)
  * @dda: pointer to dda algorithm context
  *
  */
-void	set_horizontal_dir(t_dda_ctx *dda)
+void	set_up_down_side(t_dda_ctx *dda)
 {
-	if (dda->step_dir.x > 0)
+	if (dda->step_dir.y > 0)
 		dda->side = WALL_NORTH;
 	else
 		dda->side = WALL_SOUTH;
 }
 
-void	set_vertical_dir(t_dda_ctx *dda)
+void	set_left_right_side(t_dda_ctx *dda)
 {
-	if (dda->step_dir.y > 0)
-		dda->side = WALL_EAST;
-	else
+	if (dda->step_dir.x > 0)
 		dda->side = WALL_WEST;
+	else
+		dda->side = WALL_EAST;
 }
 
 void find_first_hitting_wall(t_game *game, t_dda_ctx *dda)
@@ -63,15 +63,13 @@ void find_first_hitting_wall(t_game *game, t_dda_ctx *dda)
 		{
 			dda->side_dist.x += (dda->delta_dist.x * TILE_SIZE);
 			dda->map_pos.x += (int)dda->step_dir.x;
-			// dda->side = 0;
-			set_horizontal_dir(dda);
+			set_left_right_side(dda);
 		}
 		else
 		{
 			dda->side_dist.y += (dda->delta_dist.y * TILE_SIZE);
 			dda->map_pos.y += (int)dda->step_dir.y;
-			set_vertical_dir(dda);
-			// dda->side = 1;
+			set_up_down_side(dda);
 		}
 		if (dda->map_pos.x < 0 || dda->map_pos.x >= game->world.map_width || dda->map_pos.y < 0 || dda->map_pos.y >= game->world.map_height)
 			break ;
@@ -147,9 +145,9 @@ void compute_ray_dir(t_game *game, t_dda_ctx *dda, double x)
 void compute_dist_to_hit_wall(t_dda_ctx *dda)
 {
 	if(dda->side == WALL_NORTH || dda->side == WALL_SOUTH)
-		dda->hit_dist = (dda->side_dist.x  / TILE_SIZE - dda->delta_dist.x);
-	else
 		dda->hit_dist = (dda->side_dist.y  / TILE_SIZE - dda->delta_dist.y);
+	else
+		dda->hit_dist = (dda->side_dist.x  / TILE_SIZE - dda->delta_dist.x);
 }
 
 /**

@@ -129,4 +129,6 @@ void ui_render_ammo(t_game *game);
 // access specifier
 char get_map_cell(t_game *game, int x, int y);
 
+// error logs
+bool	log_error(char *error);
 #endif

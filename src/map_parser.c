@@ -457,9 +457,9 @@ bool validate_config(t_config *config)
 			return (false);
 		i++;
 	}
-	if (!parse_color(config->value[C], &config->c))
+	if (!parse_color(config->value[TOKEN_C], &config->c))
 		return (false);
-	if (!parse_color(config->value[F], &config->f))
+	if (!parse_color(config->value[TOKEN_F], &config->f))
 		return (false);
 	return true;
 }
@@ -550,20 +550,17 @@ t_world	build_map(t_config* config)
 
 bool	construct_game(t_config *config, t_game* game)
 {
-	int	i;
 	t_vec2	pos;
 
-	i = 0;
-	pos = vec2_new(config->player_x * TILE_SIZE, config->player_y * TILE_SIZE);
+	pos = vec2_new(config->player_x * TILE_SIZE + TILE_SIZE/2, config->player_y * TILE_SIZE + TILE_SIZE/2);
 	game->ceiling = config->c;
 	game->floor = config->f;
 	game->player.pos = pos;
 	game->world = build_map(config);
-	while (i < 4)
-	{
-		game->world.values[i] = ft_strdup(config->value[i]);
-		i++;
-	}
+	game->world.values[WALL_NORTH] = ft_strdup(config->value[TOKEN_NO]);
+	game->world.values[WALL_SOUTH] = ft_strdup(config->value[TOKEN_SO]);
+	game->world.values[WALL_WEST] = ft_strdup(config->value[TOKEN_WE]);
+	game->world.values[WALL_EAST] = ft_strdup(config->value[TOKEN_EA]);
 	return (true);
 }
 

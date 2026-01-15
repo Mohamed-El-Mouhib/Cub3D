@@ -46,6 +46,30 @@ static t_animation *animation_reload(t_game *game)
 	return load_animation_frames(game, paths, size, 90);
 }
 
+void	set_cardinal_dir(char dir, t_player* player)
+{
+	if (dir == 'E')
+	{
+		player->dir = vec2_new(1, 0);
+		player->plane = vec2_new(0, 0.66);
+	}
+	else if (dir == 'W')
+	{
+		player->dir = vec2_new(-1, 0);
+		player->plane = vec2_new(0, -0.66);
+	}
+	else if (dir == 'N')
+	{
+		player->dir = vec2_new(0, -1);
+		player->plane = vec2_new(0.66, 0);
+	}
+	else if (dir == 'S')
+	{
+		player->dir = vec2_new(0, 1);
+		player->plane = vec2_new(-0.66, 0);
+	}
+}
+
 void player_init_animations(t_game *game)
 {
 	game->player.state                       = PLAYER_WALKING;
@@ -56,8 +80,10 @@ void player_init_animations(t_game *game)
 
 void player_init(t_game *game)
 {
-	game->player.dir = vec2_new(1, 0);
-	game->player.plane = vec2_new(0, 0.66);
+	char	dir;
+
+	dir = get_map_cell(game, game->player.pos.x/TILE_SIZE, game->player.pos.y/TILE_SIZE);
+	set_cardinal_dir(dir, &game->player);
 	game->player.bob = vec2_new(0, 0);
 	game->player.sway = 0;
 	game->player.rot_angle = INIT_ROTATION_STEP;
