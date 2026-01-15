@@ -14,7 +14,7 @@
 int	key_release(int key_code, t_game *game)
 {
 	if (key_code == XK_Escape)
-		exit(0);
+		release_game_and_exit(game, EXIT_SUCCESS);
 	else if (key_code == XK_Right)
 		game->inputs[KEY_RIGHT] = false;
 	else if (key_code == XK_Left)
@@ -66,7 +66,7 @@ void	toggle_door(t_game* game)
 int	key_press(int key_code, t_game *game)
 {
 	if (key_code == XK_Escape)
-		exit(0);
+		release_game_and_exit(game, EXIT_SUCCESS);
 	else if (key_code == XK_Right)
 		game->inputs[KEY_RIGHT] = true;
 	else if (key_code == XK_Left)

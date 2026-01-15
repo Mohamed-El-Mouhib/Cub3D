@@ -38,7 +38,10 @@ bool init_game_world(char *filename, t_game* game)
 		return (false);
 	game->mlx = mlx_init();
 	if (!game->mlx)
-		ft_exit_error("Failed to allocate mlx");
+	{
+		printf("Failed to allocate mlx\n");
+		release_game_and_exit(game, EXIT_FAILURE);
+	}
 	return (true);
 }
 
@@ -56,7 +59,10 @@ void init_game(t_game *game, char *filename)
 	game->wall[WALL_DOOR] = *assets_get_data_from_path(game, "./textures/Wall/DOOR.xpm");
 	game->win = mlx_new_window(game->mlx, game->screen_width, game->screen_height, "MOUSE");
 	if (!game->win)
-		ft_exit_error("Failed to allocate window");
+	{
+		printf("Failed to allocate window\n");
+		release_game_and_exit(game, EXIT_FAILURE);
+	}
 	game->scene = image_new(game, game->screen_width, game->screen_height);
 	game->mouse_pos = vec2_new(0, 0);
 	ft_bzero(game->inputs, sizeof(game->inputs));
