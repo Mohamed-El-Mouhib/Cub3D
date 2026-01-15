@@ -6,7 +6,7 @@
 /*   By: mel-mouh <mel-mouh@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/15 17:11:44 by mel-mouh          #+#    #+#             */
-/*   Updated: 2026/01/15 17:13:53 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2026/01/15 17:34:36 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ unsigned int	apply_fog(unsigned int color_val, double factor)
 	return (*(unsigned int *)c);
 }
 
-double	get_texture_x(t_game *game, t_dda_ctx *info)
+double	get_tex_x(t_game *game, t_dda_ctx *info)
 {
 	double	x;
 
@@ -101,7 +101,7 @@ double	get_texture_x(t_game *game, t_dda_ctx *info)
 	return (x);
 }
 
-double	get_texture_y(t_game *game, t_dda_ctx *info, int i)
+double	get_tex_y(t_game *game, t_dda_ctx *info, int i)
 {
 	double	y;
 

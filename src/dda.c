@@ -6,7 +6,7 @@
 /*   By: mel-mouh <mel-mouh@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 10:26:43 by aljbari           #+#    #+#             */
-/*   Updated: 2026/01/15 16:30:50 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2026/01/15 17:31:12 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ void	raycast_draw_walls(t_game *game)
 		if ((int)dda.hit_dist != 0)
 		{
 			calculate_wall_boundaries(game, &dda, x);
-			draw_texture_line(game, &dda);
+			draw_texture_line(game, &dda, -1);
 		}
 		x++;
 	}
