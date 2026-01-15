@@ -551,20 +551,17 @@ t_world	build_map(t_config* config)
 
 bool	construct_game(t_config *config, t_game* game)
 {
-	int	i;
 	t_vec2	pos;
 
-	i = 0;
-	pos = vec2_new(config->player_x * TILE_SIZE, config->player_y * TILE_SIZE);
+	pos = vec2_new(config->player_x * TILE_SIZE + TILE_SIZE/2, config->player_y * TILE_SIZE + TILE_SIZE/2);
 	game->ceiling = config->c;
 	game->floor = config->f;
 	game->player.pos = pos;
 	game->world = build_map(config);
-	while (i < 4)
-	{
-		game->world.values[i] = ft_strdup(config->value[i]);
-		i++;
-	}
+	game->world.values[WALL_NORTH] = ft_strdup(config->value[WALL_NORTH]);
+	game->world.values[WALL_SOUTH] = ft_strdup(config->value[WALL_SOUTH]);
+	game->world.values[WALL_WEST] = ft_strdup(config->value[WALL_WEST]);
+	game->world.values[WALL_EAST] = ft_strdup(config->value[WALL_EAST]);
 	return (true);
 }
 
