@@ -63,6 +63,14 @@ typedef struct s_vec2
 	double			y;
 }					t_vec2;
 
+typedef struct s_color
+{
+	unsigned char	r;
+	unsigned char	g;
+	unsigned char	b;
+	unsigned char	a;
+}					t_color_;
+
 typedef struct s_data
 {
 	void			*img;

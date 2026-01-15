@@ -6,7 +6,7 @@
 /*   By: mel-mouh <mel-mouh@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 19:33:13 by aljbari           #+#    #+#             */
-/*   Updated: 2026/01/15 17:08:33 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2026/01/15 17:14:28 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,4 +164,10 @@ void	release_player(t_game *game);
 void	release_enemies(t_game *game);
 void	release_assets(t_game *game);
 
+
+double	get_texture_x(t_game *game, t_dda_ctx *info);
+double	get_side_and_cords(t_game *game, t_dda_ctx *info);
+double	get_texture_y(t_game *game, t_dda_ctx *info, int i);
+unsigned int	apply_fog(unsigned int color_val, double factor);
+unsigned int	get_color_info(t_data *side, t_dda_ctx *info, int i, t_vec2 *vec);
 #endif
