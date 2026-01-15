@@ -59,21 +59,21 @@ static t_animation	*enemy_animation_attacking(t_game *game)
 void	enemy_init_pos(t_game *game, t_enemy *enemy)
 {
 	t_vec2	p_pos;
-	t_vec2	dir;
 	int		dist;
 
-	p_pos = vec2_new(game->player.pos.x / TILE_SIZE,
-			game->player.pos.y / TILE_SIZE);
+	p_pos = vec2_new(game->player.pos.x / TILE_SIZE, game->player.pos.y
+			/ TILE_SIZE);
 	dist = 0;
-	while (dist < 10)
+	while (dist < 5)
 	{
-		dir.x = (rand() % 3) - 1;
-		dir.y = (rand() % 3) - 1;
-		if (get_map_cell(game, p_pos.x + dir.x, p_pos.y + dir.y) == '0')
-		{
-			p_pos.x += dir.x;
-			p_pos.y += dir.y;
-		}
+		if (get_map_cell(game, p_pos.x + 1, p_pos.y) == '0')
+			p_pos.x++;
+		else if (get_map_cell(game, p_pos.x, p_pos.y + 1) == '0')
+			p_pos.y++;
+		else if (get_map_cell(game, p_pos.x, p_pos.y - 1) == '0')
+			p_pos.y--;
+		else if (get_map_cell(game, p_pos.x - 1, p_pos.y) == '0')
+			p_pos.x--;
 		dist++;
 	}
 	enemy->pos.x = p_pos.x * TILE_SIZE;
@@ -102,7 +102,7 @@ void	init_enemies(t_game *game)
 		enemy->animation[ENEMY_DEAD] = enemy_animation_dead(game);
 		enemy->state = ENEMY_WALKING;
 		enemy->health = ENEMY_MAX_HEALTH;
-		enemy->last_attack_time = 0;
+		enemy->last_attack_time = curr_time_ms();
 		i++;
 	}
 }
