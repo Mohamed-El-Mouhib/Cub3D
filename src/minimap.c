@@ -6,41 +6,14 @@
 /*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 10:29:11 by aljbari           #+#    #+#             */
-/*   Updated: 2025/11/17 22:53:04 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2026/01/15 16:02:37 by aljbari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../includes/cub3d.h"
 
-int	calc_distance(int x, int y)
-{
-	return (x * x + y * y);
-}
-
-void	minimap_draw_player(t_game *game)
-{
-	double	scale;
-	t_vec2	head;
-	t_vec2	mini_player_pos;
-
-	scale = TILE_SIZE / MINIMAP_SCALE;
-	mini_player_pos = vec2_new(HALF_MINIMAP + X_OFFSET, HALF_MINIMAP
-			+ Y_OFFSET);
-	head = vec2_add(vec2_scale(game->player.dir, scale), mini_player_pos);
-	draw_line(&game->scene, mini_player_pos, head, COLOR_WHITE);
-	draw_filled_circle(&game->scene, mini_player_pos, 5, COLOR_WHITE);
-	// minimap_draw_enemy(game, mini_player_pos);
-}
-
-void	draw_fov_in_minimap(t_game *game, t_dda_ctx *dda)
-{
-	t_vec2 mini_player_pos; // the player position in the minimap
-	t_vec2 mini_hit_point;  // where the ray hits in minimap?
-	mini_player_pos = vec2_new(120, 120);
-	// mini_player_pos = vec2_div(game->player.pos, MINIMAP_SCALE);
-	mini_hit_point = vec2_add(mini_player_pos, vec2_scale(dda->ray,
-				dda->hit_dist / MINIMAP_SCALE));
-	draw_line(&game->scene, mini_player_pos, mini_hit_point, COLOR_MINDARO);
-}
+void	draw_fov_in_minimap(t_game *game, t_dda_ctx *dda);
+int		calc_distance(int x, int y);
+void	minimap_draw_player(t_game *game);
 
 void	minimap_draw_walls(t_game *game)
 {
@@ -120,7 +93,7 @@ void	calc_minimap_tiles(t_game *game, int i, int j)
 	if (tile == '1' || tile == 'C')
 		image_put_pixel(&game->scene, i + X_OFFSET, j + Y_OFFSET, 0x8a8a8a);
 	else
-		image_put_pixel(&game->scene, i + X_OFFSET, j + Y_OFFSET, 0xB1B1B1);
+		image_put_pixel(&game->scene, i + X_OFFSET, j + Y_OFFSET, 0x5c5c5c);
 }
 
 void	draw_circle_map(t_game *game)
