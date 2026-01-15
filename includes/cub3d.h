@@ -45,15 +45,15 @@
 
 # define TILE_SIZE 80.0
 
-#define MAP_VALID_CHARACTERS "01NSEWOC "
+# define MAP_VALID_CHARACTERS "01NSEWOC "
 
 typedef struct s_lex
 {
 	char	*file;
-	char *text;       // string text
-	size_t len;       // length
-	size_t pos;       // index
-	size_t map_start; // index
+	char	*text;
+	size_t	len;
+	size_t	pos;
+	size_t	map_start;
 }			t_lex;
 
 // minimap

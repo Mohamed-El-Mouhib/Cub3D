@@ -71,36 +71,3 @@ double	vec2_len(t_vec2 p1, t_vec2 p2)
 {
 	return (sqrt(vec2_len_squared(p1, p2)));
 }
-
-/**
- * vec2_print - print 2d vector
- *
- * @v: Your salty vectore that causing problems
- * @prefix: text will be placed in front of the vectore
- */
-void	vec2_print(t_vec2 v, char *prefix)
-{
-	printf("%s: Vec(%.2f, %.2f)\n", prefix, v.x, v.y);
-}
-
-/**
- */
-t_vec2	vec2_add(t_vec2 v1, t_vec2 v2)
-{
-	return (vec2_new(v1.x + v2.x, v1.y + v2.y));
-}
-
-t_vec2	vec2_scale(t_vec2 v1, double factor)
-{
-	return (vec2_new(v1.x * factor, v1.y * factor));
-}
-
-t_vec2	vec2_div(t_vec2 v1, double factor)
-{
-	return (vec2_new(v1.x / factor, v1.y / factor));
-}
-
-t_vec2	vec2_unit(t_vec2 from, t_vec2 to)
-{
-	return (vec2_div(vec2_sub(to, from), vec2_len(from, to)));
-}
