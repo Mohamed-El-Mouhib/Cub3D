@@ -50,7 +50,7 @@ void game_update(t_game *game)
 	if (game->player.lives == 0)
 	{
 		printf("R.I.P DARLING MOUSE :(\n");
-		exit(0);
+		release_game_and_exit(game, EXIT_SUCCESS);
 	}
 	// game
 	game_update_time(game);
@@ -110,17 +110,10 @@ int game_loop(t_game *game)
 	return (0);
 }
 
-void	free_map(t_game* game)
+int destroy(t_game *game)
 {
-	int	i;
-
-	i = 0;
-	while (i < game->world.map_height)
-	{
-		free(game->world.map[i]);
-		i++;
-	}
-	free(game->world.map);
+	release_game_and_exit(game, EXIT_SUCCESS);
+	return (0);
 }
 
 int	main(int ac, char **av)
@@ -136,6 +129,7 @@ int	main(int ac, char **av)
 	mlx_hook(game.win, 3, 1L << 1, key_release, &game);       // if key released
 	mlx_hook(game.win, 4, 1L << 2, handle_mouse_press, &game);
 	mlx_hook(game.win, 5, 1L << 3, handle_mouse_release, &game);
+	mlx_hook(game.win, 17, 0, destroy, &game);
 	mlx_loop(game.mlx);
 	return (0);
 }

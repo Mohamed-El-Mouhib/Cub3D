@@ -24,7 +24,7 @@ all: libft_rule $(NAME)
 assets:
 	rm -rf $(ASSET_DIR) $(ASSET_ARC)
 	@echo Downloading the assets...
-	@curl -sOL $(ASSETS_LINK)
+	@curl -LO $(ASSETS_LINK)
 	@echo Unzipping the assets Archive...
 	@unzip -oq $(ASSET_ARC)
 

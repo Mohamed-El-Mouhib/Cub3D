@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/graphics.h"
+#include "../includes/cub3d.h"
 
 /**
  * clear_img - clear img buffer by makeing all pixel zero
@@ -93,13 +93,13 @@ bool image_load_xpm_or_exit(t_game *game, t_data *buff, char *path)
 	if (!buff)
 	{
 		printf("Error: null buffer when opening: '%s'\n", path);
-		exit(1);
+		release_game_and_exit(game, EXIT_FAILURE);
 	}
 	img.img = mlx_xpm_file_to_image(game->mlx, path, &img.width, &img.height);
 	if (!img.img)
 	{
 		printf("Error: failed to load XPM file: '%s'\n", path);
-		exit(1);
+		release_game_and_exit(game, EXIT_FAILURE);
 	}
 	img.addr = mlx_get_data_addr(img.img, &img.bpp, &img.line_len, &img.endian);
 	*buff = img;

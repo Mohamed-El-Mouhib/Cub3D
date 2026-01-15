@@ -31,11 +31,15 @@ int assets_load_xpm(t_game *game, char *path)
 {
 	t_data *data;
 
-	data = malloc(sizeof(t_data));
+	data = ft_calloc(1, sizeof(t_data));
 	if (!data)
-		exit(1);
-	image_load_xpm_or_exit(game, data, path);
+	{
+		perror("Error");
+		release_game_and_exit(game, EXIT_FAILURE);
+	}
+	ft_bzero(data, sizeof(t_data));
 	dyn_add_back(game->assets, data); 
+	image_load_xpm_or_exit(game, data, path);
 	return (game->assets->length - 1);
 }
 
