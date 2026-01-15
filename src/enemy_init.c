@@ -56,6 +56,30 @@ static t_animation	*enemy_animation_attacking(t_game *game)
 	return (load_animation_frames(game, paths, size, 120));
 }
 
+void	enemy_init_pos(t_game *game, t_enemy *enemy)
+{
+	t_vec2	p_pos;
+	t_vec2	dir;
+	int		dist;
+
+	p_pos = vec2_new(game->player.pos.x / TILE_SIZE,
+			game->player.pos.y / TILE_SIZE);
+	dist = 0;
+	while (dist < 10)
+	{
+		dir.x = (rand() % 3) - 1;
+		dir.y = (rand() % 3) - 1;
+		if (get_map_cell(game, p_pos.x + dir.x, p_pos.y + dir.y) == '0')
+		{
+			p_pos.x += dir.x;
+			p_pos.y += dir.y;
+		}
+		dist++;
+	}
+	enemy->pos.x = p_pos.x * TILE_SIZE;
+	enemy->pos.y = p_pos.y * TILE_SIZE;
+}
+
 void	init_enemies(t_game *game)
 {
 	t_enemy	*enemy;
@@ -72,7 +96,7 @@ void	init_enemies(t_game *game)
 			release_game_and_exit(game, EXIT_FAILURE);
 		}
 		dyn_add_back(game->enemies, enemy);
-		enemy->pos = vec2_new(TILE_SIZE * 11 + 40, TILE_SIZE * 1 + 40);
+		enemy_init_pos(game, enemy);
 		enemy->animation[ENEMY_WALKING] = enemy_animation_walking(game);
 		enemy->animation[ENEMY_ATTACKING] = enemy_animation_attacking(game);
 		enemy->animation[ENEMY_DEAD] = enemy_animation_dead(game);
